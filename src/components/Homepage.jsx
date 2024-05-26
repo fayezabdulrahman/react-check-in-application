@@ -1,5 +1,6 @@
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
 import CheckInForm from './CheckInForm';
+import SubmittedCheckin from './SubmittedCheckin';
 const Homepage = () => {
   return (
     <>
@@ -13,7 +14,7 @@ const Homepage = () => {
             <CheckInForm />
           </TabPanel>
           <TabPanel>
-            <p>two!</p>
+            <SubmittedCheckin />
           </TabPanel>
         </TabPanels>
       </Tabs>
