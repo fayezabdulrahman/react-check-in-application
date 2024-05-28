@@ -2,11 +2,11 @@ import Homepage from './components/Homepage';
 import AdminHomepage from './components/AdminHomepage';
 import ProtectedRoute from './Pages/ProtectedRoute';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Signup from './components/Signup';
+import Registration from './Pages/Registration';
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Signup />
+    element: <Registration />
   },
   {
     path: '/homepage',

@@ -1,46 +1,39 @@
 import {
-  Button,
   FormControl,
-  FormErrorMessage,
-  FormLabel,
   Input,
+  FormLabel,
+  FormErrorMessage,
   InputGroup,
   InputRightElement,
-  Box
+  Box,
+  Button
 } from '@chakra-ui/react';
+import * as Yup from 'yup';
 import { Formik, Form, Field } from 'formik';
 import { useState } from 'react';
-import * as Yup from 'yup';
 const INITIAL_STATE = {
   email: '',
-  firstName: '',
-  lastName: '',
   password: ''
 };
-
-const Signup = () => {
+const Login = () => {
   const [showPass, setShowPass] = useState(false);
   const handleShowPassClick = () => setShowPass(!showPass);
   const validationSchema = Yup.object({
     email: Yup.string()
       .required('Email is required')
       .email('Invalid email address'),
-    firstName: Yup.string().required('First name is required'),
-    lastName: Yup.string().required('Surname is required'),
     password: Yup.string()
       .required('Password is required')
-      .min(3, 'Must be greater than 3 characters.')
+      .min(3, 'Must be greater than 3 characters')
   });
-
-  const submitForm = (values) => {
-    console.log('formValues', values);
+  const handleLogin = (values) => {
+    console.log(values);
   };
-
   return (
     <>
       <Formik
         initialValues={INITIAL_STATE}
-        onSubmit={submitForm}
+        onSubmit={handleLogin}
         validationSchema={validationSchema}
       >
         {() => (
@@ -56,28 +49,7 @@ const Signup = () => {
                 </FormControl>
               )}
             </Field>
-            <Field name="firstName">
-              {({ field, form }) => (
-                <FormControl
-                  isInvalid={form.errors.firstName && form.touched.firstName}
-                >
-                  <FormLabel>First Name</FormLabel>
-                  <Input {...field} />
-                  <FormErrorMessage>{form.errors.firstName}</FormErrorMessage>
-                </FormControl>
-              )}
-            </Field>
-            <Field name="lastName">
-              {({ field, form }) => (
-                <FormControl
-                  isInvalid={form.errors.lastName && form.touched.lastName}
-                >
-                  <FormLabel>Surname</FormLabel>
-                  <Input {...field} />
-                  <FormErrorMessage>{form.errors.lastName}</FormErrorMessage>
-                </FormControl>
-              )}
-            </Field>
+
             <Field name="password">
               {({ field, form }) => (
                 <FormControl
@@ -100,9 +72,9 @@ const Signup = () => {
                 </FormControl>
               )}
             </Field>
-            <Box display="flex" justifyContent="center" width='100%'>
-              <Button mt={4} colorScheme="orange" type="submit" width='50%'>
-                Submit
+            <Box display="flex" justifyContent="center" width="100%">
+              <Button mt={4} colorScheme="orange" type="submit" width="50%">
+                Login
               </Button>
             </Box>
           </Form>
@@ -112,4 +84,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Login;
