@@ -10,6 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { Formik, Form, Field } from 'formik';
 import { useState } from 'react';
+import { client } from '../util/axios-util';
 import * as Yup from 'yup';
 const INITIAL_STATE = {
   email: '',
@@ -33,6 +34,10 @@ const Signup = () => {
   });
 
   const submitForm = (values) => {
+    client
+      .post('/register', values)
+      .then((response) => console.log(response))
+      .catch((error) => console.log(error));
     console.log('formValues', values);
   };
 
@@ -100,8 +105,8 @@ const Signup = () => {
                 </FormControl>
               )}
             </Field>
-            <Box display="flex" justifyContent="center" width='100%'>
-              <Button mt={4} colorScheme="orange" type="submit" width='50%'>
+            <Box display="flex" justifyContent="center" width="100%">
+              <Button mt={4} colorScheme="orange" type="submit" width="50%">
                 Submit
               </Button>
             </Box>

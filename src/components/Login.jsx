@@ -11,6 +11,8 @@ import {
 import * as Yup from 'yup';
 import { Formik, Form, Field } from 'formik';
 import { useState } from 'react';
+import { client } from '../util/axios-util';
+
 const INITIAL_STATE = {
   email: '',
   password: ''
@@ -28,6 +30,10 @@ const Login = () => {
   });
   const handleLogin = (values) => {
     console.log(values);
+    client
+      .post('/login', values)
+      .then((response) => console.log(response))
+      .catch((error) => console.log(error));
   };
   return (
     <>
