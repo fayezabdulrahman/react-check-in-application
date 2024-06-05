@@ -1,6 +1,17 @@
 import { Container } from '@chakra-ui/react';
-import { FormControl, FormLabel, Input, Select, Button} from '@chakra-ui/react';
+import {
+  FormControl,
+  FormLabel,
+  Input,
+  Select,
+  Button
+} from '@chakra-ui/react';
+import { client } from '../util/axios-util';
+
 const CheckInForm = () => {
+  const handleSubmit = async () => {
+    await client.get('/protected');
+  };
   return (
     <>
       <Container>
@@ -23,8 +34,10 @@ const CheckInForm = () => {
             <option>6</option>
           </Select>
         </FormControl>
-        <FormControl pt='4' >
-          <Button colorScheme="orange">Orange</Button>
+        <FormControl pt="4">
+          <Button colorScheme="orange" onClick={handleSubmit}>
+            Orange
+          </Button>
         </FormControl>
       </Container>
     </>

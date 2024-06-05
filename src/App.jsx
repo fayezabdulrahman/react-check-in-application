@@ -3,6 +3,7 @@ import AdminHomepage from './components/AdminHomepage';
 import ProtectedRoute from './Pages/ProtectedRoute';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Registration from './Pages/Registration';
+import UserProvider from './hooks/auth';
 const router = createBrowserRouter([
   {
     path: '/',
@@ -22,7 +23,9 @@ const router = createBrowserRouter([
 function App() {
   return (
     <>
-      <RouterProvider router={router} />;
+      <UserProvider>
+        <RouterProvider router={router} />;
+      </UserProvider>
     </>
   );
 }

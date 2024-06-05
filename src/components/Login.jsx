@@ -12,14 +12,28 @@ import * as Yup from 'yup';
 import { Formik, Form, Field } from 'formik';
 import { useState } from 'react';
 import { client } from '../util/axios-util';
-
+import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { UserContext } from '../hooks/auth';
 const INITIAL_STATE = {
   email: '',
   password: ''
 };
+const USER_INITIAL_STATE = {
+  isAuthenticated: false,
+  id: '',
+  role: '',
+  token: '',
+  firstName: '',
+  lastName: ''
+};
 const Login = () => {
   const [showPass, setShowPass] = useState(false);
   const handleShowPassClick = () => setShowPass(!showPass);
+  const [userState, setUserState] = useState(USER_INITIAL_STATE);
+  const navigate = useNavigate();
+  const { login } = useContext(UserContext);
   const validationSchema = Yup.object({
     email: Yup.string()
       .required('Email is required')
@@ -30,10 +44,27 @@ const Login = () => {
   });
   const handleLogin = (values) => {
     console.log(values);
-    client
-      .post('/login', values)
-      .then((response) => console.log(response))
-      .catch((error) => console.log(error));
+    login(values);
+    navigate('/homepage');
+    // client
+    //   .post('/login', values)
+    //   .then((response) => {
+    //     const token = response.data.token;
+    //     const extractedToken = jwtDecode(token);
+    //     console.log(extractedToken);
+    //     setUserState({
+    //       isAuthenticated: true,
+    //       role: 'user',
+    //       token: token,
+    //       id: extractedToken.id,
+    //       firstName: extractedToken.firstName,
+    //       lastName: extractedToken.lastName
+    //     });
+    //     navigate('/homepage');
+    //   })
+    //   .catch((error) => console.log(error));
+
+    // console.log('user state', userState);
   };
   return (
     <>

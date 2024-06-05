@@ -15,19 +15,30 @@ import {
   WrapItem,
   Avatar,
   Heading,
-  Flex,
+  Flex
 } from '@chakra-ui/react';
 import { IconButton } from '@chakra-ui/react';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { CiLogout } from 'react-icons/ci';
 import { IoChatboxOutline, IoHomeOutline } from 'react-icons/io5';
 import { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { UserContext } from '../hooks/auth';
 const Navigation = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef();
+  const { logout } = useContext(UserContext);
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
   return (
     <>
-      <Flex gap='8' alignItems='center' justifyContent='space-between' p={4}>
+      <Flex gap="8" alignItems="center" justifyContent="space-between" p={4}>
         <IconButton
           variant="outline"
           colorScheme="teal"
@@ -88,6 +99,7 @@ const Navigation = () => {
                   aria-label="Call Sage"
                   fontSize="20px"
                   icon={<CiLogout />}
+                  onClick={handleLogout}
                 />
                 Logout
               </Box>
