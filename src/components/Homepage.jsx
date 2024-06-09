@@ -1,10 +1,7 @@
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
 import CheckInForm from './CheckInForm';
 import SubmittedCheckin from './SubmittedCheckin';
-import { useAuth } from '../context/AuthProvider';
 const Homepage = () => {
-  // const {token} = useAuth();
-  // console.log('homepage token', token);
   return (
     <>
       <Tabs isFitted variant="enclosed" m={4}>

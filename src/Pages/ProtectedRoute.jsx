@@ -1,4 +1,4 @@
-import { Outlet, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import { useAuth } from '../context/AuthProvider';
 const ProtectedRoute = ({ children }) => {
@@ -12,7 +12,6 @@ const ProtectedRoute = ({ children }) => {
   return (
     <>
       <Navigation />
-      {/* <Outlet /> */}
       {children}
     </>
   );
