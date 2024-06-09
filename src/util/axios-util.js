@@ -7,23 +7,23 @@ export const client = axios.create({
   withCredentials: true
 });
 
-client.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  async function (error) {
-    const originalRequest = error.config;
+// client.interceptors.response.use(
+//   (response) => {
+//     return response;
+//   },
+//   async function (error) {
+//     const originalRequest = error.config;
 
-    if (error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
+//     if (error.response.status === 401 && !originalRequest._retry) {
+//       originalRequest._retry = true;
 
-      try {
-        await client.get('/refreshToken');
-        return client(originalRequest);
-      } catch (error) {
-        console.error('Token refresh failed', error);
-      }
-    }
-    return Promise.reject(error);
-  }
-);
+//       try {
+//         await client.get('/refreshToken');
+//         return client(originalRequest);
+//       } catch (error) {
+//         console.error('Token refresh failed', error);
+//       }
+//     }
+//     return Promise.reject(error);
+//   }
+// );

@@ -1,31 +1,29 @@
 import Homepage from './components/Homepage';
-import AdminHomepage from './components/AdminHomepage';
 import ProtectedRoute from './Pages/ProtectedRoute';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Registration from './Pages/Registration';
-import UserProvider from './hooks/auth';
+import AuthProvider from './context/AuthProvider';
 const router = createBrowserRouter([
   {
     path: '/',
+    index: true,
+    element: (
+      <ProtectedRoute>
+        <Homepage />
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: '/register',
     element: <Registration />
-  },
-  {
-    path: '/homepage',
-    element: <ProtectedRoute role="user" redirectTo="/" />,
-    children: [{ index: true, element: <Homepage /> }]
-  },
-  {
-    path: '/admin',
-    element: <ProtectedRoute role="admin" redirectTo="/" />,
-    children: [{ index: true, element: <AdminHomepage /> }]
   }
 ]);
 function App() {
   return (
     <>
-      <UserProvider>
+      <AuthProvider>
         <RouterProvider router={router} />;
-      </UserProvider>
+      </AuthProvider>
     </>
   );
 }

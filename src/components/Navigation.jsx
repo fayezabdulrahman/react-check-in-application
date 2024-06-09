@@ -23,18 +23,17 @@ import { CiLogout } from 'react-icons/ci';
 import { IoChatboxOutline, IoHomeOutline } from 'react-icons/io5';
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
-import { UserContext } from '../hooks/auth';
+import { useAuth } from '../context/AuthProvider';
 const Navigation = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef();
-  const { logout } = useContext(UserContext);
+  const { logout } = useAuth();
 
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
+  const handleLogout = async () => {
+    await logout();
+    navigate('/register');
   };
   return (
     <>

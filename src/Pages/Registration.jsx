@@ -14,7 +14,7 @@ import Signup from '../components/Signup';
 const Registration = () => {
   return (
     <>
-      <Container maxW="2xl" centerContent p={6} bg='black'>
+      <Container maxW="2xl" centerContent p={6} bg="black">
         <Box
           display="flex"
           justifyContent="center"
@@ -31,15 +31,15 @@ const Registration = () => {
         <Box bg="white" p={4} borderRadius="lg" borderWidth="2px" w="100%">
           <Tabs variant="soft-rounded" colorScheme="orange">
             <TabList mb="1rem">
-              <Tab w="50%">Sign Up</Tab>
               <Tab w="50%">Login</Tab>
+              <Tab w="50%">Sign Up</Tab>
             </TabList>
             <TabPanels>
               <TabPanel>
-                <Signup />
+                <Login />
               </TabPanel>
               <TabPanel>
-                <Login />
+                <Signup />
               </TabPanel>
             </TabPanels>
           </Tabs>
