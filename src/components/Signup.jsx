@@ -6,11 +6,12 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-  Box
+  Box,
+  useToast
 } from '@chakra-ui/react';
+import { useAuth } from '../context/AuthProvider';
 import { Formik, Form, Field } from 'formik';
 import { useState } from 'react';
-import { client } from '../util/axios-util';
 import * as Yup from 'yup';
 const INITIAL_STATE = {
   email: '',
@@ -20,8 +21,13 @@ const INITIAL_STATE = {
 };
 
 const Signup = () => {
+  const { signUp } = useAuth();
   const [showPass, setShowPass] = useState(false);
   const handleShowPassClick = () => setShowPass(!showPass);
+
+  const toast = useToast();
+
+  // validation for signing up
   const validationSchema = Yup.object({
     email: Yup.string()
       .required('Email is required')
@@ -33,12 +39,35 @@ const Signup = () => {
       .min(3, 'Must be greater than 3 characters.')
   });
 
-  const submitForm = (values) => {
-    client
-      .post('/register', values)
-      .then((response) => console.log(response))
-      .catch((error) => console.log(error));
+  const submitForm = async (values, actions) => {
     console.log('formValues', values);
+
+    const toastId = toast({
+      title: 'Signing up...',
+      status: 'loading',
+      position: 'bottom',
+      duration: null
+    });
+
+    try {
+      await signUp(values);
+
+      toast.update(toastId, {
+        title: 'Signup Successful',
+        status: 'success',
+        duration: 3000
+      });
+
+      actions.resetForm(); // resetForm After submit
+
+    } catch (error) {
+      toast.update(toastId, {
+        title: 'Signup Failed',
+        description: error.response.data || 'An error occurred',
+        status: 'error',
+        duration: 3000
+      });
+    }
   };
 
   return (

@@ -54,15 +54,13 @@ const AuthProvider = ({ children }) => {
   const login = async (user) => {
     setLoading(true);
     try {
-      await client
-      .post('/login', user)
-      .then((response) => {
+      await client.post('/login', user).then((response) => {
         console.log('response from server', response.data);
         const token = response.data.token;
 
         setToken(token);
       });
-    } catch(error) {
+    } catch (error) {
       console.log('error', error);
       setToken(null);
     } finally {
@@ -78,6 +76,17 @@ const AuthProvider = ({ children }) => {
         setToken(undefined);
       })
       .catch((error) => console.log(error));
+  };
+
+  const signUp = async (values) => {
+    try {
+      const response = await client.post('/register', values);
+      console.log('response from backend on register', response);
+      return response;
+    } catch (error) {
+      console.log('registration failed', error);
+      throw error;
+    }
   };
 
   // interceptor for each request going out to the server so we include the token
@@ -136,6 +145,7 @@ const AuthProvider = ({ children }) => {
     setToken: setToken,
     login: login,
     logout: logout,
+    signUp: signUp,
     loading: loading
   };
 
