@@ -8,8 +8,16 @@ import {
 
 import { client } from '../util/axios-util.js';
 import Loading from '../components/Loading.jsx';
+import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
+
 
 const AuthContext = createContext();
+const INITIAL_USER_STATE = {
+  firstName: undefined,
+  lastName: undefined,
+  role: undefined
+};
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
@@ -24,7 +32,9 @@ export const useAuth = () => {
 
 const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(undefined);
+  const [userState, setUserState] = useState(INITIAL_USER_STATE);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   // this gets called one time when app launches to determine if user is logged in or not.
   useEffect(() => {
@@ -33,7 +43,7 @@ const AuthProvider = ({ children }) => {
         console.log('intial call');
         const response = await client.get('/me');
         const availableToken =
-          response.config.headers.Authorization.split(' ')[1];
+          response.config.headers.Authorization?.split(' ')[1];
         if (availableToken) {
           setToken(availableToken);
         } else {
@@ -59,6 +69,21 @@ const AuthProvider = ({ children }) => {
         const token = response.data.token;
 
         setToken(token);
+
+        const user = jwtDecode(token);
+        console.log('user', user);
+        setUserState(() => ({
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role
+        }));
+
+        if (user.role === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/');
+        }
+
       });
     } catch (error) {
       console.log('error', error);
@@ -74,6 +99,7 @@ const AuthProvider = ({ children }) => {
       .then((response) => {
         console.log(response.data.message);
         setToken(undefined);
+        setUserState(INITIAL_USER_STATE);
       })
       .catch((error) => console.log(error));
   };
@@ -125,6 +151,8 @@ const AuthProvider = ({ children }) => {
             console.log('refresh response', response.data);
 
             setToken(response.data.token);
+
+            retrieveUserState(response.data.token);
             originalRequest._retry = true;
             originalRequest.headers.Authorization = `Bearer ${response.data.token}`;
 
@@ -140,8 +168,18 @@ const AuthProvider = ({ children }) => {
     );
   }, []);
 
+  const retrieveUserState = (token) => {
+    const user = jwtDecode(token);
+    setUserState(() => ({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role
+    }));
+  };
+
   const ctxValue = {
     token: token,
+    userState,
     setToken: setToken,
     login: login,
     logout: logout,

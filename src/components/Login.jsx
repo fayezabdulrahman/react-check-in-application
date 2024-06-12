@@ -11,7 +11,6 @@ import {
 import * as Yup from 'yup';
 import { Formik, Form, Field } from 'formik';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthProvider';
 const Login = () => {
   const INITIAL_STATE = {
@@ -20,7 +19,6 @@ const Login = () => {
   };
   const [showPass, setShowPass] = useState(false);
   const handleShowPassClick = () => setShowPass(!showPass);
-  const navigate = useNavigate();
   const { login } = useAuth();
 
   // validatoin for form
@@ -34,7 +32,6 @@ const Login = () => {
   });
   const handleLogin = async (values) => {
     await login(values);
-    navigate('/');
   };
   return (
     <>
