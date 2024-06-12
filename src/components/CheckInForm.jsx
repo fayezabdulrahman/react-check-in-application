@@ -36,7 +36,7 @@ const CheckInForm = () => {
         </FormControl>
         <FormControl pt="4">
           <Button colorScheme="orange" onClick={handleSubmit}>
-            Orange
+            Submit
           </Button>
         </FormControl>
       </Container>

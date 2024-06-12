@@ -3,38 +3,17 @@ import {
   TabList,
   TabPanels,
   Tab,
-  TabPanel,
-  Text,
-  Container,
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  CardFooter,
+  TabPanel
 } from '@chakra-ui/react';
+import LatestCheckIn from './LatestCheckIn';
 import CreateCheckIn from './CreateCheckIn';
 
 const AdminHomepage = () => {
-  const noCheckIn = true;
-  let content = (
-    <>
-      {noCheckIn ? (
-        <Container>
-          <Card>
-            <CardHeader color='gray.500'>No Active Check</CardHeader>
-            <CardBody>
-              <Text>Create a check in for your clients</Text>
-            </CardBody>
-            <CardFooter>
-              <Button colorScheme="orange">Create Check In</Button>
-            </CardFooter>
-          </Card>
-        </Container>
-      ) : (
-        <CreateCheckIn />
-      )}
-    </>
-  );
+  // when page loads - call api to fetch db to check for latestCheckIn
+  // if no latest check in - render code to ask admin to create check in
+  // if latest check in - load check in and give ability to edit/publish
+  const noCheckIn = false;
+  let content = <>{!noCheckIn ? <CreateCheckIn /> : <LatestCheckIn />}</>;
 
   return (
     <>
@@ -45,7 +24,7 @@ const AdminHomepage = () => {
         </TabList>
         <TabPanels>
           <TabPanel>{content}</TabPanel>
-          <TabPanel>tEST</TabPanel>
+          <TabPanel>Your previous check in</TabPanel>
         </TabPanels>
       </Tabs>
     </>

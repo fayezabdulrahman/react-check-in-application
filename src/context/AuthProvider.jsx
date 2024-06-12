@@ -11,7 +11,6 @@ import Loading from '../components/Loading.jsx';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 
-
 const AuthContext = createContext();
 const INITIAL_USER_STATE = {
   firstName: undefined,
@@ -83,7 +82,6 @@ const AuthProvider = ({ children }) => {
         } else {
           navigate('/');
         }
-
       });
     } catch (error) {
       console.log('error', error);
@@ -180,11 +178,11 @@ const AuthProvider = ({ children }) => {
   const ctxValue = {
     token: token,
     userState,
+    loading: loading,
     setToken: setToken,
     login: login,
     logout: logout,
-    signUp: signUp,
-    loading: loading
+    signUp: signUp
   };
 
   return (

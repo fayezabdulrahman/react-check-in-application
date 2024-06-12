@@ -1,10 +1,6 @@
 import Homepage from './components/Homepage';
 import ProtectedRoute from './Pages/ProtectedRoute';
-import {
-  BrowserRouter,
-  Route,
-  Routes,
-} from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Registration from './Pages/Registration';
 import AuthProvider from './context/AuthProvider';
 import AdminHomepage from './components/AdminHomepage';
