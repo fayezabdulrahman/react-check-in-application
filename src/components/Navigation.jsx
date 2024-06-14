@@ -27,7 +27,9 @@ import { useAuth } from '../context/AuthProvider';
 const Navigation = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef();
-  const { logout } = useAuth();
+  const { logout, userState } = useAuth();
+
+  const userName = userState.firstName + ' ' + userState.lastName;
 
   const navigate = useNavigate();
 
@@ -62,10 +64,10 @@ const Navigation = () => {
           <DrawerHeader display="flex" gap="4" alignItems="center">
             <Wrap>
               <WrapItem>
-                <Avatar name="user name" src=""></Avatar>
+                <Avatar name={userName} src=""></Avatar>
               </WrapItem>
             </Wrap>
-            <Box>Username</Box>
+            <Box>{userName}</Box>
           </DrawerHeader>
 
           <DrawerBody>
