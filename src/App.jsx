@@ -4,19 +4,22 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Registration from './Pages/Registration';
 import AuthProvider from './context/AuthProvider';
 import AdminHomepage from './components/AdminHomepage';
+import AdminProvider from './context/AdminProvider';
 
 function App() {
   return (
     <>
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
-            <Route path="/register" element={<Registration />} />
-            <Route element={<ProtectedRoute />}>
-              <Route path="/" index element={<Homepage />} />
-              <Route path="/admin" element={<AdminHomepage />} />
-            </Route>
-          </Routes>
+          <AdminProvider>
+            <Routes>
+              <Route path="/register" element={<Registration />} />
+              <Route element={<ProtectedRoute />}>
+                <Route path="/" index element={<Homepage />} />
+                <Route path="/admin" element={<AdminHomepage />} />
+              </Route>
+            </Routes>
+          </AdminProvider>
         </AuthProvider>
       </BrowserRouter>
     </>
