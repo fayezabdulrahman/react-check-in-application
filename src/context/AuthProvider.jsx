@@ -48,10 +48,8 @@ const AuthProvider = ({ children }) => {
         } else {
           setToken(null);
         }
-        // setLoading(false);
       } catch (error) {
         console.log('error from /api/me', error);
-        // setLoading(false);
         setToken(null); // we tried to fetch api and theres no token
       } finally {
         setLoading(false);
@@ -62,6 +60,7 @@ const AuthProvider = ({ children }) => {
 
   const login = async (user) => {
     setLoading(true);
+
     try {
       await client.post('/login', user).then((response) => {
         console.log('response from server', response.data);
@@ -82,10 +81,12 @@ const AuthProvider = ({ children }) => {
         } else {
           navigate('/');
         }
+        return response.data.message;
       });
     } catch (error) {
       console.log('error', error);
       setToken(null);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -139,8 +140,8 @@ const AuthProvider = ({ children }) => {
       },
       async (error) => {
         const originalRequest = error.config;
-        console.log('iniside response interceptor', error);
-        console.log('response status', error.response.status);
+        // console.log('iniside response interceptor', error);
+        // console.log('response status', error.response.status);
         if (error.response.status === 401 && !originalRequest._retry) {
           try {
             console.log('calling refresh');

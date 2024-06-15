@@ -6,7 +6,8 @@ import {
   InputGroup,
   InputRightElement,
   Box,
-  Button
+  Button,
+  useToast
 } from '@chakra-ui/react';
 import * as Yup from 'yup';
 import { Formik, Form, Field } from 'formik';
@@ -21,6 +22,8 @@ const Login = () => {
   const handleShowPassClick = () => setShowPass(!showPass);
   const { login } = useAuth();
 
+  const toast = useToast();
+
   // validatoin for form
   const validationSchema = Yup.object({
     email: Yup.string()
@@ -31,7 +34,28 @@ const Login = () => {
       .min(3, 'Must be greater than 3 characters')
   });
   const handleLogin = async (values) => {
-    await login(values);
+    const toastId = toast({
+      title: 'Signing up...',
+      status: 'loading',
+      position: 'bottom',
+      duration: null
+    });
+    try {
+      await login(values);
+
+      toast.update(toastId, {
+        title: 'Login Successful',
+        status: 'success',
+        duration: 3000
+      });
+    } catch (error) {
+      toast.update(toastId, {
+        title: 'Login Failed',
+        description: error.response?.data?.message || 'An error occurred',
+        status: 'error',
+        duration: 3000
+      });
+    }
   };
   return (
     <>
