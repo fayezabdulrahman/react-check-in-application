@@ -2,18 +2,12 @@ import { useContext, createContext, useState } from 'react';
 import { useAuth } from './AuthProvider';
 
 const AdminQuestionContext = createContext();
-const INITAL_QUESTION_STATE = {
-  label: '',
-  componentType: 'text',
-  selectOptions: [],
-  radioOptions: [],
-  isRequired: false
-};
 
 const INTIAL_CHECKIN_STATE = {
   isLatestCheckin: true,
   createdBy: '',
-  checkInQuestions: []
+  published: false,
+  questions: []
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -27,73 +21,48 @@ export const useAdminQuestion = () => {
   return adminQuestionContext;
 };
 const AdminProvider = ({ children }) => {
-  const [question, setQuestion] = useState(INITAL_QUESTION_STATE);
-  const [questions, setQuestions] = useState([]);
   const [checkIn, setCheckIn] = useState(INTIAL_CHECKIN_STATE);
   const { userState } = useAuth();
 
-
-
-  function updateRadioOptions(value) {
-    setQuestion((prevState) => ({
-      ...prevState,
-      componentType: 'radio',
-      radioOptions: value
-    }));
-  }
-
-  function updateSelectOptions(value) {
-    setQuestion((prevState) => ({
-      ...prevState,
-      componentType: 'select',
-      selectOptions: value
-    }));
-  }
-
-  function updateCheckbox(value) {
-    setQuestion((prevState) => ({
-      ...prevState,
-      isRequired: value
-    }));
-  }
-
-  function updateQuestionLabel(value) {
-    setQuestion((prevState) => ({
-      ...prevState,
-      label: value
-    }));
-  }
-
-  function saveQuestion(questionToSave) {
-    setQuestions((prevState) => [...prevState, questionToSave]);
-
-    // reset new question to add
-    setQuestion(INITAL_QUESTION_STATE);
-  }
-
-  function saveCheckIn() {
+  function saveCheckInQuestion(questionToSave) {
     setCheckIn((prevState) => ({
-        ...prevState,
-        createdBy: userState.firstName + ' ' + userState.lastName,
-        checkInQuestions: [...prevState.checkInQuestions, ...questions]
+      ...prevState,
+      createdBy: userState.firstName + ' ' + userState.lastName,
+      questions: [
+        ...prevState.questions,
+        {
+          id: checkIn.questions.length++,
+          ...questionToSave
+        }
+      ]
     }));
-
-    console.log('inside save Checkin ', questions);
-
-    // clear questions
-    setQuestions([]);
   }
+
+  function publishCheckIn() {
+    setCheckIn((prevState) => ({
+      ...prevState,
+      published: true
+    }));
+  }
+
+
+  const updateCheckInQuestion = (updatedQuestion) => {
+    console.log('udapted question', updatedQuestion);
+    setCheckIn((prevState) => ({
+      ...prevState,
+      questions: [
+        ...prevState.questions.map((q) =>
+          q.id === updatedQuestion.id ? updatedQuestion : q
+        )
+      ]
+    }));
+  };
 
   const ctxValue = {
-    updateCheckbox,
-    updateQuestionLabel,
-    updateRadioOptions,
-    updateSelectOptions,
-    saveQuestion,
-    saveCheckIn,
-    checkIn,
-    questions,
-    question
+    saveCheckInQuestion,
+    publishCheckIn,
+    updateCheckInQuestion,
+    checkIn
   };
 
   return (

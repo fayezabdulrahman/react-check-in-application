@@ -15,31 +15,32 @@ import LatestCheckIn from './LatestCheckIn';
 import QuestionsSummary from './QuestionsSummary';
 
 const CreateCheckIn = () => {
-  const { questions, checkIn, saveCheckIn } = useAdminQuestion();
+  const { checkIn, publishCheckIn } = useAdminQuestion();
 
   function handlePublishCheckin() {
-    saveCheckIn();
+    console.log('publsih checkIn');
+    publishCheckIn();
   }
 
   return (
     <>
       <Container>
-        {checkIn.checkInQuestions.length === 0 ? (
+        {!checkIn.published ? (
           <Card>
             <CardHeader color="gray.500">No Active Check</CardHeader>
             <CardBody>
-              {questions.length !== 0 && (
-                <Text>{questions.length} Question Added</Text>
+              {checkIn.questions?.length !== 0 && (
+                <Text>{checkIn.questions.length} Question Added</Text>
               )}
-              {questions.length !== 0 ? (
+              {checkIn.questions?.length !== 0 ? (
                 <Text>Publish your check in when youre ready!</Text>
               ) : (
                 <Text>
                   Create a check in for your clients by adding questions
                 </Text>
               )}
-              {questions.length !== 0 && (
-                <CardFooter display='flex' justifyContent='center'>
+              {checkIn.questions?.length !== 0 && (
+                <CardFooter display="flex" justifyContent="center">
                   <Button
                     size="sm"
                     onClick={handlePublishCheckin}
@@ -55,19 +56,15 @@ const CreateCheckIn = () => {
           <LatestCheckIn />
         )}
 
-        {questions.length !== 0 && (
+        {checkIn.questions.length !== 0  && !checkIn.published && (
           <>
-            <QuestionsSummary />
+            <Box mt="1rem">
+              <QuestionsSummary />
+            </Box>
           </>
         )}
 
-        {checkIn.checkInQuestions.length === 0 ? (
-          <>
-            <Box mt="1rem">
-              <NewQuestion />
-            </Box>
-          </>
-        ) : null}
+        <NewQuestion />
       </Container>
     </>
   );

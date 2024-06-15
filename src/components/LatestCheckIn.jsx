@@ -11,7 +11,7 @@ const LatestCheckIn = () => {
         <CardHeader color="red.500">Your Active Check In </CardHeader>
         <CardBody>
           <Flex flexDirection="column">
-            {checkIn.checkInQuestions.map((checkin, index) => (
+            {checkIn.questions?.map((checkin, index) => (
               <FormFactory key={index} question={checkin} />
             ))}
           </Flex>

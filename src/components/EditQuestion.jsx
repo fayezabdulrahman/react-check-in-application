@@ -20,30 +20,27 @@ import {
   useToast
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { IoMdAdd } from 'react-icons/io';
+import { CiEdit } from 'react-icons/ci';
 import { useAdminQuestion } from '../context/AdminProvider';
 
-const INITAL_QUESTION_STATE = {
-  label: '',
-  componentType: 'text',
-  selectOptions: [],
-  radioOptions: [],
-  isRequired: false
-};
-
-const NewQuestion = () => {
+const EditQuestion = ({ questionId }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [questionType, setQuestionType] = useState('text');
-  const [newQuestion, setNewQuestion] = useState(INITAL_QUESTION_STATE);
-  const toast = useToast();
-  const { saveCheckInQuestion } = useAdminQuestion();
+  const { checkIn, updateCheckInQuestion } = useAdminQuestion();
+  const [editQuestion, setEditQuestion] = useState(
+    checkIn.questions[questionId]
+  );
+  const [questionType, setQuestionType] = useState(editQuestion.componentType);
 
-  const isError = newQuestion.label === '';
+  console.log('edit question comp', editQuestion);
+
+  const toast = useToast();
+
+  const isError = editQuestion.label === '';
 
   function handleSelectOptions(event) {
     const input = event.target.value;
     const separatedValues = input.split(',');
-    setNewQuestion((prevState) => ({
+    setEditQuestion((prevState) => ({
       ...prevState,
       componentType: 'select',
       selectOptions: separatedValues
@@ -53,7 +50,7 @@ const NewQuestion = () => {
   function handleRadioOptions(event) {
     const input = event.target.value;
     const separatedValues = input.split(',');
-    setNewQuestion((prevState) => ({
+    setEditQuestion((prevState) => ({
       ...prevState,
       componentType: 'radio',
       selectOptions: separatedValues
@@ -62,7 +59,7 @@ const NewQuestion = () => {
 
   function handleQuestionName(event) {
     const questionToAsk = event.target.value;
-    setNewQuestion((prevState) => ({
+    setEditQuestion((prevState) => ({
       ...prevState,
       label: questionToAsk
     }));
@@ -77,9 +74,9 @@ const NewQuestion = () => {
         isClosable: true
       });
     }
-    saveCheckInQuestion(newQuestion);
+    updateCheckInQuestion(editQuestion);
     toast({
-      title: 'Question created',
+      title: 'Question Updated',
       status: 'success',
       duration: 2000,
       isClosable: true
@@ -92,24 +89,26 @@ const NewQuestion = () => {
   return (
     <>
       <Button
-        leftIcon={<IoMdAdd />}
-        colorScheme="orange"
+        leftIcon={<CiEdit />}
         variant="solid"
         size="sm"
-        mt="1rem"
+        ml={3}
+        mt={1}
         onClick={onOpen}
       >
-        Add Question
+        Edit Question
       </Button>
       <Modal isOpen={isOpen} onClose={onClose} size="xl">
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Input your question</ModalHeader>
+          <ModalHeader>Edit your question</ModalHeader>
           <ModalCloseButton />
 
           <ModalBody>
             <FormControl>
               <FormLabel>Question</FormLabel>
+              <FormLabel>{editQuestion.label}</FormLabel>
+
               <Input type="text" onChange={handleQuestionName} />
             </FormControl>
             <FormControl mt="1rem">
@@ -129,7 +128,7 @@ const NewQuestion = () => {
                 <Input type="text" onChange={handleSelectOptions} />
                 <FormHelperText>Separate each option by a comma</FormHelperText>
                 <Select placeholder="Preview your options" mt="1rem">
-                  {newQuestion.selectOptions?.map((selectOption, index) => (
+                  {editQuestion.selectOptions.map((selectOption, index) => (
                     <option key={index} value={selectOption}>
                       {selectOption.trim()}
                     </option>
@@ -148,7 +147,7 @@ const NewQuestion = () => {
 
                   <RadioGroup mt="1rem">
                     <Stack direction="row">
-                      {newQuestion.radioOptions?.map((radioOption, index) => (
+                      {editQuestion.radioOptions.map((radioOption, index) => (
                         <Radio key={index} value={radioOption}>
                           {radioOption}
                         </Radio>
@@ -161,8 +160,9 @@ const NewQuestion = () => {
             <FormControl mt="1rem">
               <FormLabel>Is this Question Required ?</FormLabel>
               <Checkbox
+                isChecked={editQuestion.isRequired}
                 onChange={(e) =>
-                  setNewQuestion((prevState) => ({
+                  setEditQuestion((prevState) => ({
                     ...prevState,
                     isRequired: e.target.checked
                   }))
@@ -187,4 +187,4 @@ const NewQuestion = () => {
   );
 };
 
-export default NewQuestion;
+export default EditQuestion;
