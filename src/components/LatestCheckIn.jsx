@@ -1,6 +1,24 @@
+import { Card, CardBody, CardHeader, Flex } from '@chakra-ui/react';
+import FormFactory from './FormFactory';
+import { useAdminQuestion } from '../context/AdminProvider';
 
 const LatestCheckIn = () => {
-  return <div>Your latest check in</div>;
+  const { checkIn } = useAdminQuestion();
+
+  return (
+    <>
+      <Card>
+        <CardHeader color="red.500">Your Active Check In </CardHeader>
+        <CardBody>
+          <Flex flexDirection="column">
+            {checkIn.checkInQuestions.map((checkin, index) => (
+              <FormFactory key={index} question={checkin} />
+            ))}
+          </Flex>
+        </CardBody>
+      </Card>
+    </>
+  );
 };
 
 export default LatestCheckIn;
