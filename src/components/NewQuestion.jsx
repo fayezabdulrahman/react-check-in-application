@@ -24,6 +24,7 @@ import { IoMdAdd } from 'react-icons/io';
 import { useAdminQuestion } from '../context/AdminProvider';
 
 const INITAL_QUESTION_STATE = {
+  id: undefined,
   label: '',
   componentType: 'text',
   selectOptions: [],
@@ -36,7 +37,7 @@ const NewQuestion = () => {
   const [questionType, setQuestionType] = useState('text');
   const [newQuestion, setNewQuestion] = useState(INITAL_QUESTION_STATE);
   const toast = useToast();
-  const { saveCheckInQuestion } = useAdminQuestion();
+  const { saveCheckInQuestion, checkIn } = useAdminQuestion();
 
   const isError = newQuestion.label === '';
 
@@ -64,6 +65,7 @@ const NewQuestion = () => {
     const questionToAsk = event.target.value;
     setNewQuestion((prevState) => ({
       ...prevState,
+      id: checkIn.questions.length,
       label: questionToAsk
     }));
   }

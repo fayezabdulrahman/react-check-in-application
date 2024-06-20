@@ -4,7 +4,6 @@ import { useAuth } from './AuthProvider';
 const AdminQuestionContext = createContext();
 
 const INTIAL_CHECKIN_STATE = {
-  isLatestCheckin: true,
   createdBy: '',
   published: false,
   questions: []
@@ -31,7 +30,7 @@ const AdminProvider = ({ children }) => {
       questions: [
         ...prevState.questions,
         {
-          id: checkIn.questions.length++,
+          // id: checkIn.questions.length++,
           ...questionToSave
         }
       ]
@@ -62,7 +61,8 @@ const AdminProvider = ({ children }) => {
     saveCheckInQuestion,
     publishCheckIn,
     updateCheckInQuestion,
-    checkIn
+    checkIn,
+    setCheckIn
   };
 
   return (
