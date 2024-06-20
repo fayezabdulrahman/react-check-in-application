@@ -1,14 +1,8 @@
 import { useContext, createContext, useState } from 'react';
 import { useAuth } from './AuthProvider';
+import { INTIAL_CHECKIN_STATE } from '../constants/application';
 
 const AdminQuestionContext = createContext();
-
-const INTIAL_CHECKIN_STATE = {
-  
-  createdBy: '',
-  published: false,
-  questions: []
-};
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const useAdminQuestion = () => {
@@ -23,20 +17,21 @@ export const useAdminQuestion = () => {
 const AdminProvider = ({ children }) => {
   const [checkIn, setCheckIn] = useState(INTIAL_CHECKIN_STATE);
   const [submittedCheckIns, setSubmittedCheckIns] = useState([]);
-  const { userState } = useAuth();
+  const [publishedCheckIn, setPublishedCheckIn] = useState(INTIAL_CHECKIN_STATE);
+  // const { userState } = useAuth();
 
-  function saveCheckInQuestion(questionToSave) {
-    setCheckIn((prevState) => ({
-      ...prevState,
-      createdBy: userState.firstName + ' ' + userState.lastName,
-      questions: [
-        ...prevState.questions,
-        {
-          ...questionToSave
-        }
-      ]
-    }));
-  }
+  // function saveCheckInQuestion(questionToSave) {
+  //   setCheckIn((prevState) => ({
+  //     ...prevState,
+  //     createdBy: userState.firstName + ' ' + userState.lastName,
+  //     questions: [
+  //       ...prevState.questions,
+  //       {
+  //         ...questionToSave
+  //       }
+  //     ]
+  //   }));
+  // }
 
   function publishCheckIn() {
     setCheckIn((prevState) => ({
@@ -44,7 +39,6 @@ const AdminProvider = ({ children }) => {
       published: true
     }));
   }
-
 
   const updateCheckInQuestion = (updatedQuestion) => {
     console.log('udapted question', updatedQuestion);
@@ -59,13 +53,15 @@ const AdminProvider = ({ children }) => {
   };
 
   const ctxValue = {
-    saveCheckInQuestion,
+    // saveCheckInQuestion,
     publishCheckIn,
     updateCheckInQuestion,
     setCheckIn,
     checkIn,
     submittedCheckIns,
-    setSubmittedCheckIns
+    setSubmittedCheckIns,
+    publishedCheckIn,
+    setPublishedCheckIn
   };
 
   return (

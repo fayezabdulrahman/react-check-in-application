@@ -39,7 +39,7 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        console.log('intial call');
+        // console.log('intial call');
         const response = await client.get('/me');
         const availableToken =
           response.config.headers.Authorization?.split(' ')[1];
@@ -49,7 +49,7 @@ const AuthProvider = ({ children }) => {
           setToken(null);
         }
       } catch (error) {
-        console.log('error from /api/me', error);
+        // console.log('error from /api/me', error);
         setToken(null); // we tried to fetch api and theres no token
       } finally {
         setLoading(false);
@@ -117,7 +117,7 @@ const AuthProvider = ({ children }) => {
   // interceptor for each request going out to the server so we include the token
   useLayoutEffect(() => {
     const authInterceptor = client.interceptors.request.use((config) => {
-      console.log('config in request interceptor', config);
+      // console.log('config in request interceptor', config);
       config.headers.Authorization =
         !config._retry && token
           ? `Bearer ${token}`
@@ -144,10 +144,10 @@ const AuthProvider = ({ children }) => {
         // console.log('response status', error.response.status);
         if (error.response.status === 401 && !originalRequest._retry) {
           try {
-            console.log('calling refresh');
+            // console.log('calling refresh');
             const response = await client.get('/refreshToken');
 
-            console.log('refresh response', response.data);
+            // console.log('refresh response', response.data);
 
             setToken(response.data.token);
 

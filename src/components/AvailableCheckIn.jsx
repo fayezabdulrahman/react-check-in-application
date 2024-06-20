@@ -15,23 +15,7 @@ import { useEffect } from 'react';
 import { client } from '../util/axios-util';
 
 const AvailableCheckIn = () => {
-  const { submittedCheckIns, setSubmittedCheckIns } = useAdminQuestion();
-
-  useEffect(() => {
-    const fetchCreatedCheckins = async () => {
-      await client
-        .get('/admin/allCheckins')
-        .then((response) => {
-          console.log('success fetching all checkins ', response.data);
-          const allCheckins = response.data.checkIns;
-          setSubmittedCheckIns(allCheckins);
-        })
-        .catch((error) => {
-          console.log('error fetching all checkins ', error);
-        });
-    };
-    fetchCreatedCheckins();
-  }, [setSubmittedCheckIns]);
+  const { submittedCheckIns } = useAdminQuestion();
 
   // add functionality to edit/delete checkins
   // add functionality to publish checkins

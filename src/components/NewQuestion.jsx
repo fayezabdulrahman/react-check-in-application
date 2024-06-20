@@ -22,22 +22,14 @@ import {
 import { useState } from 'react';
 import { IoMdAdd } from 'react-icons/io';
 import { useAdminQuestion } from '../context/AdminProvider';
-
-const INITAL_QUESTION_STATE = {
-  id: undefined,
-  label: '',
-  componentType: 'text',
-  selectOptions: [],
-  radioOptions: [],
-  isRequired: false
-};
+import {INITAL_QUESTION_STATE} from '../constants/application';
 
 const NewQuestion = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [questionType, setQuestionType] = useState('text');
   const [newQuestion, setNewQuestion] = useState(INITAL_QUESTION_STATE);
   const toast = useToast();
-  const { saveCheckInQuestion, checkIn } = useAdminQuestion();
+  const { checkIn, setCheckIn } = useAdminQuestion();
 
   const isError = newQuestion.label === '';
 
@@ -65,7 +57,7 @@ const NewQuestion = () => {
     const questionToAsk = event.target.value;
     setNewQuestion((prevState) => ({
       ...prevState,
-      id: checkIn.questions.length,
+      id: checkIn.questions?.length,
       label: questionToAsk
     }));
   }
@@ -79,7 +71,17 @@ const NewQuestion = () => {
         isClosable: true
       });
     }
-    saveCheckInQuestion(newQuestion);
+    // saveCheckInQuestion(newQuestion);
+
+    setCheckIn((prevState) => ({
+      ...prevState,
+      questions: [
+        ...prevState.questions,
+        {
+          ...newQuestion
+        }
+      ]
+    }));
     toast({
       title: 'Question created',
       status: 'success',
