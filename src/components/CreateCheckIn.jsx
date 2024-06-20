@@ -6,20 +6,33 @@ import {
   CardBody,
   CardHeader,
   Box,
-  CardFooter
+  CardFooter,
+  Input,
+  useToast
 } from '@chakra-ui/react';
 import { MdPublish } from 'react-icons/md';
 import NewQuestion from './NewQuestion';
 import { useAdminQuestion } from '../context/AdminProvider';
-import LatestCheckIn from './LatestCheckIn';
+import LatestCheckIn from './AvailableCheckIn';
 import QuestionsSummary from './QuestionsSummary';
+import { useRef } from 'react';
 
 const CreateCheckIn = () => {
-  const { checkIn, publishCheckIn } = useAdminQuestion();
+  const { checkIn } = useAdminQuestion();
+  const questionNameRef = useRef();
+  const toast = useToast();
 
   function handlePublishCheckin() {
-    console.log('publsih checkIn');
-    publishCheckIn();
+    const emptyChecckInName = questionNameRef.current.value === '';
+    if (emptyChecckInName) {
+      console.log('empty checkin name');
+      return toast({
+        title: 'Please enter a name for your check-in',
+        status: 'error',
+        duration: 3000,
+        isClosable: true
+      });
+    }
   }
 
   return (
@@ -27,28 +40,33 @@ const CreateCheckIn = () => {
       <Container>
         {!checkIn.published ? (
           <Card>
-            <CardHeader color="gray.500">No Active Check</CardHeader>
+            <CardHeader color="gray.500">No Published Check-ins</CardHeader>
             <CardBody>
-              {checkIn.questions?.length !== 0 && (
-                <Text>{checkIn.questions.length} Question Added</Text>
-              )}
               {checkIn.questions?.length !== 0 ? (
-                <Text>Publish your check in when youre ready!</Text>
+                <>
+                  <Text>{checkIn.questions.length} Question Added</Text>
+                  <Box mt="1rem">
+                    <Input
+                      placeholder="Enter the name of your check-in"
+                      ref={questionNameRef}
+                    />
+                  </Box>
+                  <CardFooter display="flex" justifyContent="center">
+                    <Button
+                      size="sm"
+                      onClick={handlePublishCheckin}
+                      rightIcon={<MdPublish />}
+                    >
+                      Create Check-in
+                    </Button>
+                  </CardFooter>
+                </>
               ) : (
-                <Text>
-                  Create a check in for your clients by adding questions
-                </Text>
-              )}
-              {checkIn.questions?.length !== 0 && (
-                <CardFooter display="flex" justifyContent="center">
-                  <Button
-                    size="sm"
-                    onClick={handlePublishCheckin}
-                    rightIcon={<MdPublish />}
-                  >
-                    Publish Check-in
-                  </Button>
-                </CardFooter>
+                <>
+                  <Text>
+                    Start creating a check-in by a adding new question.
+                  </Text>
+                </>
               )}
             </CardBody>
           </Card>
@@ -56,7 +74,7 @@ const CreateCheckIn = () => {
           <LatestCheckIn />
         )}
 
-        {checkIn.questions.length !== 0  && !checkIn.published && (
+        {checkIn.questions.length !== 0 && !checkIn.published && (
           <>
             <Box mt="1rem">
               <QuestionsSummary />

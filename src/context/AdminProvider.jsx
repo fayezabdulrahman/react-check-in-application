@@ -30,7 +30,6 @@ const AdminProvider = ({ children }) => {
       questions: [
         ...prevState.questions,
         {
-          // id: checkIn.questions.length++,
           ...questionToSave
         }
       ]

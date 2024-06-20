@@ -1,14 +1,14 @@
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
-import LatestCheckIn from './LatestCheckIn';
+import AvailableCheckIn from './AvailableCheckIn';
 import CreateCheckIn from './CreateCheckIn';
 import { useEffect } from 'react';
 import { client } from '../util/axios-util';
 import { useAdminQuestion } from '../context/AdminProvider';
 
 const AdminHomepage = () => {
-  // when page loads - call api to fetch db to check for latestCheckIn
-  // if no latest check in - render code to ask admin to create check in
-  // if latest check in - load check in and give ability to edit/publish
+  // when page loads - call api to fetch db to check for publishedChekIn
+  // if no published check in - render code to ask admin to create check in
+  // if published check in - load check in and give ability to edit/publish
   const { checkIn, setCheckIn } = useAdminQuestion();
   useEffect(() => {
     const fetchPublishedCheckin = async () => {
@@ -25,14 +25,14 @@ const AdminHomepage = () => {
     fetchPublishedCheckin();
   }, [setCheckIn]);
   const noCheckIn = checkIn.published;
-  let content = <>{!noCheckIn ? <CreateCheckIn /> : <LatestCheckIn />}</>;
+  let content = <>{!noCheckIn ? <CreateCheckIn /> : <AvailableCheckIn />}</>;
 
   return (
     <>
       <Tabs isFitted variant="enclosed" m={4}>
         <TabList mb="1em">
           <Tab>Active Check-ins</Tab>
-          <Tab>Submitted Check-ins</Tab>
+          <Tab>Created Check-ins</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>{content}</TabPanel>
