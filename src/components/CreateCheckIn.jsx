@@ -16,14 +16,16 @@ import { useAdminQuestion } from '../context/AdminProvider';
 import LatestCheckIn from './AvailableCheckIn';
 import QuestionsSummary from './QuestionsSummary';
 import { useRef } from 'react';
+import { client } from '../util/axios-util';
 
 const CreateCheckIn = () => {
-  const { checkIn } = useAdminQuestion();
-  const questionNameRef = useRef();
+  const { checkIn, setCheckIn } = useAdminQuestion();
+  const checkInNameRef = useRef();
   const toast = useToast();
 
-  function handlePublishCheckin() {
-    const emptyChecckInName = questionNameRef.current.value === '';
+  async function handlePublishCheckin() {
+    const emptyChecckInName = checkInNameRef.current.value === '';
+    console.log('question', checkInNameRef.current.value);
     if (emptyChecckInName) {
       console.log('empty checkin name');
       return toast({
@@ -33,6 +35,32 @@ const CreateCheckIn = () => {
         isClosable: true
       });
     }
+
+    setCheckIn((prevState) => ({
+      ...prevState,
+      checkInId: checkInNameRef.current.value
+    }));
+
+    // try {
+    //   const serverResponse = await client.post('/admin/createCheckin', checkIn);
+    //   console.log('sucess from server on creating checkin', serverResponse.data);
+    //   toast.update({
+    //     title: 'Successfully Created Check-in',
+    //     status: 'success',
+    //     duration: 3000
+    //   });
+
+    // } catch (error) {
+    //   console.log('error from server on creating checkin ', error);
+    //   toast.update({
+    //     title: 'Failed to Create Check-in',
+    //     description: error.response?.data?.message || 'An error occurred',
+    //     status: 'error',
+    //     duration: 3000
+    //   });
+    // }
+
+
   }
 
   return (
@@ -48,7 +76,7 @@ const CreateCheckIn = () => {
                   <Box mt="1rem">
                     <Input
                       placeholder="Enter the name of your check-in"
-                      ref={questionNameRef}
+                      ref={checkInNameRef}
                     />
                   </Box>
                   <CardFooter display="flex" justifyContent="center">

@@ -31,8 +31,6 @@ const EditQuestion = ({ questionId }) => {
   );
   const [questionType, setQuestionType] = useState(editQuestion.componentType);
 
-  console.log('edit question comp', editQuestion);
-
   const toast = useToast();
 
   const isError = editQuestion.label === '';

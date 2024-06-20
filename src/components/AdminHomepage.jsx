@@ -24,19 +24,21 @@ const AdminHomepage = () => {
 
     fetchPublishedCheckin();
   }, [setCheckIn]);
+
+  console.log('admin homepage');
   const noCheckIn = checkIn.published;
   let content = <>{!noCheckIn ? <CreateCheckIn /> : <AvailableCheckIn />}</>;
 
   return (
     <>
-      <Tabs isFitted variant="enclosed" m={4}>
+      <Tabs isFitted variant="enclosed" m={4} isLazy>
         <TabList mb="1em">
           <Tab>Active Check-ins</Tab>
           <Tab>Created Check-ins</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>{content}</TabPanel>
-          <TabPanel>Your previous check in</TabPanel>
+          <TabPanel><AvailableCheckIn /> </TabPanel>
         </TabPanels>
       </Tabs>
     </>

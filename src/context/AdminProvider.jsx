@@ -4,6 +4,7 @@ import { useAuth } from './AuthProvider';
 const AdminQuestionContext = createContext();
 
 const INTIAL_CHECKIN_STATE = {
+  
   createdBy: '',
   published: false,
   questions: []
@@ -21,6 +22,7 @@ export const useAdminQuestion = () => {
 };
 const AdminProvider = ({ children }) => {
   const [checkIn, setCheckIn] = useState(INTIAL_CHECKIN_STATE);
+  const [submittedCheckIns, setSubmittedCheckIns] = useState([]);
   const { userState } = useAuth();
 
   function saveCheckInQuestion(questionToSave) {
@@ -60,8 +62,10 @@ const AdminProvider = ({ children }) => {
     saveCheckInQuestion,
     publishCheckIn,
     updateCheckInQuestion,
+    setCheckIn,
     checkIn,
-    setCheckIn
+    submittedCheckIns,
+    setSubmittedCheckIns
   };
 
   return (
