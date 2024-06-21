@@ -128,7 +128,7 @@ const EditQuestion = ({ questionId }) => {
                 <Select placeholder="Preview your options" mt="1rem">
                   {editQuestion.selectOptions.map((selectOption, index) => (
                     <option key={index} value={selectOption}>
-                      {selectOption.trim()}
+                      {selectOption}
                     </option>
                   ))}
                 </Select>

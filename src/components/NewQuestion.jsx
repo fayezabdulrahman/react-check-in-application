@@ -19,51 +19,41 @@ import {
   FormHelperText,
   useToast
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { IoMdAdd } from 'react-icons/io';
 import { useAdminQuestion } from '../context/AdminProvider';
-import {INITAL_QUESTION_STATE} from '../constants/application';
 
 const NewQuestion = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [questionType, setQuestionType] = useState('text');
-  const [newQuestion, setNewQuestion] = useState(INITAL_QUESTION_STATE);
+  const [previewOptions, setPreviewOptions] = useState({
+    selectOptions: [],
+    radioOptions: []
+  });
+  const selectOptionsRef = useRef();
+  const radioOptionsRef = useRef();
+  const questionLabelRef = useRef();
+  const checkBoxRef = useRef();
   const toast = useToast();
   const { checkIn, setCheckIn } = useAdminQuestion();
 
-  const isError = newQuestion.label === '';
-
-  function handleSelectOptions(event) {
-    const input = event.target.value;
-    const separatedValues = input.split(',');
-    setNewQuestion((prevState) => ({
-      ...prevState,
-      componentType: 'select',
-      selectOptions: separatedValues
-    }));
-  }
-
-  function handleRadioOptions(event) {
-    const input = event.target.value;
-    const separatedValues = input.split(',');
-    setNewQuestion((prevState) => ({
-      ...prevState,
-      componentType: 'radio',
-      selectOptions: separatedValues
-    }));
-  }
-
-  function handleQuestionName(event) {
-    const questionToAsk = event.target.value;
-    setNewQuestion((prevState) => ({
-      ...prevState,
-      id: checkIn.questions?.length,
-      label: questionToAsk
-    }));
+  function handlePreview() {
+    if (selectOptionsRef.current) {
+      setPreviewOptions((prevState) => ({
+        ...prevState,
+        selectOptions: selectOptionsRef.current.value.trim().split(',')
+      }));
+    }
+    if (radioOptionsRef.current) {
+      setPreviewOptions((prevState) => ({
+        ...prevState,
+        radioOptions: radioOptionsRef.current.value.trim().split(',')
+      }));
+    }
   }
 
   function handleSaveQuestion() {
-    if (isError) {
+    if (questionLabelRef.current.value === '') {
       return toast({
         title: 'You must enter a Question',
         status: 'error',
@@ -71,14 +61,25 @@ const NewQuestion = () => {
         isClosable: true
       });
     }
-    // saveCheckInQuestion(newQuestion);
+    const quesetionToSave = {
+      id: checkIn.questions?.length,
+      label: questionLabelRef.current.value,
+      componentType: questionType,
+      selectOptions: selectOptionsRef.current
+        ? selectOptionsRef.current.value.trim().split(',')
+        : [],
+      radioOptions: radioOptionsRef.current
+        ? radioOptionsRef.current.value.trim().split(',')
+        : [],
+      isRequired: checkBoxRef.current.checked
+    };
 
     setCheckIn((prevState) => ({
       ...prevState,
       questions: [
         ...prevState.questions,
         {
-          ...newQuestion
+          ...quesetionToSave
         }
       ]
     }));
@@ -88,7 +89,6 @@ const NewQuestion = () => {
       duration: 2000,
       isClosable: true
     });
-    // reset questionType
     setQuestionType('text');
     onClose();
   }
@@ -114,7 +114,7 @@ const NewQuestion = () => {
           <ModalBody>
             <FormControl>
               <FormLabel>Question</FormLabel>
-              <Input type="text" onChange={handleQuestionName} />
+              <Input type="text" ref={questionLabelRef} />
             </FormControl>
             <FormControl mt="1rem">
               <FormLabel>Type of Answer</FormLabel>
@@ -130,12 +130,16 @@ const NewQuestion = () => {
             {questionType === 'select' ? (
               <FormControl mt="1rem">
                 <FormLabel>Enter the dropdown options</FormLabel>
-                <Input type="text" onChange={handleSelectOptions} />
+                <Input
+                  type="text"
+                  ref={selectOptionsRef}
+                  onChange={handlePreview}
+                />
                 <FormHelperText>Separate each option by a comma</FormHelperText>
                 <Select placeholder="Preview your options" mt="1rem">
-                  {newQuestion.selectOptions?.map((selectOption, index) => (
+                  {previewOptions.selectOptions?.map((selectOption, index) => (
                     <option key={index} value={selectOption}>
-                      {selectOption.trim()}
+                      {selectOption}
                     </option>
                   ))}
                 </Select>
@@ -145,18 +149,24 @@ const NewQuestion = () => {
               <>
                 <FormControl mt="1rem">
                   <FormLabel>Enter the radio options</FormLabel>
-                  <Input type="text" onChange={handleRadioOptions} />
+                  <Input
+                    type="text"
+                    ref={radioOptionsRef}
+                    onChange={handlePreview}
+                  />
                   <FormHelperText>
                     Separate each option by a comma
                   </FormHelperText>
 
                   <RadioGroup mt="1rem">
                     <Stack direction="row">
-                      {newQuestion.radioOptions?.map((radioOption, index) => (
-                        <Radio key={index} value={radioOption}>
-                          {radioOption}
-                        </Radio>
-                      ))}
+                      {previewOptions.radioOptions?.map(
+                        (radioOption, index) => (
+                          <Radio key={index} value={radioOption}>
+                            {radioOption}
+                          </Radio>
+                        )
+                      )}
                     </Stack>
                   </RadioGroup>
                 </FormControl>
@@ -164,16 +174,7 @@ const NewQuestion = () => {
             ) : null}
             <FormControl mt="1rem">
               <FormLabel>Is this Question Required ?</FormLabel>
-              <Checkbox
-                onChange={(e) =>
-                  setNewQuestion((prevState) => ({
-                    ...prevState,
-                    isRequired: e.target.checked
-                  }))
-                }
-              >
-                Yes
-              </Checkbox>
+              <Checkbox ref={checkBoxRef}>Yes</Checkbox>
             </FormControl>
           </ModalBody>
 
