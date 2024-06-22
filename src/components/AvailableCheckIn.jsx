@@ -12,12 +12,40 @@ import {
 } from '@chakra-ui/react';
 import { useAdminQuestion } from '../context/AdminProvider';
 import { client } from '../util/axios-util';
+import { useEffect, useState } from 'react';
+import Loading from './Loading';
+
 const AvailableCheckIn = () => {
-  const { submittedCheckIns, setPublishedCheckIn } = useAdminQuestion();
+  const { submittedCheckIns, setSubmittedCheckIns, setPublishedCheckIn, publishedCheckIn } = useAdminQuestion();
+  const [loading, setLoading] = useState(true);
+  const [publishing, setPublishing] = useState(false);
+
   const toast = useToast();
 
-  // add functionality to edit/delete checkins
+  // TODO: add functionality to edit/delete checkins
+
+
+  useEffect(() => {
+    const fetchCreatedCheckins = async () => {
+      await client
+        .get('/admin/allCheckins')
+        .then((response) => {
+          console.log('success fetching all checkins ', response.data);
+          const allCheckins = response.data.checkIns;
+          setSubmittedCheckIns(allCheckins);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.log('error fetching all checkins ', error);
+          setLoading(false);
+        });
+    };
+    fetchCreatedCheckins();
+    // added publishedCheckIn as dependecny because when we publish a check-in we want to re-render so we can disable publish button
+  }, [setSubmittedCheckIns, publishedCheckIn]);
+
   async function handlePublishCheckIn(checkInId) {
+    setPublishing(true);
     const payload = {
       checkInToPublish: checkInId
     };
@@ -25,9 +53,9 @@ const AvailableCheckIn = () => {
       const response = await client.post('/admin/publishCheckIn', payload);
       console.log('response from server', response.data);
       const message = response.data.message;
-      const publishedCheckIn = response.data.checkIn;
+      const serverPublishedCheckIn = response.data.checkIn;
 
-      setPublishedCheckIn(publishedCheckIn);
+      setPublishedCheckIn(serverPublishedCheckIn);
       toast({
         title: message,
         status: 'success',
@@ -42,7 +70,13 @@ const AvailableCheckIn = () => {
         duration: 3000,
         isClosable: true
       });
+    } finally {
+      setPublishing(false);
     }
+  }
+
+  if (loading) {
+    return <Loading />;
   }
 
   return (
@@ -59,6 +93,8 @@ const AvailableCheckIn = () => {
           <CardFooter>
             <ButtonGroup>
               <Button
+                isLoading={publishing}
+                loadingText='Publishing'
                 variant="solid"
                 colorScheme="orange"
                 isDisabled={availableCheckIn.published}

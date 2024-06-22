@@ -1,10 +1,4 @@
-import {
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel
-} from '@chakra-ui/react';
+import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
 import AvailableCheckIn from './AvailableCheckIn';
 import CreateCheckIn from './CreateCheckIn';
 import { useEffect, useState } from 'react';
@@ -16,50 +10,33 @@ import Loading from './Loading';
 const AdminHomepage = () => {
   // when page loads - call api to fetch db to check for publishedChekIn
   // if no published check in - render code to ask admin to create check in
-  // if published check in - load check in and give ability to edit/publish
-  const { setSubmittedCheckIns, setPublishedCheckIn, publishedCheckIn, checkIn } =
-    useAdminQuestion();
+  // if published check in - load check in for admin to view it
+  const { setPublishedCheckIn, publishedCheckIn, checkIn } = useAdminQuestion();
   const [loading, setLoading] = useState(true);
-  const [isInitialMount, setIsInitialMount] = useState(true);
   useEffect(() => {
     const fetchPublishedCheckin = async () => {
-      await client.get('/admin/publishedCheckin').then((response) => {
-        console.log('response from server', response.data);
-        const serverResponse = response.data;
-        if (serverResponse.checkIn !== null) {
-          const publishedCheckInDB = serverResponse.checkIn;
-          setPublishedCheckIn(publishedCheckInDB);
-        }
-      });
-    };
-
-    const fetchCreatedCheckins = async () => {
       await client
-        .get('/admin/allCheckins')
+        .get('/admin/publishedCheckin')
         .then((response) => {
-          console.log('success fetching all checkins ', response.data);
-          const allCheckins = response.data.checkIns;
-          setSubmittedCheckIns(allCheckins);
+          console.log('response from server', response.data);
+          const serverResponse = response.data;
+          if (serverResponse.checkIn !== null) {
+            const publishedCheckInDB = serverResponse.checkIn;
+            setPublishedCheckIn(publishedCheckInDB);
+          }
         })
         .catch((error) => {
-          console.log('error fetching all checkins ', error);
+          console.log('error fetching published check-in', error);
         });
     };
 
     const fetchData = async () => {
-      if (isInitialMount) {
-        await fetchPublishedCheckin();
-        await fetchCreatedCheckins();
-        setIsInitialMount(false);
-        setLoading(false);
-      } else if (checkIn.checkInId) {
-        await fetchCreatedCheckins();
-      }
-
+      await fetchPublishedCheckin();
+      setLoading(false);
     };
 
     fetchData();
-  }, [isInitialMount, checkIn, setSubmittedCheckIns, setPublishedCheckIn]);
+  }, [setPublishedCheckIn]);
 
   console.log('admin homepage state value ', checkIn);
   const isPublishCheckIn = publishedCheckIn && publishedCheckIn.published;
@@ -73,7 +50,7 @@ const AdminHomepage = () => {
 
   return (
     <>
-      <Tabs isFitted variant="enclosed" m={4}>
+      <Tabs isFitted variant="enclosed" m={4} isLazy>
         <TabList mb="1em">
           <Tab>Active Check-ins</Tab>
           <Tab>Created Check-ins</Tab>
