@@ -3,9 +3,7 @@ import {
   TabList,
   TabPanels,
   Tab,
-  TabPanel,
-  Box,
-  Spinner
+  TabPanel
 } from '@chakra-ui/react';
 import AvailableCheckIn from './AvailableCheckIn';
 import CreateCheckIn from './CreateCheckIn';
@@ -19,9 +17,10 @@ const AdminHomepage = () => {
   // when page loads - call api to fetch db to check for publishedChekIn
   // if no published check in - render code to ask admin to create check in
   // if published check in - load check in and give ability to edit/publish
-  const { setSubmittedCheckIns, setPublishCheckIn, publishedCheckIn, checkIn } =
+  const { setSubmittedCheckIns, setPublishedCheckIn, publishedCheckIn, checkIn } =
     useAdminQuestion();
   const [loading, setLoading] = useState(true);
+  const [isInitialMount, setIsInitialMount] = useState(true);
   useEffect(() => {
     const fetchPublishedCheckin = async () => {
       await client.get('/admin/publishedCheckin').then((response) => {
@@ -29,7 +28,7 @@ const AdminHomepage = () => {
         const serverResponse = response.data;
         if (serverResponse.checkIn !== null) {
           const publishedCheckInDB = serverResponse.checkIn;
-          setPublishCheckIn(publishedCheckInDB);
+          setPublishedCheckIn(publishedCheckInDB);
         }
       });
     };
@@ -48,13 +47,19 @@ const AdminHomepage = () => {
     };
 
     const fetchData = async () => {
-      await fetchPublishedCheckin();
-      await fetchCreatedCheckins();
-      setLoading(false);
+      if (isInitialMount) {
+        await fetchPublishedCheckin();
+        await fetchCreatedCheckins();
+        setIsInitialMount(false);
+        setLoading(false);
+      } else if (checkIn.checkInId) {
+        await fetchCreatedCheckins();
+      }
+
     };
 
     fetchData();
-  }, [checkIn]);
+  }, [isInitialMount, checkIn, setSubmittedCheckIns, setPublishedCheckIn]);
 
   console.log('admin homepage state value ', checkIn);
   const isPublishCheckIn = publishedCheckIn && publishedCheckIn.published;

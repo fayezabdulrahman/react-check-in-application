@@ -140,6 +140,7 @@ const AuthProvider = ({ children }) => {
       },
       async (error) => {
         const originalRequest = error.config;
+        console.log(error);
         // console.log('iniside response interceptor', error);
         // console.log('response status', error.response.status);
         if (error.response.status === 401 && !originalRequest._retry) {
