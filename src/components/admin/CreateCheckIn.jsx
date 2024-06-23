@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { MdPublish } from 'react-icons/md';
 import NewQuestion from '../NewQuestion';
-import { useAdminQuestion } from '../../context/AdminProvider';
+import { useAdmin } from '../../context/AdminProvider';
 import QuestionsSummary from '../shared/QuestionsSummary';
 import { useEffect, useRef } from 'react';
 import { client } from '../../util/axios-util';
@@ -20,7 +20,7 @@ import { INITAL_QUESTION_STATE } from '../../constants/application';
 import { useAuth } from '../../context/AuthProvider';
 
 const CreateCheckIn = () => {
-  const { checkIn, setCheckIn } = useAdminQuestion();
+  const { checkIn, setCheckIn } = useAdmin();
   const { userState } = useAuth();
   const checkInNameRef = useRef();
   const toast = useToast();

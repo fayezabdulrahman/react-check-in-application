@@ -3,7 +3,7 @@ import AvailableCheckIn from './AvailableCheckIn';
 import CreateCheckIn from './CreateCheckIn';
 import { useEffect, useState } from 'react';
 import { client } from '../../util/axios-util';
-import { useAdminQuestion } from '../../context/AdminProvider';
+import { useAdmin } from '../../context/AdminProvider';
 import PublishedCheckIn from './PublishedCheckIn';
 import Loading from '../shared/Loading';
 
@@ -11,7 +11,7 @@ const AdminHomepage = () => {
   // when page loads - call api to fetch db to check for publishedChekIn
   // if no published check in - render code to ask admin to create check in
   // if published check in - load check in for admin to view it
-  const { setPublishedCheckIn, publishedCheckIn, checkIn } = useAdminQuestion();
+  const { setPublishedCheckIn, publishedCheckIn, checkIn } = useAdmin();
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchPublishedCheckin = async () => {

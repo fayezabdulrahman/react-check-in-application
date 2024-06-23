@@ -1,17 +1,17 @@
 import { useContext, createContext, useState } from 'react';
 import { INTIAL_CHECKIN_STATE } from '../constants/application';
 
-const AdminQuestionContext = createContext();
+const AdminContext = createContext();
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const useAdminQuestion = () => {
-  const adminQuestionContext = useContext(AdminQuestionContext);
+export const useAdmin = () => {
+  const adminContext = useContext(AdminContext);
 
-  if (!adminQuestionContext) {
-    throw new Error('useAdminQuestion must be used within a AdminProvider');
+  if (!AdminContext) {
+    throw new Error('useAdmin must be used within a AdminProvider');
   }
 
-  return adminQuestionContext;
+  return adminContext;
 };
 const AdminProvider = ({ children }) => {
   const [checkIn, setCheckIn] = useState(INTIAL_CHECKIN_STATE);
@@ -37,9 +37,9 @@ const AdminProvider = ({ children }) => {
   };
 
   return (
-    <AdminQuestionContext.Provider value={ctxValue}>
+    <AdminContext.Provider value={ctxValue}>
       {children}
-    </AdminQuestionContext.Provider>
+    </AdminContext.Provider>
   );
 };
 

@@ -1,9 +1,9 @@
 import { Button, Flex, useToast } from '@chakra-ui/react';
-import { useAdminQuestion } from '../../context/AdminProvider';
+import { useAdmin } from '../../context/AdminProvider';
 import QuestionsSummary from '../shared/QuestionsSummary';
 import { client } from '../../util/axios-util';
 const EditCheckIn = ({ checkInId }) => {
-  const { submittedCheckIns, setSubmittedCheckIns } = useAdminQuestion();
+  const { submittedCheckIns, setSubmittedCheckIns } = useAdmin();
   const toast = useToast();
   const checkInToEdit = submittedCheckIns.find(
     (checkIn) => checkIn.checkInId === checkInId

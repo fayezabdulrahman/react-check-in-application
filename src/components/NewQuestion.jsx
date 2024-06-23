@@ -21,7 +21,7 @@ import {
 } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
 import { IoMdAdd } from 'react-icons/io';
-import { useAdminQuestion } from '../context/AdminProvider';
+import { useAdmin } from '../context/AdminProvider';
 
 const NewQuestion = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -35,7 +35,7 @@ const NewQuestion = () => {
   const questionLabelRef = useRef();
   const checkBoxRef = useRef();
   const toast = useToast();
-  const { checkIn, setCheckIn } = useAdminQuestion();
+  const { checkIn, setCheckIn } = useAdmin();
 
   function handlePreview() {
     if (selectOptionsRef.current) {

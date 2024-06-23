@@ -10,7 +10,7 @@ import {
   Text,
   useToast
 } from '@chakra-ui/react';
-import { useAdminQuestion } from '../../context/AdminProvider';
+import { useAdmin } from '../../context/AdminProvider';
 import { client } from '../../util/axios-util';
 import { useEffect, useState } from 'react';
 import Loading from '../shared/Loading';
@@ -22,7 +22,7 @@ const AvailableCheckIn = () => {
     setSubmittedCheckIns,
     setPublishedCheckIn,
     publishedCheckIn
-  } = useAdminQuestion();
+  } = useAdmin();
   const [loading, setLoading] = useState(true);
   const [publishing, setPublishing] = useState(false);
   const [editing, setEditing] = useState(false);
