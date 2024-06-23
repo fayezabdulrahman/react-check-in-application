@@ -5,6 +5,7 @@ import Registration from './Pages/Registration';
 import AuthProvider from './context/AuthProvider';
 import AdminHomepage from './components/admin/AdminHomepage';
 import AdminProvider from './context/AdminProvider';
+import UserProvider from './context/UserProvider';
 
 function App() {
   return (
@@ -12,13 +13,15 @@ function App() {
       <BrowserRouter>
         <AuthProvider>
           <AdminProvider>
-            <Routes>
-              <Route path="/register" element={<Registration />} />
-              <Route element={<ProtectedRoute />}>
-                <Route path="/" index element={<Homepage />} />
-                <Route path="/admin" element={<AdminHomepage />} />
-              </Route>
-            </Routes>
+            <UserProvider>
+              <Routes>
+                <Route path="/register" element={<Registration />} />
+                <Route element={<ProtectedRoute />}>
+                  <Route path="/" index element={<Homepage />} />
+                  <Route path="/admin" element={<AdminHomepage />} />
+                </Route>
+              </Routes>
+            </UserProvider>
           </AdminProvider>
         </AuthProvider>
       </BrowserRouter>
