@@ -117,7 +117,7 @@ const CreateCheckIn = () => {
         {checkIn.questions?.length > 0 && (
           <>
             <Box mt="1rem">
-              <QuestionsSummary />
+              <QuestionsSummary checkIn={checkIn} setCheckIn={setCheckIn} isSubmitted={false} />
             </Box>
           </>
         )}

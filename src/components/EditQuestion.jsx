@@ -21,11 +21,9 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { CiEdit } from 'react-icons/ci';
-import { useAdminQuestion } from '../context/AdminProvider';
 
-const EditQuestion = ({ questionId }) => {
+const EditQuestion = ({ questionId, checkIn, setCheckIn, isSubmitted }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { checkIn, updateCheckInQuestion } = useAdminQuestion();
   const [editQuestion, setEditQuestion] = useState(
     checkIn.questions[questionId]
   );
@@ -72,7 +70,36 @@ const EditQuestion = ({ questionId }) => {
         isClosable: true
       });
     }
-    updateCheckInQuestion(editQuestion);
+
+    console.log('edited question', editQuestion);
+
+    if (isSubmitted) {
+      // Handle editing in submitted check-ins
+      setCheckIn((prevState) => {
+        console.log('prevState for isSubmitted', prevState);
+        const updatedCheckIns = prevState.map((checkIn) =>
+          checkIn.questions.some((q) => q.id === editQuestion.id)
+            ? {
+                ...checkIn,
+                questions: checkIn.questions.map((q) =>
+                  q.id === editQuestion.id ? editQuestion : q
+                )
+              }
+            : checkIn
+        );
+        return updatedCheckIns;
+      });
+    } else {
+      setCheckIn((prevState) => ({
+        ...prevState,
+        questions: [
+          ...prevState.questions.map((q) =>
+            q.id === editQuestion.id ? editQuestion : q
+          )
+        ]
+      }));
+    }
+
     toast({
       title: 'Question Updated',
       status: 'success',

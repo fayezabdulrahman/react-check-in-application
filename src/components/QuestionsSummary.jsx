@@ -10,10 +10,8 @@ import {
   UnorderedList,
   ListItem
 } from '@chakra-ui/react';
-import { useAdminQuestion } from '../context/AdminProvider';
 import EditQuestion from './EditQuestion';
-const QuestionsSummary = () => {
-  const { checkIn } = useAdminQuestion();
+const QuestionsSummary = ({checkIn, setCheckIn, isSubmitted}) => {
   return (
     <>
       <Card mt="1rem">
@@ -46,7 +44,7 @@ const QuestionsSummary = () => {
                   ))}
                 </UnorderedList>
                 <Box display="flex" justifyContent="flex-end">
-                  <EditQuestion questionId={index}/>
+                  <EditQuestion questionId={index} checkIn={checkIn} setCheckIn={setCheckIn} isSubmitted={isSubmitted}/>
                 </Box>
               </Box>
             </Stack>

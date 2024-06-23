@@ -14,16 +14,23 @@ import { useAdminQuestion } from '../context/AdminProvider';
 import { client } from '../util/axios-util';
 import { useEffect, useState } from 'react';
 import Loading from './Loading';
+import EditCheckIn from './EditCheckIn';
 
 const AvailableCheckIn = () => {
-  const { submittedCheckIns, setSubmittedCheckIns, setPublishedCheckIn, publishedCheckIn } = useAdminQuestion();
+  const {
+    submittedCheckIns,
+    setSubmittedCheckIns,
+    setPublishedCheckIn,
+    publishedCheckIn
+  } = useAdminQuestion();
   const [loading, setLoading] = useState(true);
   const [publishing, setPublishing] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [checkInToEdit, setCheckInToEdit] = useState('');
 
   const toast = useToast();
 
   // TODO: add functionality to edit/delete checkins
-
 
   useEffect(() => {
     const fetchCreatedCheckins = async () => {
@@ -75,6 +82,15 @@ const AvailableCheckIn = () => {
     }
   }
 
+  function handleEditCheckIn(checkInIndex) {
+    setCheckInToEdit(checkInIndex);
+    setEditing(true);
+  }
+
+  if (editing) {
+    return <EditCheckIn checkInId={checkInToEdit} />;
+  }
+
   if (loading) {
     return <Loading />;
   }
@@ -82,7 +98,7 @@ const AvailableCheckIn = () => {
   return (
     <Container>
       <Heading> Your Created Check-ins</Heading>
-      {submittedCheckIns.map((availableCheckIn, index) => (
+      {submittedCheckIns?.map((availableCheckIn, index) => (
         <Card key={index} mt="1rem">
           <CardHeader>Check-in name: {availableCheckIn.checkInId}</CardHeader>
           <CardBody>
@@ -94,7 +110,7 @@ const AvailableCheckIn = () => {
             <ButtonGroup>
               <Button
                 isLoading={publishing}
-                loadingText='Publishing'
+                loadingText="Publishing"
                 variant="solid"
                 colorScheme="orange"
                 isDisabled={availableCheckIn.published}
@@ -102,7 +118,11 @@ const AvailableCheckIn = () => {
               >
                 Publish
               </Button>
-              <Button variant="ghost" colorScheme="orange">
+              <Button
+                variant="ghost"
+                colorScheme="orange"
+                onClick={() => handleEditCheckIn(availableCheckIn.checkInId)}
+              >
                 Edit
               </Button>
             </ButtonGroup>
