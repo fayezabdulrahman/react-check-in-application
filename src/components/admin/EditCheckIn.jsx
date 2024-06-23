@@ -1,7 +1,7 @@
 import { Button, Flex, useToast } from '@chakra-ui/react';
-import { useAdminQuestion } from '../context/AdminProvider';
-import QuestionsSummary from './QuestionsSummary';
-import { client } from '../util/axios-util';
+import { useAdminQuestion } from '../../context/AdminProvider';
+import QuestionsSummary from '../shared/QuestionsSummary';
+import { client } from '../../util/axios-util';
 const EditCheckIn = ({ checkInId }) => {
   const { submittedCheckIns, setSubmittedCheckIns } = useAdminQuestion();
   const toast = useToast();
@@ -20,7 +20,6 @@ const EditCheckIn = ({ checkInId }) => {
         duration: 3000,
         isClosable: true
       });
-
     } catch (error) {
       toast({
         title: 'Failed to Update Check-in',
@@ -34,8 +33,10 @@ const EditCheckIn = ({ checkInId }) => {
 
   return (
     <>
-      <Flex justifyContent='flex-end'>
-        <Button colorScheme='orange' size='sm' onClick={handleSaveCheckIn}>Save Check-in</Button>
+      <Flex justifyContent="flex-end">
+        <Button colorScheme="orange" size="sm" onClick={handleSaveCheckIn}>
+          Save Check-in
+        </Button>
       </Flex>
       <QuestionsSummary
         checkIn={checkInToEdit}

@@ -2,10 +2,10 @@ import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
 import AvailableCheckIn from './AvailableCheckIn';
 import CreateCheckIn from './CreateCheckIn';
 import { useEffect, useState } from 'react';
-import { client } from '../util/axios-util';
-import { useAdminQuestion } from '../context/AdminProvider';
+import { client } from '../../util/axios-util';
+import { useAdminQuestion } from '../../context/AdminProvider';
 import PublishedCheckIn from './PublishedCheckIn';
-import Loading from './Loading';
+import Loading from '../shared/Loading';
 
 const AdminHomepage = () => {
   // when page loads - call api to fetch db to check for publishedChekIn

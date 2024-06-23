@@ -10,10 +10,10 @@ import {
   Text,
   useToast
 } from '@chakra-ui/react';
-import { useAdminQuestion } from '../context/AdminProvider';
-import { client } from '../util/axios-util';
+import { useAdminQuestion } from '../../context/AdminProvider';
+import { client } from '../../util/axios-util';
 import { useEffect, useState } from 'react';
-import Loading from './Loading';
+import Loading from '../shared/Loading';
 import EditCheckIn from './EditCheckIn';
 
 const AvailableCheckIn = () => {

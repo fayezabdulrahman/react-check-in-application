@@ -1,6 +1,6 @@
 import { Container, Flex, Heading } from '@chakra-ui/react';
-import { useAdminQuestion } from '../context/AdminProvider';
-import FormFactory from './FormFactory';
+import { useAdminQuestion } from '../../context/AdminProvider';
+import FormFactory from '../shared/FormFactory';
 
 const PublishedCheckIn = () => {
   const { publishedCheckIn } = useAdminQuestion();

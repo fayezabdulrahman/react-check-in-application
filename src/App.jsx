@@ -3,7 +3,7 @@ import ProtectedRoute from './Pages/ProtectedRoute';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Registration from './Pages/Registration';
 import AuthProvider from './context/AuthProvider';
-import AdminHomepage from './components/AdminHomepage';
+import AdminHomepage from './components/admin/AdminHomepage';
 import AdminProvider from './context/AdminProvider';
 
 function App() {

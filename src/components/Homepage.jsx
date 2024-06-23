@@ -1,6 +1,6 @@
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
-import CheckInForm from './CheckInForm';
-import SubmittedCheckin from './SubmittedCheckin';
+import CheckInForm from './user/CheckInForm';
+import SubmittedCheckin from './admin/SubmittedCheckin';
 const Homepage = () => {
   return (
     <>

@@ -11,13 +11,13 @@ import {
   useToast
 } from '@chakra-ui/react';
 import { MdPublish } from 'react-icons/md';
-import NewQuestion from './NewQuestion';
-import { useAdminQuestion } from '../context/AdminProvider';
-import QuestionsSummary from './QuestionsSummary';
+import NewQuestion from '../NewQuestion';
+import { useAdminQuestion } from '../../context/AdminProvider';
+import QuestionsSummary from '../shared/QuestionsSummary';
 import { useEffect, useRef } from 'react';
-import { client } from '../util/axios-util';
-import { INITAL_QUESTION_STATE } from '../constants/application';
-import { useAuth } from '../context/AuthProvider';
+import { client } from '../../util/axios-util';
+import { INITAL_QUESTION_STATE } from '../../constants/application';
+import { useAuth } from '../../context/AuthProvider';
 
 const CreateCheckIn = () => {
   const { checkIn, setCheckIn } = useAdminQuestion();
@@ -117,7 +117,11 @@ const CreateCheckIn = () => {
         {checkIn.questions?.length > 0 && (
           <>
             <Box mt="1rem">
-              <QuestionsSummary checkIn={checkIn} setCheckIn={setCheckIn} isSubmitted={false} />
+              <QuestionsSummary
+                checkIn={checkIn}
+                setCheckIn={setCheckIn}
+                isSubmitted={false}
+              />
             </Box>
           </>
         )}

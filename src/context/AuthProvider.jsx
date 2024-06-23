@@ -7,7 +7,7 @@ import {
 } from 'react';
 
 import { client } from '../util/axios-util.js';
-import Loading from '../components/Loading.jsx';
+import Loading from '../components/shared/Loading.jsx';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 

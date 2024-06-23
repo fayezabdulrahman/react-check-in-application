@@ -11,7 +11,7 @@ import {
   ListItem
 } from '@chakra-ui/react';
 import EditQuestion from './EditQuestion';
-const QuestionsSummary = ({checkIn, setCheckIn, isSubmitted}) => {
+const QuestionsSummary = ({ checkIn, setCheckIn, isSubmitted }) => {
   return (
     <>
       <Card mt="1rem">
@@ -44,7 +44,12 @@ const QuestionsSummary = ({checkIn, setCheckIn, isSubmitted}) => {
                   ))}
                 </UnorderedList>
                 <Box display="flex" justifyContent="flex-end">
-                  <EditQuestion questionId={index} checkIn={checkIn} setCheckIn={setCheckIn} isSubmitted={isSubmitted}/>
+                  <EditQuestion
+                    questionId={index}
+                    checkIn={checkIn}
+                    setCheckIn={setCheckIn}
+                    isSubmitted={isSubmitted}
+                  />
                 </Box>
               </Box>
             </Stack>

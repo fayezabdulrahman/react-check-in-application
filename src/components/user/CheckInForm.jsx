@@ -6,7 +6,7 @@ import {
   Select,
   Button
 } from '@chakra-ui/react';
-import { client } from '../util/axios-util';
+import { client } from '../../util/axios-util';
 
 const CheckInForm = () => {
   const handleSubmit = async () => {
