@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from 'react';
-import { INTIAL_CHECKIN_STATE } from '../constants/application';
+import { INITIAL_QUESTION_RESPONSE, INTIAL_CHECKIN_STATE } from '../constants/application';
 
 const UserContext = createContext();
 
@@ -16,8 +16,11 @@ export const useUser = () => {
 
 const UserProvider = ({ children }) => {
   const [publishedCheckIn, setPublishedCheckIn] = useState(INTIAL_CHECKIN_STATE);
+  const [questionResponse, setQuestionResponse] = useState(INITIAL_QUESTION_RESPONSE);
 
   const ctxValue = {
+    questionResponse, 
+    setQuestionResponse,
     publishedCheckIn,
     setPublishedCheckIn
   };

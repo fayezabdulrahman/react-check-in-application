@@ -13,3 +13,9 @@ export const INITAL_QUESTION_STATE = {
     radioOptions: [],
     isRequired: false
 };
+
+export const INITIAL_QUESTION_RESPONSE = {
+    checkInId: undefined,
+    submittedBy: undefined,
+    answers: []
+}
