@@ -1,11 +1,10 @@
-import { Button, Container, useToast, Flex, Heading } from '@chakra-ui/react';
+import { Container, useToast, Heading } from '@chakra-ui/react';
 import FormFactory from '../shared/FormFactory';
 import { client } from '../../util/axios-util';
 import { useEffect, useState } from 'react';
 import { useUser } from '../../context/UserProvider';
 import Loading from '../shared/Loading';
 import { useAuth } from '../../context/AuthProvider';
-import { INITIAL_QUESTION_RESPONSE } from '../../constants/application';
 
 const CheckInForm = () => {
   const {
@@ -17,13 +16,14 @@ const CheckInForm = () => {
 
   const [loading, setLoading] = useState(true);
   const { userState } = useAuth();
+  const [answeredCheckIn, setAnsweredCheckIn] = useState(false);
   const toast = useToast();
 
   useEffect(() => {
     const submitCheckInApiCall = async () => {
       if (!questionResponse.submittedBy) return;
       try {
-        console.log('submit answer', questionResponse);
+        console.log('submit question response', questionResponse);
         const responseServer = await client.post(
           '/user/submitCheckIn',
           questionResponse
@@ -34,7 +34,7 @@ const CheckInForm = () => {
           duration: 3000,
           isClosable: true
         });
-        setQuestionResponse(INITIAL_QUESTION_RESPONSE);
+        setAnsweredCheckIn(responseServer.data.answered);
       } catch (error) {
         console.log('error from server on submitting checkin ', error);
         toast({
@@ -50,7 +50,7 @@ const CheckInForm = () => {
     submitCheckInApiCall();
   }, [questionResponse, setQuestionResponse, toast]);
 
-  function handleSubmit() {
+  function callApi() {
     setQuestionResponse((prevState) => ({
       ...prevState,
       checkInId: publishedCheckIn.checkInId,
@@ -58,19 +58,7 @@ const CheckInForm = () => {
     }));
   }
 
-  async function handleFetch() {
-    try {
-      console.log('submit answer', questionResponse);
-      const responseServer = await client.get(
-        '/user/questionResponses'
-      );
-      console.log('response', responseServer.data);
-    } catch (error) {
-      console.log('error from server on retrieving responses ', error);
-    }
-  }
-
-  // call api to fetch publishedcheckIn
+  // call api to fetch publishedcheckIn and check if user already answered the check-in
   useEffect(() => {
     const fetchPublishedCheckin = async () => {
       await client
@@ -79,6 +67,7 @@ const CheckInForm = () => {
           console.log('response from server', response.data);
           const serverResponse = response.data;
           if (serverResponse.checkIn !== null) {
+            console.log('fetched published checkin, ', response.data);
             const publishedCheckInDB = serverResponse.checkIn;
             setPublishedCheckIn(publishedCheckInDB);
           }
@@ -88,34 +77,56 @@ const CheckInForm = () => {
         });
     };
 
+    const fetchAnsweredCheckIn = async () => {
+      const payload = {
+        firstName: userState.firstName,
+        lastName: userState.lastName
+      };
+      await client
+        .post('/user/answeredCheckIn', payload)
+        .then((response) => {
+          const serverResponse = response.data;
+          if (serverResponse.existingCheckIn !== null) {
+            console.log('You already entered a check-in response');
+            const userSubmittedCheckIn = response.data.existingCheckIn;
+            setAnsweredCheckIn(userSubmittedCheckIn.answered);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+
     const fetchData = async () => {
       await fetchPublishedCheckin();
+      await fetchAnsweredCheckIn();
       setLoading(false);
     };
 
     fetchData();
-  }, [setPublishedCheckIn]);
+  }, []);
 
   if (loading) {
     return <Loading />;
   }
   return (
     <Container>
-      {publishedCheckIn.questions.length > 0 ? (
+      {publishedCheckIn.questions.length > 0 && !answeredCheckIn && (
         <>
           <Heading>Check-in available</Heading>
-          <Flex flexDirection="column">
-            {publishedCheckIn.questions?.map((quesetion, index) => (
-              <FormFactory key={index} question={quesetion} />
-            ))}
-          </Flex>
-          <Button onClick={handleSubmit}>Submit</Button>
-          <Button onClick={handleFetch}>test</Button>
-
+          <FormFactory publishedCheckIn={publishedCheckIn} onSubmit={callApi} />
         </>
-      ) : (
+      )}
+      {publishedCheckIn.questions.length &&
+        publishedCheckIn.questions.length === 0 &&
+        !answeredCheckIn && (
+          <>
+            <Heading>No Check-in available</Heading>
+          </>
+        )}
+      {answeredCheckIn && (
         <>
-          <Heading>No Check-in available</Heading>
+          <Heading>Your response was submitted! Thank you</Heading>
         </>
       )}
     </Container>

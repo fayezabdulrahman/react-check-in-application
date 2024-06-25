@@ -1,5 +1,4 @@
 import {
-  Container,
   FormControl,
   FormLabel,
   Input,
@@ -7,107 +6,125 @@ import {
   RadioGroup,
   Select,
   Stack,
-  Textarea
+  Box,
+  Button,
+  FormErrorMessage
 } from '@chakra-ui/react';
 import { useUser } from '../../context/UserProvider';
+import { Field, Form, Formik } from 'formik';
+import * as Yup from 'yup';
 
-const FormFactory = ({ question }) => {
-  const { componentType } = question;
+const FormFactory = ({ publishedCheckIn, onSubmit }) => {
   const { setQuestionResponse } = useUser();
+  const initialValues = publishedCheckIn.questions.reduce(
+    (values, question) => {
+      values[question.label] = '';
+      return values;
+    },
+    {}
+  );
 
-  // const handleChange = (value) => {
-  //   onInputChange(question.label, value);
-  // };
+  const handleSubmit = (values) => {
+    console.log(values);
+    // Transform the values into an array format
+    const answers = Object.entries(values).map(([question, answer]) => ({
+      question,
+      answer
+    }));
+    console.log('answers array', answers);
+    // Update the state with the new answers
+    setQuestionResponse((prevState) => ({
+      ...prevState,
+      answers: answers
+    }));
 
-  // const handleChange = (event) => {
-  //   console.log(event);
-  //   const { name, value } = event.target;
-  //   setQuestionResponse((prev) => ({
-  //     ...prev,
-  //     answers: {
-  //       ...prev.answers,
-  //       [name]: value
-  //     }
-  //   }));
-  //   console.log('questionResponse', questionResponse);
-  // };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setQuestionResponse((prevResponse) => {
-      const newAnswers = prevResponse.answers.filter(
-        (ans) => ans.questionLabel !== name
-      );
-      newAnswers.push({ questionLabel: name, answer: value });
-      return {
-        ...prevResponse,
-        answers: newAnswers
-      };
-    });
+    onSubmit();
   };
 
-  function renderDynamicQuesiton() {
-    switch (componentType) {
-      case 'text':
-        return (
-          <FormControl {...question.isRequired} mb="1rem">
-            <FormLabel>{question.label}</FormLabel>
-            <Input type="text" onChange={handleChange} name={question.label} />
-          </FormControl>
-        );
-      case 'select':
-        return (
-          <FormControl {...question.isRequired} mb="1rem">
-            <FormLabel>{question.label}</FormLabel>
+  const generateValidationSchema = (questions) => {
+    let schemaShape = {};
 
-            <Select
-              placeholder="Select Option"
-              onChange={handleChange}
-              name={question.label}
-            >
-              {question.selectOptions?.map((option) => {
-                return (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                );
-              })}
-            </Select>
-          </FormControl>
+    questions.forEach((question) => {
+      if (question.isRequired) {
+        schemaShape[question.label] = Yup.string().required(
+          'This field is required'
         );
-      case 'radio':
-        return (
-          <>
-            <FormControl {...question.isRequired} mb="1rem">
-              <FormLabel>{question.label}</FormLabel>
-            </FormControl>
-            <RadioGroup onChange={(value) => handleChange({ target: { name: question.label, value } })} name={question.label}>
-              <Stack direction="row">
-                {question.radioOptions?.map((option) => {
-                  return (
-                    <Radio key={option} value={option}>
-                      {option}
-                    </Radio>
-                  );
-                })}
-              </Stack>
-            </RadioGroup>
-          </>
-        );
-      case 'textarea':
-        return (
-          <FormControl {...question.isRequired} mb="1rem">
-            <FormLabel>{question.label}</FormLabel>
-            <Textarea onChange={handleChange} name={question.label} />
-          </FormControl>
-        );
-      default:
-        return null;
-    }
-  }
+      } else {
+        schemaShape[question.label] = Yup.string();
+      }
+    });
+    return Yup.object().shape(schemaShape);
+  };
+
+  const validationSchema = generateValidationSchema(publishedCheckIn.questions);
+
   return (
     <>
-      <Container centerContent>{renderDynamicQuesiton()}</Container>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ values, setFieldValue }) => (
+          <Form>
+            {publishedCheckIn.questions?.map((question, index) => (
+              <Field key={index} name={question.label}>
+                {({ field, form }) => (
+                  <FormControl
+                    isRequired={question.isRequired}
+                    isInvalid={
+                      form.errors[question.label] &&
+                      form.touched[question.label]
+                    }
+                    mb="1rem"
+                  >
+                    <FormLabel>{question.label}</FormLabel>
+                    {question.componentType === 'text' && (
+                      <Input type="text" {...field} />
+                    )}
+                    {question.componentType === 'select' && (
+                      <Select placeholder="Select Option" {...field}>
+                        {question.selectOptions?.map((option) => {
+                          return (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          );
+                        })}
+                      </Select>
+                    )}
+                    {question.componentType === 'radio' && (
+                      <RadioGroup
+                        {...field}
+                        value={values[question.label]}
+                        onChange={(value) =>
+                          setFieldValue(question.label, value)
+                        }
+                      >
+                        <Stack direction="row">
+                          {question.radioOptions?.map((option, index) => (
+                            <Radio key={index} value={option}>
+                              {option}
+                            </Radio>
+                          ))}
+                        </Stack>
+                      </RadioGroup>
+                    )}
+                    <FormErrorMessage>
+                      {form.errors[question.label]}
+                    </FormErrorMessage>
+                  </FormControl>
+                )}
+              </Field>
+            ))}
+            <Box display="flex" justifyContent="center" width="100%">
+              <Button mt={4} colorScheme="orange" type="submit" width="50%">
+                Submit
+              </Button>
+            </Box>
+          </Form>
+        )}
+      </Formik>
     </>
   );
 };

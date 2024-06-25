@@ -35,7 +35,7 @@ const Login = () => {
   });
   const handleLogin = async (values) => {
     const toastId = toast({
-      title: 'Signing up...',
+      title: 'Logging in..',
       status: 'loading',
       position: 'bottom',
       duration: null

@@ -17,5 +17,6 @@ export const INITAL_QUESTION_STATE = {
 export const INITIAL_QUESTION_RESPONSE = {
     checkInId: undefined,
     submittedBy: undefined,
+    answered: false,
     answers: []
 }
