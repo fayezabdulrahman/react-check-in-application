@@ -6,6 +6,7 @@ import AuthProvider from './context/AuthProvider';
 import AdminHomepage from './components/admin/AdminHomepage';
 import AdminProvider from './context/AdminProvider';
 import UserProvider from './context/UserProvider';
+import DetailedPublishedCheckIn from './components/admin/DetailedPublishedCheckIn';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
                 <Route element={<ProtectedRoute />}>
                   <Route path="/" index element={<Homepage />} />
                   <Route path="/admin" element={<AdminHomepage />} />
+                  <Route path='/admin/publishedCheckIn' element={<DetailedPublishedCheckIn />} />
                 </Route>
               </Routes>
             </UserProvider>
