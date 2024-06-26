@@ -7,6 +7,7 @@ import AdminHomepage from './components/admin/AdminHomepage';
 import AdminProvider from './context/AdminProvider';
 import UserProvider from './context/UserProvider';
 import DetailedPublishedCheckIn from './components/admin/DetailedPublishedCheckIn';
+import EditCheckIn from './components/admin/EditCheckIn';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
                   <Route path="/" index element={<Homepage />} />
                   <Route path="/admin" element={<AdminHomepage />} />
                   <Route path='/admin/publishedCheckIn' element={<DetailedPublishedCheckIn />} />
+                  <Route path='/admin/editCheckIn' element={<EditCheckIn />} />
                 </Route>
               </Routes>
             </UserProvider>

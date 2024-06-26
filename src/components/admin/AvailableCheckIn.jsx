@@ -10,11 +10,11 @@ import {
   Text,
   useToast
 } from '@chakra-ui/react';
+import { Link as ReactRouterLink } from 'react-router-dom';
 import { useAdmin } from '../../context/AdminProvider';
 import { client } from '../../util/axios-util';
 import { useEffect, useState } from 'react';
 import Loading from '../shared/Loading';
-import EditCheckIn from './EditCheckIn';
 
 const AvailableCheckIn = () => {
   const {
@@ -25,12 +25,10 @@ const AvailableCheckIn = () => {
   } = useAdmin();
   const [loading, setLoading] = useState(true);
   const [publishing, setPublishing] = useState(false);
-  const [editing, setEditing] = useState(false);
-  const [checkInToEdit, setCheckInToEdit] = useState('');
 
   const toast = useToast();
 
-  // TODO: add functionality to edit/delete checkins
+  // TODO: add functionality to delete checkins
 
   useEffect(() => {
     const fetchCreatedCheckins = async () => {
@@ -82,15 +80,6 @@ const AvailableCheckIn = () => {
     }
   }
 
-  function handleEditCheckIn(checkInIndex) {
-    setCheckInToEdit(checkInIndex);
-    setEditing(true);
-  }
-
-  if (editing) {
-    return <EditCheckIn checkInId={checkInToEdit} />;
-  }
-
   if (loading) {
     return <Loading />;
   }
@@ -119,9 +108,11 @@ const AvailableCheckIn = () => {
                 Publish
               </Button>
               <Button
+                as={ReactRouterLink}
+                to='/admin/editCheckIn'
+                state={{checkInId: availableCheckIn.checkInId}}
                 variant="ghost"
                 colorScheme="orange"
-                onClick={() => handleEditCheckIn(availableCheckIn.checkInId)}
               >
                 Edit
               </Button>

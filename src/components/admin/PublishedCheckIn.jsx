@@ -1,7 +1,6 @@
 import {
   Container,
   Divider,
-  Button,
   Heading,
   Stat,
   StatLabel,
@@ -27,6 +26,7 @@ const PublishedCheckIn = () => {
 
   useEffect(() => {
     fetchPublishedCheckInAnalytics();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchPublishedCheckInAnalytics = async () => {
