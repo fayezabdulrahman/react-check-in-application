@@ -117,7 +117,7 @@ const CheckInForm = () => {
           <FormFactory publishedCheckIn={publishedCheckIn} onSubmit={callApi} />
         </>
       )}
-      {publishedCheckIn.questions.length &&
+      {publishedCheckIn.questions &&
         publishedCheckIn.questions.length === 0 &&
         !answeredCheckIn && (
           <>

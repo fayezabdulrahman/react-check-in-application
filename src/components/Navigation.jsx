@@ -15,8 +15,9 @@ import {
   WrapItem,
   Avatar,
   Heading,
-  Flex
+  Flex,
 } from '@chakra-ui/react';
+import { Link as ReactRouterLink } from 'react-router-dom';
 import { IconButton } from '@chakra-ui/react';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { CiLogout } from 'react-icons/ci';
@@ -78,6 +79,9 @@ const Navigation = () => {
             >
               <Box display="flex" alignItems="center" gap="2">
                 <IconButton
+                  as={ReactRouterLink}
+                  to="/"
+                  onClick={onClose}
                   colorScheme="teal"
                   aria-label="Call Sage"
                   fontSize="20px"
@@ -87,6 +91,9 @@ const Navigation = () => {
               </Box>
               <Box display="flex" alignItems="center" gap="2">
                 <IconButton
+                  as={ReactRouterLink}
+                  to="/chat"
+                  onClick={onClose}
                   colorScheme="teal"
                   aria-label="Call Sage"
                   fontSize="20px"

@@ -8,6 +8,7 @@ import AdminProvider from './context/AdminProvider';
 import UserProvider from './context/UserProvider';
 import DetailedPublishedCheckIn from './components/admin/DetailedPublishedCheckIn';
 import EditCheckIn from './components/admin/EditCheckIn';
+import ChatPage from './Pages/ChatPage';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
                   <Route path="/admin" element={<AdminHomepage />} />
                   <Route path='/admin/publishedCheckIn' element={<DetailedPublishedCheckIn />} />
                   <Route path='/admin/editCheckIn' element={<EditCheckIn />} />
+                  <Route path='/chat' element={<ChatPage />} />
                 </Route>
               </Routes>
             </UserProvider>
