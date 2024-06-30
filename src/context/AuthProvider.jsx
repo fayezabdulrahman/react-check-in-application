@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 const INITIAL_USER_STATE = {
+  id: undefined,
   firstName: undefined,
   lastName: undefined,
   role: undefined
@@ -69,12 +70,12 @@ const AuthProvider = ({ children }) => {
         setToken(token);
 
         const user = jwtDecode(token);
-        console.log('user', user);
-        setUserState(() => ({
+        setUserState({
+          id: user.id,
           firstName: user.firstName,
           lastName: user.lastName,
           role: user.role
-        }));
+        });
 
         if (user.role === 'admin') {
           navigate('/admin');
@@ -152,7 +153,8 @@ const AuthProvider = ({ children }) => {
 
             setToken(response.data.token);
 
-            retrieveUserState(response.data.token);
+            reInitiliazeUserFromRefreshToken(response.data.token);
+
             originalRequest._retry = true;
             originalRequest.headers.Authorization = `Bearer ${response.data.token}`;
 
@@ -168,13 +170,14 @@ const AuthProvider = ({ children }) => {
     );
   }, []);
 
-  const retrieveUserState = (token) => {
+  const reInitiliazeUserFromRefreshToken = (token) => {
     const user = jwtDecode(token);
-    setUserState(() => ({
+    setUserState({
+      id: user.id,
       firstName: user.firstName,
       lastName: user.lastName,
       role: user.role
-    }));
+    });
   };
 
   const ctxValue = {

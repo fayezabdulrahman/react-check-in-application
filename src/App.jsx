@@ -9,6 +9,7 @@ import UserProvider from './context/UserProvider';
 import DetailedPublishedCheckIn from './components/admin/DetailedPublishedCheckIn';
 import EditCheckIn from './components/admin/EditCheckIn';
 import ChatPage from './Pages/ChatPage';
+import ChatProvider from './context/ChatProvider';
 
 function App() {
   return (
@@ -17,16 +18,24 @@ function App() {
         <AuthProvider>
           <AdminProvider>
             <UserProvider>
-              <Routes>
-                <Route path="/register" element={<Registration />} />
-                <Route element={<ProtectedRoute />}>
-                  <Route path="/" index element={<Homepage />} />
-                  <Route path="/admin" element={<AdminHomepage />} />
-                  <Route path='/admin/publishedCheckIn' element={<DetailedPublishedCheckIn />} />
-                  <Route path='/admin/editCheckIn' element={<EditCheckIn />} />
-                  <Route path='/chat' element={<ChatPage />} />
-                </Route>
-              </Routes>
+              <ChatProvider>
+                <Routes>
+                  <Route path="/register" element={<Registration />} />
+                  <Route element={<ProtectedRoute />}>
+                    <Route path="/" index element={<Homepage />} />
+                    <Route path="/admin" element={<AdminHomepage />} />
+                    <Route
+                      path="/admin/publishedCheckIn"
+                      element={<DetailedPublishedCheckIn />}
+                    />
+                    <Route
+                      path="/admin/editCheckIn"
+                      element={<EditCheckIn />}
+                    />
+                    <Route path="/chat" element={<ChatPage />} />
+                  </Route>
+                </Routes>
+              </ChatProvider>
             </UserProvider>
           </AdminProvider>
         </AuthProvider>

@@ -15,7 +15,7 @@ import {
   WrapItem,
   Avatar,
   Heading,
-  Flex,
+  Flex
 } from '@chakra-ui/react';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import { IconButton } from '@chakra-ui/react';
@@ -29,6 +29,7 @@ const Navigation = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef();
   const { logout, userState } = useAuth();
+  const isAdmin = userState.role === 'admin';
 
   const userName = userState.firstName + ' ' + userState.lastName;
 
@@ -80,7 +81,7 @@ const Navigation = () => {
               <Box display="flex" alignItems="center" gap="2">
                 <IconButton
                   as={ReactRouterLink}
-                  to="/"
+                  to={isAdmin ? '/admin' : '/'}
                   onClick={onClose}
                   colorScheme="teal"
                   aria-label="Call Sage"
