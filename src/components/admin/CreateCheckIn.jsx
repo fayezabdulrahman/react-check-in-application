@@ -16,7 +16,7 @@ import { useAdmin } from '../../context/AdminProvider';
 import QuestionsSummary from '../shared/QuestionsSummary';
 import { useEffect, useRef } from 'react';
 import { client } from '../../util/axios-util';
-import { INITAL_QUESTION_STATE } from '../../constants/application';
+import { INTIAL_CHECKIN_STATE } from '../../constants/application';
 import { useAuth } from '../../context/AuthProvider';
 
 const CreateCheckIn = () => {
@@ -45,7 +45,7 @@ const CreateCheckIn = () => {
           isClosable: true
         });
 
-        setCheckIn(INITAL_QUESTION_STATE);
+        setCheckIn(INTIAL_CHECKIN_STATE);
       } catch (error) {
         console.log('error from server on creating checkin ', error);
         toast({

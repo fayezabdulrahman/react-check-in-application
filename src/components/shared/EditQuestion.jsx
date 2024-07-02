@@ -71,22 +71,19 @@ const EditQuestion = ({ questionId, checkIn, setCheckIn, isSubmitted }) => {
       });
     }
 
-    console.log('edited question', editQuestion);
-
     if (isSubmitted) {
-      // Handle editing in submitted check-ins
       setCheckIn((prevState) => {
-        console.log('prevState for isSubmitted', prevState);
-        const updatedCheckIns = prevState.map((checkIn) =>
-          checkIn.questions.some((q) => q.id === editQuestion.id)
-            ? {
-                ...checkIn,
-                questions: checkIn.questions.map((q) =>
-                  q.id === editQuestion.id ? editQuestion : q
-                )
-              }
-            : checkIn
-        );
+        const updatedCheckIns = prevState.map((updatedCheckIn) => {
+          if (updatedCheckIn.checkInId === checkIn.checkInId) {
+            return {
+              ...updatedCheckIn,
+              questions: updatedCheckIn.questions.map((q) =>
+                q.id === editQuestion.id ? editQuestion : q
+              )
+            };
+          }
+          return updatedCheckIn;
+        });
         return updatedCheckIns;
       });
     } else {

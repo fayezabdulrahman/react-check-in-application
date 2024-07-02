@@ -14,13 +14,13 @@ import EditQuestion from './EditQuestion';
 const QuestionsSummary = ({ checkIn, setCheckIn, isSubmitted }) => {
   return (
     <>
-      <Card mt="1rem">
+      <Card mt="1rem" overflowY="auto" maxH='500px'>
         <CardHeader>
           <Heading size="md">Summary of Your Questions</Heading>
         </CardHeader>
 
         <CardBody>
-          {checkIn.questions?.map((question, index) => (
+          {checkIn?.questions?.map((question, index) => (
             <Stack key={index} divider={<StackDivider />} spacing="4">
               <Box mt="1rem">
                 <Heading size="xs">{question.label}</Heading>

@@ -41,7 +41,7 @@ const AuthProvider = ({ children }) => {
     const fetchUser = async () => {
       try {
         // console.log('intial call');
-        const response = await client.get('/me');
+        const response = await client.get('/auth/me');
         const availableToken =
           response.config.headers.Authorization?.split(' ')[1];
         if (availableToken) {
@@ -63,7 +63,7 @@ const AuthProvider = ({ children }) => {
     setLoading(true);
 
     try {
-      await client.post('/login', user).then((response) => {
+      await client.post('/auth/login', user).then((response) => {
         console.log('response from server', response.data);
         const token = response.data.token;
 
@@ -95,7 +95,7 @@ const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     await client
-      .post('/logout')
+      .post('/auth/logout')
       .then((response) => {
         console.log(response.data.message);
         setToken(undefined);
@@ -106,7 +106,7 @@ const AuthProvider = ({ children }) => {
 
   const signUp = async (values) => {
     try {
-      const response = await client.post('/register', values);
+      const response = await client.post('/auth/register', values);
       console.log('response from backend on register', response);
       return response;
     } catch (error) {
@@ -147,7 +147,7 @@ const AuthProvider = ({ children }) => {
         if (error.response.status === 401 && !originalRequest._retry) {
           try {
             // console.log('calling refresh');
-            const response = await client.get('/refreshToken');
+            const response = await client.get('/auth/refreshToken');
 
             // console.log('refresh response', response.data);
 
