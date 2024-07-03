@@ -51,6 +51,7 @@ const CheckInForm = () => {
   }, [questionResponse, setQuestionResponse, toast]);
 
   function callApi() {
+    // this method updates the submittedBy property which triggers the useEffect due to the questionResponse dependency
     setQuestionResponse((prevState) => ({
       ...prevState,
       checkInId: publishedCheckIn.checkInId,
@@ -78,12 +79,8 @@ const CheckInForm = () => {
     };
 
     const fetchAnsweredCheckIn = async () => {
-      const payload = {
-        firstName: userState.firstName,
-        lastName: userState.lastName
-      };
       await client
-        .post('/user/answeredCheckIn', payload)
+        .get('/user/answeredCheckIn')
         .then((response) => {
           const serverResponse = response.data;
           if (serverResponse.existingCheckIn !== null) {
