@@ -37,7 +37,7 @@ const Navigation = () => {
 
   const handleLogout = async () => {
     await logout();
-    navigate('/register');
+    navigate('/');
   };
   return (
     <>

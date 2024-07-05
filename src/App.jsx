@@ -20,9 +20,9 @@ function App() {
             <UserProvider>
               <ChatProvider>
                 <Routes>
-                  <Route path="/register" element={<Registration />} />
+                  <Route path="/" element={<Registration />} />
                   <Route element={<ProtectedRoute />}>
-                    <Route path="/" index element={<Homepage />} />
+                    <Route path="/home" index element={<Homepage />} />
                     <Route path="/admin" element={<AdminHomepage />} />
                     <Route
                       path="/admin/publishedCheckIn"

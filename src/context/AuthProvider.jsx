@@ -80,7 +80,7 @@ const AuthProvider = ({ children }) => {
         if (user.role === 'admin') {
           navigate('/admin');
         } else {
-          navigate('/');
+          navigate('/home');
         }
         return response.data.message;
       });

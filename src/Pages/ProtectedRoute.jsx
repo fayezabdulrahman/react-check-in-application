@@ -5,7 +5,7 @@ const ProtectedRoute = () => {
   const { token, userState } = useAuth();
 
   if (token === null || userState.role === undefined ) {
-    return <Navigate to="/register" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return (
