@@ -9,8 +9,6 @@ import {
   DrawerCloseButton,
   DrawerHeader,
   DrawerBody,
-  DrawerFooter,
-  Button,
   Wrap,
   WrapItem,
   Avatar,

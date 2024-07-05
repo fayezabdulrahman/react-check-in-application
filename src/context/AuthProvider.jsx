@@ -102,6 +102,7 @@ const AuthProvider = ({ children }) => {
         setUserState(INITIAL_USER_STATE);
       })
       .catch((error) => console.log(error));
+      localStorage.clear();
   };
 
   const signUp = async (values) => {

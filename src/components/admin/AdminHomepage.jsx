@@ -23,6 +23,7 @@ const AdminHomepage = () => {
           if (serverResponse.checkIn !== null) {
             const publishedCheckInDB = serverResponse.checkIn;
             setPublishedCheckIn(publishedCheckInDB);
+            localStorage.setItem('publishedCheckIn', JSON.stringify(publishedCheckInDB));
           }
         })
         .catch((error) => {
@@ -31,7 +32,12 @@ const AdminHomepage = () => {
     };
 
     const fetchData = async () => {
-      await fetchPublishedCheckin();
+      const cachedPublishedCheckIn = localStorage.getItem('publishedCheckIn');
+      if (cachedPublishedCheckIn) {
+        setPublishedCheckIn(JSON.parse(cachedPublishedCheckIn));
+      } else {
+        await fetchPublishedCheckin();
+      }
       setLoading(false);
     };
 

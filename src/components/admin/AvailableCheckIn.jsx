@@ -31,8 +31,6 @@ const AvailableCheckIn = () => {
 
   const toast = useToast();
 
-  // TODO: add functionality to delete checkins
-
   useEffect(() => {
     const fetchCreatedCheckins = async () => {
       await client
@@ -41,14 +39,13 @@ const AvailableCheckIn = () => {
           console.log('success fetching all checkins ', response.data);
           const allCheckins = response.data.checkIns;
           setSubmittedCheckIns(allCheckins);
-          setLoading(false);
         })
         .catch((error) => {
           console.log('error fetching all checkins ', error);
-          setLoading(false);
         });
     };
     fetchCreatedCheckins();
+    setLoading(false);
     // added publishedCheckIn as dependecny because when we publish a check-in we want to re-render so we can disable publish button
   }, [setSubmittedCheckIns, publishedCheckIn, deleting]);
 
@@ -61,9 +58,19 @@ const AvailableCheckIn = () => {
       const response = await client.post('/admin/publishCheckIn', payload);
       console.log('response from server', response.data);
       const message = response.data.message;
-      const serverPublishedCheckIn = response.data.checkIn;
+      // if we get a successful response, set cache and update state
+      if (response.data.checkIn) {
+        const serverPublishedCheckIn = response.data.checkIn;
+        // remove old cache for analytics first
+        localStorage.removeItem('publishedCheckInAnalytics');
+        // set new cache for published check-in
+        localStorage.setItem(
+          'publishedCheckIn',
+          JSON.stringify(serverPublishedCheckIn)
+        );
+        setPublishedCheckIn(serverPublishedCheckIn);
+      }
 
-      setPublishedCheckIn(serverPublishedCheckIn);
       toast({
         title: message,
         status: 'success',
@@ -123,9 +130,14 @@ const AvailableCheckIn = () => {
     try {
       const response = await client.post('/admin/unPublishCheckIn', payload);
       const message = response.data.message;
-      const serverPublishedCheckIn = response.data.checkIn;
+      // if we get a successfull response, remove cache and update state
+      if (response.data.checkIn) {
+        localStorage.removeItem('publishedCheckInAnalytics');
+        localStorage.removeItem('publishedCheckIn');
+        const serverPublishedCheckIn = response.data.checkIn;
+        setPublishedCheckIn(serverPublishedCheckIn);
+      }
 
-      setPublishedCheckIn(serverPublishedCheckIn);
       toast({
         title: message,
         status: 'success',
@@ -176,7 +188,9 @@ const AvailableCheckIn = () => {
                 <Button
                   variant="solid"
                   colorScheme="orange"
-                  onClick={() => handleUnPublishCheckIn(availableCheckIn.checkInId)}
+                  onClick={() =>
+                    handleUnPublishCheckIn(availableCheckIn.checkInId)
+                  }
                 >
                   Unpublish
                 </Button>

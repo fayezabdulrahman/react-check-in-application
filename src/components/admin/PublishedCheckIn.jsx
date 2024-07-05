@@ -22,14 +22,19 @@ const PublishedCheckIn = () => {
   const [checkInAnalytics, setCheckInAnalytics] = useState({});
   const [loading, setLoading] = useState(true);
 
-  console.log('published checkIn', publishedCheckIn);
-
   useEffect(() => {
-    fetchPublishedCheckInAnalytics();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const cachedAnalytics = localStorage.getItem('publishedCheckInAnalytics');
+    if (cachedAnalytics) {
+      setCheckInAnalytics(JSON.parse(cachedAnalytics));
+    } else {
+      fetchPublishedCheckInAnalytics();
+    }
+    setLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [publishedCheckIn]);
 
   const fetchPublishedCheckInAnalytics = async () => {
+    setLoading(true);
     const payload = { checkInId: publishedCheckIn.checkInId };
 
     await client
@@ -37,6 +42,10 @@ const PublishedCheckIn = () => {
       .then((response) => {
         setCheckInAnalytics(response.data);
         console.log('response from server for analytics', response.data);
+        localStorage.setItem(
+          'publishedCheckInAnalytics',
+          JSON.stringify(response.data)
+        );
       })
       .catch((error) => {
         console.log(error);
@@ -66,17 +75,26 @@ const PublishedCheckIn = () => {
             </StatHelpText>
           </Stat>
         </CardBody>
-        <Divider />
-        <CardFooter display="flex" justifyContent="space-between">
-          <ChakraLink as={ReactRouterLink} to="/admin/publishedCheckIn" state={{checkInAnalytics: checkInAnalytics}}>
-            View
-          </ChakraLink>
-          <IconButton
-            aria-label="Search database"
-            icon={<IoIosRefresh />}
-            onClick={fetchPublishedCheckInAnalytics}
-          />
-        </CardFooter>
+        {checkInAnalytics.count !== 0 && (
+          <>
+            <Divider />
+
+            <CardFooter display="flex" justifyContent="space-between">
+              <ChakraLink
+                as={ReactRouterLink}
+                to="/admin/publishedCheckIn"
+                state={{ checkInAnalytics: checkInAnalytics }}
+              >
+                View
+              </ChakraLink>
+              <IconButton
+                aria-label="Search database"
+                icon={<IoIosRefresh />}
+                onClick={fetchPublishedCheckInAnalytics}
+              />
+            </CardFooter>
+          </>
+        )}
       </Card>
     </Container>
   );

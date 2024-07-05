@@ -6,11 +6,10 @@ import 'ag-grid-community/styles/ag-theme-quartz.css';
 const DetailedPublishedCheckIn = () => {
   const location = useLocation();
   const { checkInAnalytics } = location.state;
-  console.log('checkInAnalytics ', checkInAnalytics);
 
   const transformData = (data) => {
     // Extract questions from the first set of answers
-    const questions = data[0].answers.map((answer) => answer.question);
+    const questions = data[0]?.answers?.map((answer) => answer.question);
 
     // Extract answers grouped by each question
     const answers = data.map((item) => {
@@ -32,7 +31,7 @@ const DetailedPublishedCheckIn = () => {
   const columnDefs = useMemo(() => {
     const userColumns = [{ headerName: 'Name', field: 'fullName' }];
 
-    const questionColumns = questions.map((question) => ({
+    const questionColumns = questions?.map((question) => ({
       headerName: question,
       field: question
     }));
