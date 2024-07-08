@@ -3,13 +3,14 @@ import { AgGridReact } from 'ag-grid-react';
 import { useMemo } from 'react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
+import { Box, Heading } from '@chakra-ui/react';
 const DetailedPublishedCheckIn = () => {
   const location = useLocation();
   const { checkInAnalytics } = location.state;
 
   const transformData = (data) => {
     // Extract questions from the first set of answers
-    const questions = data[0]?.answers?.map((answer) => answer.question);
+    const questions = data[0]?.answers.map((answer) => answer.question);
 
     // Extract answers grouped by each question
     const answers = data.map((item) => {
@@ -25,7 +26,7 @@ const DetailedPublishedCheckIn = () => {
     return { questions, answers };
   };
 
-  const { questions, answers } = transformData(checkInAnalytics.questions);
+  const { questions, answers } = transformData(checkInAnalytics.responses);
 
   // Define the columns for ag-Grid
   const columnDefs = useMemo(() => {
@@ -38,18 +39,29 @@ const DetailedPublishedCheckIn = () => {
 
     return [...userColumns, ...questionColumns];
   }, [questions]);
-  console.log('questions', questions);
-  console.log('answers', answers);
+
+  const defaultColumns = useMemo(() => {
+    return {
+      flex: 1,
+      filter: true,
+      wrapText: true,
+      autoHeight: true,
+      wrapHeaderText: true,
+      autoHeaderHeight: true
+    };
+  }, []);
 
   return (
     <>
-      <div className="ag-theme-quartz" style={{ height: 600, width: '100%' }}>
+      <Box className="ag-theme-quartz" height="600" margin="1rem">
+        <Heading mb="1rem">Check-in results</Heading>
+
         <AgGridReact
           rowData={answers}
           columnDefs={columnDefs}
-          defaultColDef={{ flex: 1 }}
+          defaultColDef={defaultColumns}
         />
-      </div>
+      </Box>
     </>
   );
 };
