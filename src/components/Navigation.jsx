@@ -13,13 +13,15 @@ import {
   WrapItem,
   Avatar,
   Heading,
-  Flex
+  Flex,
+  Icon,
+  Link
 } from '@chakra-ui/react';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import { IconButton } from '@chakra-ui/react';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { CiLogout } from 'react-icons/ci';
-import { IoChatboxOutline, IoHomeOutline } from 'react-icons/io5';
+import { IoHomeOutline } from 'react-icons/io5';
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthProvider';
@@ -77,38 +79,20 @@ const Navigation = () => {
               align="stretch"
             >
               <Box display="flex" alignItems="center" gap="2">
-                <IconButton
+                <Icon as={IoHomeOutline} boxSize={6} />
+                <Link
                   as={ReactRouterLink}
                   to={isAdmin ? '/admin' : '/'}
                   onClick={onClose}
-                  colorScheme="teal"
-                  aria-label="Call Sage"
-                  fontSize="20px"
-                  icon={<IoHomeOutline />}
-                />
-                Home
+                >
+                  Home
+                </Link>
               </Box>
               <Box display="flex" alignItems="center" gap="2">
-                <IconButton
-                  as={ReactRouterLink}
-                  to="/chat"
-                  onClick={onClose}
-                  colorScheme="teal"
-                  aria-label="Call Sage"
-                  fontSize="20px"
-                  icon={<IoChatboxOutline />}
-                />
-                Chat
-              </Box>
-              <Box display="flex" alignItems="center" gap="2">
-                <IconButton
-                  colorScheme="teal"
-                  aria-label="Call Sage"
-                  fontSize="20px"
-                  icon={<CiLogout />}
-                  onClick={handleLogout}
-                />
-                Logout
+                <Icon as={CiLogout} boxSize={6} />
+                <Link as={ReactRouterLink} onClick={handleLogout}>
+                  Logout
+                </Link>
               </Box>
             </VStack>
           </DrawerBody>
