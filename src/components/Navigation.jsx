@@ -82,7 +82,7 @@ const Navigation = () => {
                 <Icon as={IoHomeOutline} boxSize={6} />
                 <Link
                   as={ReactRouterLink}
-                  to={isAdmin ? '/admin' : '/'}
+                  to={isAdmin ? '/admin' : '/home'}
                   onClick={onClose}
                 >
                   Home

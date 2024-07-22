@@ -1,4 +1,4 @@
-import Homepage from './components/Homepage';
+import Homepage from './components/user/Homepage';
 import ProtectedRoute from './Pages/ProtectedRoute';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Registration from './Pages/Registration';
