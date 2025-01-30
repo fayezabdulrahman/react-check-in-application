@@ -28,7 +28,7 @@ jobs:
     - name: Install dependencies
       run: npm install
     - name: Build app
-      run: npm build
+      run: npm run build
     - name: Copy build to Nginx dir
       run: sudo cp dist/* /var/www/react-app/
     - name: Deploy app
