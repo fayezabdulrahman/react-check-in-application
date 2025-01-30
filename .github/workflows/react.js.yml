@@ -5,11 +5,10 @@ name: Deploy React App CI/CD
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ['main']
 
 jobs:
   build:
-
     runs-on: self-hosted
 
     strategy:
@@ -18,18 +17,18 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - name: Checkout source code
-      uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - name: Install dependencies
-      run: npm install
-    - name: Build app
-      run: npm run build
-    - name: Copy build to static dir
-      run: sudo cp dist/* /var/www/react-app/
+      - name: Checkout source code
+        uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm install
+      - name: Build app
+        run: npm run build
+      - name: Copy build to static directory
+        run: sudo cp dist/* /var/www/react-app/
     # - name: Deploy app
     #   run: pm2 restart FrontEndApp
