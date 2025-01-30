@@ -31,5 +31,5 @@ jobs:
       run: npm run build
     - name: Copy build to Nginx dir
       run: sudo cp dist/* /var/www/react-app/
-    - name: Deploy app
-      run: pm2 restart FrontEndApp
+    # - name: Deploy app
+    #   run: pm2 restart FrontEndApp
