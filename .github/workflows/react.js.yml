@@ -29,7 +29,7 @@ jobs:
       run: npm install
     - name: Build app
       run: npm run build
-    - name: Copy build to Nginx dir
+    - name: Copy build to static dir
       run: sudo cp dist/* /var/www/react-app/
     # - name: Deploy app
     #   run: pm2 restart FrontEndApp
