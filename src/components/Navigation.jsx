@@ -12,10 +12,10 @@ import {
   Wrap,
   WrapItem,
   Avatar,
-  Heading,
   Flex,
   Icon,
-  Link
+  Link,
+  Image
 } from '@chakra-ui/react';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import { IconButton } from '@chakra-ui/react';
@@ -25,6 +25,7 @@ import { IoHomeOutline } from 'react-icons/io5';
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthProvider';
+import logo from '../assets/b2b.png';
 const Navigation = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef();
@@ -51,7 +52,7 @@ const Navigation = () => {
           onClick={onOpen}
           icon={<GiHamburgerMenu />}
         />
-        <Heading> Gym name</Heading>
+        <Image rounded="sm" src={logo} height='50px' />
       </Flex>
 
       <Drawer
