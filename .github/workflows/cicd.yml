@@ -1,0 +1,39 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Deploy React App CI/CD
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [22.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_ACCESS_TOKEN }}
+      - name: Build Docker Image
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/ez-check-in-react-app .
+      - name: Push Docker Image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/ez-check-in-react-app:latest
+
+  deploy:
+    needs: build
+      runs-on: self-hosted # runs on aws-ec2
+      steps:
+        - name: Pull Docker Image
+          run: docker pull ${{ secrets.DOCKER_USERNAME }}/ez-check-in-react-app:latest
+        - name: Delete old container
+          run: docker rm -f ez-check-in-react-app
+        - name: Run Docker Container
+          run: docker run -d -p 3000:80 --name ez-check-in-react-app ${{ secrets.DOCKER_USERNAME}}/ez-check-in-react-app
+
