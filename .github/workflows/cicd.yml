@@ -35,5 +35,5 @@ jobs:
         run: |
           docker run -d -p 80:80 \
           --name ez-check-in-react-app \
-          --env-file .env.envproduction \
+          --env-file .env.production \
           ${{ secrets.DOCKER_USERNAME }}/ez-check-in-react-app
