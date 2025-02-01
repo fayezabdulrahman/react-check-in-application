@@ -21,16 +21,15 @@ jobs:
         run: docker push ${{ secrets.DOCKER_USERNAME }}/ez-check-in-react-app:latest
 
   deploy:
-      needs: build
-      runs-on: self-hosted # runs on aws-ec2
-      steps:
-        - name: Mount Prod Secerts
-          run: |
-            echo "${{ secrets.PROD_ENV_FILE_BACKEND_URL }}" > .env.production
-        - name: Pull Docker Image
-          run: docker pull ${{ secrets.DOCKER_USERNAME }}/ez-check-in-react-app:latest
-        - name: Delete old container
-          run: docker rm -f ez-check-in-react-app
-        - name: Run Docker Container
-          run: docker run -d -p 80:80 --name ez-check-in-react-app ${{ secrets.DOCKER_USERNAME}}/ez-check-in-react-app
-
+    needs: build
+    runs-on: self-hosted # runs on aws-ec2
+    steps:
+      - name: Mount Prod Secerts
+        run: |
+          echo "${{ secrets.PROD_ENV_FILE }}" > .env.production
+      - name: Pull Docker Image
+        run: docker pull ${{ secrets.DOCKER_USERNAME }}/ez-check-in-react-app:latest
+      - name: Delete old container
+        run: docker rm -f ez-check-in-react-app
+      - name: Run Docker Container
+        run: docker run -d -p 80:80 --name ez-check-in-react-app ${{ secrets.DOCKER_USERNAME}}/ez-check-in-react-app
