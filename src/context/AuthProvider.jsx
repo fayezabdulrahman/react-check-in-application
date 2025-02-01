@@ -85,7 +85,6 @@ const AuthProvider = ({ children }) => {
         return response.data.message;
       });
     } catch (error) {
-      console.log('error', error);
       setToken(null);
       throw error;
     } finally {
@@ -142,7 +141,6 @@ const AuthProvider = ({ children }) => {
       },
       async (error) => {
         const originalRequest = error.config;
-        console.log(error);
         // console.log('iniside response interceptor', error);
         // console.log('response status', error.response.status);
         if (error.response.status === 401 && !originalRequest._retry) {
