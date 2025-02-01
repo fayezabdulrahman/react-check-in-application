@@ -29,5 +29,5 @@ jobs:
         - name: Delete old container
           run: docker rm -f ez-check-in-react-app
         - name: Run Docker Container
-          run: docker run -d -p 3000:80 --name ez-check-in-react-app ${{ secrets.DOCKER_USERNAME}}/ez-check-in-react-app
+          run: docker run -d -p 80:80 --name ez-check-in-react-app ${{ secrets.DOCKER_USERNAME}}/ez-check-in-react-app
 
