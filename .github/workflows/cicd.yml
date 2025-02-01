@@ -10,12 +10,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
@@ -27,7 +21,7 @@ jobs:
         run: docker push ${{ secrets.DOCKER_USERNAME }}/ez-check-in-react-app:latest
 
   deploy:
-    needs: build
+      needs: build
       runs-on: self-hosted # runs on aws-ec2
       steps:
         - name: Pull Docker Image
