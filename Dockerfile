@@ -18,4 +18,4 @@ COPY env.sh /docker-entrypoint.d/env.sh
 RUN chmod +x /docker-entrypoint.d/env.sh
 
 EXPOSE 80
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+# ENTRYPOINT ["nginx", "-g", "daemon off;"]
