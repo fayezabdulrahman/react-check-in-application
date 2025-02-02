@@ -24,16 +24,19 @@ jobs:
     needs: build
     runs-on: self-hosted # runs on aws-ec2
     steps:
-      - name: Mount Prod Secerts
+      - name: Mount Prod Secerts And Convert to Env variables
         run: |
-          echo "${{ secrets.PROD_ENV_FILE }}" > .env.production
+          echo "${{ secrets.PROD_ENV_FILE }}" | while read line; do
+            echo "Exporting $line"
+            echo "export $line" >> $GITHUB_ENV
+          done
       - name: Pull Docker Image
         run: docker pull ${{ secrets.DOCKER_USERNAME }}/ez-check-in-react-app:latest
       - name: Delete old container
-        run: docker rm -f ez-check-in-react-app
+        run: docker rm -f ez-check-in-react-app || true
       - name: Run Docker Container
         run: |
           docker run -d -p 80:80 \
           --name ez-check-in-react-app \
-          --env-file .env.production \
+          $(echo "${{ secrets.PROD_ENV_FILE }}" | awk '{printf "-e %s ", $0}') \
           ${{ secrets.DOCKER_USERNAME }}/ez-check-in-react-app
