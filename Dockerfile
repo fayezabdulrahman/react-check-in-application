@@ -1,5 +1,12 @@
 # Build Stage
 FROM node:18-alpine AS build
+
+# Build args
+ARG VITE_BACKEND_API_URL
+
+# Set env variables during build process
+ENV VITE_BACKEND_API_URL=$VITE_BACKEND_API_URL
+
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
@@ -13,9 +20,5 @@ COPY --from=build /app/dist /usr/share/nginx/html
 # Copy custom Nginx configuration from repo
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# add env.sh to docker-entrypoint.d
-COPY env.sh /docker-entrypoint.d/env.sh
-RUN chmod +x /docker-entrypoint.d/env.sh
-
 EXPOSE 80
-# ENTRYPOINT ["nginx", "-g", "daemon off;"]
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
