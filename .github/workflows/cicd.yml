@@ -26,12 +26,6 @@ jobs:
     needs: build
     runs-on: self-hosted # runs on aws-ec2
     steps:
-      # - name: Mount Prod Secerts And Convert to Env variables
-      #   run: |
-      #     echo "${{ secrets.PROD_ENV_FILE }}" | while read line; do
-      #       echo "Exporting $line"
-      #       echo "export $line" >> $GITHUB_ENV
-      #     done
       - name: Pull Docker Image
         run: docker pull ${{ secrets.DOCKER_USERNAME }}/ez-check-in-react-app:latest
       - name: Delete old container
