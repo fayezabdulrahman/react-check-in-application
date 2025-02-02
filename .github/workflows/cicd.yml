@@ -26,6 +26,8 @@ jobs:
     needs: build
     runs-on: self-hosted # runs on aws-ec2
     steps:
+      - name: Stop Nginx (if running)
+        run: sudo systemctl stop nginx || true
       - name: Pull Docker Image
         run: docker pull ${{ secrets.DOCKER_USERNAME }}/ez-check-in-react-app:latest
       - name: Delete old container
