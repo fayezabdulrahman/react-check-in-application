@@ -36,4 +36,5 @@ jobs:
         run: |
           docker run -d -p 3000:80 \
           --name ez-check-in-react-app \
+          -v /etc/letsencrypt/live/ezcheckin.app:/etc/letsencrypt/live/ezcheckin.app:ro \
           ${{ secrets.DOCKER_USERNAME }}/ez-check-in-react-app
