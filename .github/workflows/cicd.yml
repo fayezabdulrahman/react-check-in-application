@@ -32,7 +32,7 @@ jobs:
         run: docker rm -f ez-check-in-react-app || true
       - name: Run Docker Container
         run: |
-          docker run -d -p 3000:80 \
+          docker run -d -p 80:80 \
           --name ez-check-in-react-app \
           -v /etc/letsencrypt/live/ezcheckin.app/fullchain.pem:/etc/letsencrypt/live/ezcheckin.app/fullchain.pem:ro \
           -v /etc/letsencrypt/live/ezcheckin.app/privkey.pem:/etc/letsencrypt/live/ezcheckin.app/privkey.pem:ro \
