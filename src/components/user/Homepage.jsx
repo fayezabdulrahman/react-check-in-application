@@ -1,10 +1,10 @@
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
 import CheckInForm from './CheckInForm';
-import SubmittedCheckIn from '../admin/SubmittedCheckIn';
+import SubmittedCheckIn from './SubmittedCheckIn';
 const Homepage = () => {
   return (
     <>
-      <Tabs isFitted variant="enclosed" m={4}>
+      <Tabs isFitted variant="enclosed" isLazy m={4}>
         <TabList mb="1em">
           <Tab>Active Check-ins</Tab>
           <Tab>Submitted Check-ins</Tab>

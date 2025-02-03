@@ -1,10 +1,16 @@
 import { Container, useToast, Heading } from '@chakra-ui/react';
 import FormFactory from '../shared/FormFactory';
-import { client } from '../../util/axios-util';
 import { useEffect, useState } from 'react';
 import { useUser } from '../../context/UserProvider';
 import Loading from '../shared/Loading';
 import { useAuth } from '../../context/AuthProvider';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { INTIAL_CHECKIN_STATE } from '../../constants/application';
+import {
+  fetchAnsweredCheckin,
+  fetchPublishedCheckin,
+  submitCheckIn
+} from '../../services/userService';
 
 const CheckInForm = () => {
   const {
@@ -14,115 +20,140 @@ const CheckInForm = () => {
     setQuestionResponse
   } = useUser();
 
-  const [loading, setLoading] = useState(true);
   const { userState } = useAuth();
   const [answeredCheckIn, setAnsweredCheckIn] = useState(false);
   const toast = useToast();
 
+  const {
+    data: publishedCheckinData,
+    isPending: publishedCheckinIsPending,
+    error: PublishedCheckinError
+  } = useQuery({
+    queryKey: ['publishedCheckin'],
+    queryFn: fetchPublishedCheckin
+  });
+
+  const {
+    data: answeredCheckinData,
+    isFetching: answeredCheckinIsFetching,
+    error: answeredCheckinError
+  } = useQuery({
+    queryKey: ['answeredCheckin'],
+    queryFn: fetchAnsweredCheckin,
+    enabled: !!publishedCheckinData?.checkIn
+  });
+
+  const {
+    mutate: submitUserCheckinMutate,
+    isPending: submitUserCheckinIsPending
+  } = useMutation({
+    mutationFn: submitCheckIn, // Calls API only when triggered
+    onSuccess: (response) => {
+      console.log('Submission successful:', response);
+      toast({
+        title: 'Check-in submitted successfully!',
+        status: 'success',
+        duration: 3000,
+        isClosable: true
+      });
+
+      setAnsweredCheckIn(true);
+    },
+    onError: (error) => {
+      console.error('Error submitting check-in:', error);
+      toast({
+        title: 'Submission failed!',
+        description: error.message,
+        status: 'error',
+        duration: 3000,
+        isClosable: true
+      });
+    }
+  });
+
+  // Update published check-in state when data is available
   useEffect(() => {
-    const submitCheckInApiCall = async () => {
-      if (!questionResponse.submittedBy) return;
-      try {
-        console.log('submit question response', questionResponse);
-        const responseServer = await client.post(
-          '/user/submitCheckIn',
-          questionResponse
-        );
-        toast({
-          title: responseServer.data.message,
-          status: 'success',
-          duration: 3000,
-          isClosable: true
-        });
-        setAnsweredCheckIn(responseServer.data.answered);
-      } catch (error) {
-        console.log('error from server on submitting checkin ', error);
-        toast({
-          title: 'Failed to Submit Check-in',
-          description: error.response?.data?.message || 'An error occurred',
-          status: 'error',
-          duration: 3000,
-          isClosable: true
-        });
-      }
-    };
+    if (publishedCheckinData?.checkIn) {
+      setPublishedCheckIn(publishedCheckinData.checkIn);
+    } else {
+      setPublishedCheckIn(INTIAL_CHECKIN_STATE);
+    }
+  }, [publishedCheckinData, publishedCheckIn, setPublishedCheckIn]);
 
-    submitCheckInApiCall();
-  }, [questionResponse, setQuestionResponse, toast]);
-
-  function callApi() {
-    // this method updates the submittedBy property which triggers the useEffect due to the questionResponse dependency
-    setQuestionResponse((prevState) => ({
-      ...prevState,
-      checkInId: publishedCheckIn.checkInId,
-      submittedBy: userState.firstName + ' ' + userState.lastName
-    }));
-  }
-
-  // call api to fetch publishedcheckIn and check if user already answered the check-in
+  // Update answered check-in state when data is available
   useEffect(() => {
-    const fetchPublishedCheckin = async () => {
-      await client
-        .get('/admin/publishedCheckin')
-        .then((response) => {
-          console.log('response from server', response.data);
-          const serverResponse = response.data;
-          if (serverResponse.checkIn !== null) {
-            console.log('fetched published checkin, ', response.data);
-            const publishedCheckInDB = serverResponse.checkIn;
-            setPublishedCheckIn(publishedCheckInDB);
-          }
-        })
-        .catch((error) => {
-          console.log('error fetching published check-in', error);
-        });
-    };
+    if (answeredCheckinData?.existingCheckIn) {
+      setAnsweredCheckIn(answeredCheckinData?.existingCheckIn?.answered);
+    }
+  }, [answeredCheckinData, publishedCheckIn]);
 
-    const fetchAnsweredCheckIn = async () => {
-      await client
-        .get('/user/answeredCheckIn')
-        .then((response) => {
-          const serverResponse = response.data;
-          if (serverResponse.existingCheckIn !== null) {
-            console.log('You already entered a check-in response');
-            const userSubmittedCheckIn = response.data.existingCheckIn;
-            setAnsweredCheckIn(userSubmittedCheckIn.answered);
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    };
-
-    const fetchData = async () => {
-      await fetchPublishedCheckin();
-      await fetchAnsweredCheckIn();
-      setLoading(false);
-    };
-
-    fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  if (loading) {
+  if (publishedCheckinIsPending) {
     return <Loading />;
   }
+  if (PublishedCheckinError) {
+    toast({
+      title: 'An error occured.',
+      status: 'error',
+      duration: 3000,
+      isClosable: true
+    });
+    return <p>Failed to fetch published check in. Please try again later...</p>;
+  }
+
+  if (answeredCheckinIsFetching) {
+    return <Loading />;
+  }
+
+  if (answeredCheckinError) {
+    toast({
+      title: 'An error occured.',
+      status: 'error',
+      duration: 3000,
+      isClosable: true
+    });
+    return <p>Failed to fetch answered check in. Please try again later...</p>;
+  }
+
+  console.log('answered check in data', answeredCheckinData);
+  console.log('published check in response', publishedCheckinData);
+  console.log('check in state', publishedCheckIn);
+  console.log('answered boolean ', answeredCheckIn);
+
+  if (submitUserCheckinIsPending) {
+    return <Loading />;
+  }
+
+  function submitDetails() {
+    const updatedResponse = {
+      ...questionResponse,
+      checkInId: publishedCheckIn.checkInId,
+      submittedBy: userState.firstName + ' ' + userState.lastName
+    };
+    setQuestionResponse(() => ({
+      updatedResponse
+    }));
+
+    // Call mutate() to trigger API call
+    submitUserCheckinMutate(updatedResponse);
+  }
+
   return (
     <Container>
-      {publishedCheckIn.questions.length > 0 && !answeredCheckIn && (
+      {publishedCheckIn?.questions.length > 0 && !answeredCheckIn && (
         <>
           <Heading>Check-in available</Heading>
-          <FormFactory publishedCheckIn={publishedCheckIn} onSubmit={callApi} />
+          <FormFactory
+            publishedCheckIn={publishedCheckIn}
+            onSubmit={submitDetails}
+          />
         </>
       )}
-      {publishedCheckIn.questions &&
-        publishedCheckIn.questions.length === 0 &&
-        !answeredCheckIn && (
-          <>
-            <Heading>No Check-in available</Heading>
-          </>
-        )}
-      {answeredCheckIn && (
+      {publishedCheckIn?.questions?.length === 0 && !answeredCheckIn && (
+        <>
+          <Heading>No Check-in available</Heading>
+        </>
+      )}
+      {publishedCheckIn?.questions?.length > 0 && answeredCheckIn && (
         <>
           <Heading>Your response was submitted! Thank you</Heading>
         </>

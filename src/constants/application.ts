@@ -20,3 +20,10 @@ export const INITIAL_QUESTION_RESPONSE = {
     answered: false,
     answers: []
 }
+
+export const API_URLS = {
+    publishedCheckIn: '/admin/publishedCheckin',
+    answeredCheckIn: '/user/answeredCheckIn',
+    submtitCheckIn: '/user/submitCheckIn',
+    allUserSubmittedCheckIn: '/user/getAllSubmittedCheckIn'
+}

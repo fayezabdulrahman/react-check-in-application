@@ -7,45 +7,45 @@ import {
   Text,
   useToast
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useUser } from '../../context/UserProvider';
-import { client } from '../../util/axios-util';
 import Loading from '../shared/Loading';
+import { useQuery } from '@tanstack/react-query';
+import { fetchAllUserSubmittedCheckIns } from '../../services/userService';
 const SubmittedCheckIn = () => {
   const { submittedCheckIns, setSubmittedCheckIns } = useUser();
-  const [loading, setLoading] = useState(true);
   const toast = useToast();
 
+  const { data, isPending, error } = useQuery({
+    queryKey: ['allUserSubmittedCheckin'],
+    queryFn: fetchAllUserSubmittedCheckIns
+  });
+
   useEffect(() => {
-    const fetchSubmittedCheckins = async () => {
-      try {
-        const response = await client.get('/user/getAllSubmittedCheckIn');
-        setSubmittedCheckIns(response.data.submittedCheckIns);
-      } catch (error) {
-        toast({
-          title: 'Failed to get Submitted Check-ins',
-          description: error.response?.data?.message || 'An error occurred',
-          status: 'error',
-          duration: 3000,
-          isClosable: true
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (data?.submittedCheckIns) {
+      setSubmittedCheckIns(data.submittedCheckIns);
+    }
+  }, [setSubmittedCheckIns, submittedCheckIns, data]);
 
-    fetchSubmittedCheckins();
-  }, []);
-
-  if (loading) {
+  if (isPending) {
     return <Loading />;
+  }
+
+  if (error) {
+    toast({
+      title: 'Failed to get Submitted Check-ins',
+      description: error.response?.data?.message || 'An error occurred',
+      status: 'error',
+      duration: 3000,
+      isClosable: true
+    });
   }
   return (
     <>
       <Container>
         <Heading pb="8">Your submitted check-ins</Heading>
         <Flex gap="4" direction="column">
-          {submittedCheckIns.map((checkin) => (
+          {submittedCheckIns?.map((checkin) => (
             <Card key={checkin.checkInId.checkInId}>
               <CardBody>
                 <Heading as="h4" size="md">
