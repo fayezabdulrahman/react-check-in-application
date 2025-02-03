@@ -23,6 +23,7 @@ export const INITIAL_QUESTION_RESPONSE = {
 
 export const API_URLS = {
     publishedCheckIn: '/admin/publishedCheckin',
+    createCheckIn: '/admin/createCheckin',
     answeredCheckIn: '/user/answeredCheckIn',
     submtitCheckIn: '/user/submitCheckIn',
     allUserSubmittedCheckIn: '/user/getAllSubmittedCheckIn'

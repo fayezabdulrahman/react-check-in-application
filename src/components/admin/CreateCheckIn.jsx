@@ -14,10 +14,12 @@ import { MdPublish } from 'react-icons/md';
 import NewQuestion from '../NewQuestion';
 import { useAdmin } from '../../context/AdminProvider';
 import QuestionsSummary from '../shared/QuestionsSummary';
-import { useEffect, useRef } from 'react';
-import { client } from '../../util/axios-util';
+import { useRef } from 'react';
 import { INTIAL_CHECKIN_STATE } from '../../constants/application';
 import { useAuth } from '../../context/AuthProvider';
+import { useMutation } from '@tanstack/react-query';
+import { createAdminCheckIn } from '../../services/adminService';
+import Loading from '../shared/Loading';
 
 const CreateCheckIn = () => {
   const { checkIn, setCheckIn } = useAdmin();
@@ -25,43 +27,38 @@ const CreateCheckIn = () => {
   const checkInNameRef = useRef();
   const toast = useToast();
 
-  useEffect(() => {
-    const createCheckInApiCall = async () => {
-      if (!checkIn.checkInId) return;
-      try {
-        const serverResponse = await client.post(
-          '/admin/createCheckin',
-          checkIn
-        );
-        console.log(
-          'sucess from server on creating checkin',
-          serverResponse.data
-        );
+  const {mutate: createCheckIn, isPending} = useMutation({
+    mutationFn: createAdminCheckIn,
+    onSuccess: (response) => {
+      console.log('response from creating check in ', response);
+      toast({
+        title: 'Successfully Created Check-in',
+        status: 'success',
+        duration: 3000,
+        isClosable: true
+      });
 
-        toast({
-          title: 'Successfully Created Check-in',
-          status: 'success',
-          duration: 3000,
-          isClosable: true
-        });
+      setCheckIn(INTIAL_CHECKIN_STATE);
 
-        setCheckIn(INTIAL_CHECKIN_STATE);
-      } catch (error) {
-        console.log('error from server on creating checkin ', error);
-        toast({
-          title: 'Failed to Create Check-in',
-          description: error.response?.data?.message || 'An error occurred',
-          status: 'error',
-          duration: 3000,
-          isClosable: true
-        });
-      }
-    };
+      // invalidate cache so we get latest created check ins
+      // TODO
 
-    createCheckInApiCall();
-  }, [checkIn, toast, setCheckIn]);
+    },
+    onError: (error) => {
+      toast({
+        title: 'Failed to Create Check-in',
+        description: error.response?.data?.message || 'An error occurred',
+        status: 'error',
+        duration: 3000,
+        isClosable: true
+      });
+    }
+  });
 
-  console.log('check in state inside CreateCheckIn', checkIn);
+
+  if (isPending) {
+    return <Loading />;
+  }
 
   function handleCreateCheckIn() {
     const emptyChecckInName = checkInNameRef.current.value === '';
@@ -74,11 +71,16 @@ const CreateCheckIn = () => {
       });
     }
 
-    setCheckIn((prevState) => ({
-      ...prevState,
+    const checkinToCreate = {
+      ...checkIn,
       createdBy: userState.firstName + ' ' + userState.lastName,
       checkInId: checkInNameRef.current.value
-    }));
+    };
+
+    setCheckIn(checkinToCreate);
+
+     // Call mutate() to trigger API call
+    createCheckIn(checkinToCreate);
   }
 
   return (
