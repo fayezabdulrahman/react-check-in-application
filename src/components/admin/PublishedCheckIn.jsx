@@ -6,60 +6,66 @@ import {
   StatLabel,
   StatNumber,
   StatHelpText,
-  IconButton
+  IconButton,
+  useToast
 } from '@chakra-ui/react';
 import { Card, CardBody, CardFooter } from '@chakra-ui/react';
 import { useAdmin } from '../../context/AdminProvider';
 import { useEffect, useState } from 'react';
-import { client } from '../../util/axios-util';
 import { IoIosRefresh } from 'react-icons/io';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import { Link as ChakraLink } from '@chakra-ui/react';
 import Loading from '../shared/Loading';
+import { useMutation } from '@tanstack/react-query';
+import { fetchPublishedCheckInAnalytics } from '../../services/adminService';
 
 const PublishedCheckIn = () => {
   const { publishedCheckIn } = useAdmin();
   const [checkInAnalytics, setCheckInAnalytics] = useState({});
-  const [loading, setLoading] = useState(true);
+  const toast = useToast();
+
+  const {mutate: fetchCheckInAnalyticMutate, isPending } = useMutation({
+    mutationFn: fetchPublishedCheckInAnalytics,
+    onSuccess: (response) => {
+      if (response) {
+        console.log('analyitcs response ', response);
+        setCheckInAnalytics(response);
+        localStorage.setItem(
+          'publishedCheckInAnalytics',
+          JSON.stringify(response)
+        );
+      }
+    },
+    onError: () => {
+      toast({
+        title: 'Failed to get published check in responses.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true
+      });
+    }
+  });
 
   useEffect(() => {
+    console.log('inside useEffectsss');
     const cachedAnalytics = localStorage.getItem('publishedCheckInAnalytics');
     if (cachedAnalytics) {
       setCheckInAnalytics(JSON.parse(cachedAnalytics));
     } else {
-      fetchPublishedCheckInAnalytics();
+      const payload = { checkInId: publishedCheckIn.checkInId };
+      // trigger mutate API Call
+      fetchCheckInAnalyticMutate(payload);
     }
-    setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [publishedCheckIn]);
+  }, [setCheckInAnalytics, fetchCheckInAnalyticMutate]);
 
-  const fetchPublishedCheckInAnalytics = async () => {
-    setLoading(true);
-    const payload = { checkInId: publishedCheckIn.checkInId };
-
-    await client
-      .post('/admin/checkInAnayltics', payload)
-      .then((response) => {
-        setCheckInAnalytics(response.data);
-        console.log('response from server for analytics', response.data);
-        localStorage.setItem(
-          'publishedCheckInAnalytics',
-          JSON.stringify(response.data)
-        );
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => setLoading(false));
-  };
-
-  if (loading) {
+  if (isPending) {
     return <Loading />;
   }
 
   return (
     <Container>
-      <Heading color="gray.500" m="1rem 0 0 1rem">
+      <Heading color="gray.500" m="1rem 0 1rem 1rem">
         Your published check-in
       </Heading>
       <Card>

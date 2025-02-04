@@ -21,9 +21,19 @@ export const INITIAL_QUESTION_RESPONSE = {
     answers: []
 }
 
+export const INITIAL_PERFORMING_ACTION_STATE = {
+    actionInProgress: false,
+    actionType: ''
+}
+
 export const API_URLS = {
     publishedCheckIn: '/admin/publishedCheckin',
+    publishNewCheckIn: '/admin/publishCheckIn',
+    unPublishCheckIn: '/admin/unPublishCheckIn',
+    publishedCheckInAnalytic: '/admin/checkInAnayltics',
+    deleteCheckIn: '/admin/deleteCheckIn',
     createCheckIn: '/admin/createCheckin',
+    allAdminCheckIn: '/admin/allCheckins',
     answeredCheckIn: '/user/answeredCheckIn',
     submtitCheckIn: '/user/submitCheckIn',
     allUserSubmittedCheckIn: '/user/getAllSubmittedCheckIn'

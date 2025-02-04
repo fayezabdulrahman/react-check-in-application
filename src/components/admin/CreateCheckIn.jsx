@@ -17,7 +17,7 @@ import QuestionsSummary from '../shared/QuestionsSummary';
 import { useRef } from 'react';
 import { INTIAL_CHECKIN_STATE } from '../../constants/application';
 import { useAuth } from '../../context/AuthProvider';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createAdminCheckIn } from '../../services/adminService';
 import Loading from '../shared/Loading';
 
@@ -26,6 +26,7 @@ const CreateCheckIn = () => {
   const { userState } = useAuth();
   const checkInNameRef = useRef();
   const toast = useToast();
+  const queryClient = useQueryClient();
 
   const {mutate: createCheckIn, isPending} = useMutation({
     mutationFn: createAdminCheckIn,
@@ -41,7 +42,7 @@ const CreateCheckIn = () => {
       setCheckIn(INTIAL_CHECKIN_STATE);
 
       // invalidate cache so we get latest created check ins
-      // TODO
+      queryClient.invalidateQueries({queryKey: ['allAdminCheckIn']});
 
     },
     onError: (error) => {

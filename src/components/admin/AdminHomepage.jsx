@@ -20,7 +20,7 @@ const AdminHomepage = () => {
   // when page loads - call api to fetch db to check for publishedChekIn
   // if no published check in - render code to ask admin to create check in
   // if published check in - load check in for admin to view it
-  const { setPublishedCheckIn, publishedCheckIn, checkIn } = useAdmin();
+  const { setPublishedCheckIn, publishedCheckIn } = useAdmin();
   // const [loading, setLoading] = useState(true);
   const toast = useToast();
 
