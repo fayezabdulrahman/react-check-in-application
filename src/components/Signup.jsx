@@ -97,6 +97,7 @@ const Signup = () => {
               {({ field, form }) => (
                 <FormControl
                   isInvalid={form.errors.firstName && form.touched.firstName}
+                  paddingTop='0.25rem'
                 >
                   <FormLabel>First Name</FormLabel>
                   <Input {...field} />
@@ -108,6 +109,7 @@ const Signup = () => {
               {({ field, form }) => (
                 <FormControl
                   isInvalid={form.errors.lastName && form.touched.lastName}
+                  paddingTop='0.25rem'
                 >
                   <FormLabel>Surname</FormLabel>
                   <Input {...field} />
@@ -119,6 +121,7 @@ const Signup = () => {
               {({ field, form }) => (
                 <FormControl
                   isInvalid={form.errors.password && form.touched.password}
+                  paddingTop='0.25rem'
                 >
                   <FormLabel>Password</FormLabel>
                   <InputGroup size="md">

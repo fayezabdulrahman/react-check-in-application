@@ -75,6 +75,7 @@ const Login = () => {
               {({ field, form }) => (
                 <FormControl
                   isInvalid={form.errors.email && form.touched.email}
+                  paddingTop='0.5rem'
                 >
                   <FormLabel>Email</FormLabel>
                   <Input {...field} />
@@ -87,6 +88,7 @@ const Login = () => {
               {({ field, form }) => (
                 <FormControl
                   isInvalid={form.errors.password && form.touched.password}
+                  paddingTop='0.5rem'
                 >
                   <FormLabel>Password</FormLabel>
                   <InputGroup size="md">
