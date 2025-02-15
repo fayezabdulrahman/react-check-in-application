@@ -1,7 +1,7 @@
 import Homepage from './components/user/Homepage';
 import ProtectedRoute from './Pages/ProtectedRoute';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Registration from './Pages/Registration';
+import Landing from './Pages/Landing';
 import AuthProvider from './context/AuthProvider';
 import AdminHomepage from './components/admin/AdminHomepage';
 import AdminProvider from './context/AdminProvider';
@@ -18,7 +18,7 @@ function App() {
           <AdminProvider>
             <UserProvider>
                 <Routes>
-                  <Route path="/" element={<Registration />} />
+                  <Route path="/" element={<Landing />} />
                   <Route element={<ProtectedRoute />}>
                     <Route path="/home" index element={<Homepage />} />
                     <Route path="/admin" element={<AdminHomepage />} />

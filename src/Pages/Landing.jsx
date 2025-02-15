@@ -12,7 +12,7 @@ import {
 import Login from '../components/Login';
 import Signup from '../components/Signup';
 import backgroundLogo from '../assets/b2b_second.jpg';
-const Registration = () => {
+const Landing = () => {
 
   return (
     <>
@@ -61,4 +61,4 @@ const Registration = () => {
   );
 };
 
-export default Registration;
+export default Landing;
