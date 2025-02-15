@@ -7,8 +7,10 @@ import {
   InputGroup,
   InputRightElement,
   Box,
-  useToast
+  useToast,
+  IconButton
 } from '@chakra-ui/react';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useAuth } from '../context/AuthProvider';
 import { Formik, Form, Field } from 'formik';
 import { useState } from 'react';
@@ -44,7 +46,6 @@ const Signup = () => {
       ...values,
       email: values.email.trim().toLowerCase()
     };
-
 
     const toastId = toast({
       title: 'Signing up...',
@@ -97,7 +98,7 @@ const Signup = () => {
               {({ field, form }) => (
                 <FormControl
                   isInvalid={form.errors.firstName && form.touched.firstName}
-                  paddingTop='0.25rem'
+                  paddingTop="0.25rem"
                 >
                   <FormLabel>First Name</FormLabel>
                   <Input {...field} />
@@ -109,7 +110,7 @@ const Signup = () => {
               {({ field, form }) => (
                 <FormControl
                   isInvalid={form.errors.lastName && form.touched.lastName}
-                  paddingTop='0.25rem'
+                  paddingTop="0.25rem"
                 >
                   <FormLabel>Surname</FormLabel>
                   <Input {...field} />
@@ -121,19 +122,17 @@ const Signup = () => {
               {({ field, form }) => (
                 <FormControl
                   isInvalid={form.errors.password && form.touched.password}
-                  paddingTop='0.25rem'
+                  paddingTop="0.25rem"
                 >
                   <FormLabel>Password</FormLabel>
                   <InputGroup size="md">
                     <Input type={showPass ? 'text' : 'password'} {...field} />
                     <InputRightElement width="4.5rem">
-                      <Button
-                        h="1.75rem"
-                        size="sm"
+                      <IconButton
+                        size='sm'
                         onClick={handleShowPassClick}
-                      >
-                        {showPass ? 'Hide' : 'Show'}
-                      </Button>
+                        icon={showPass ? <FaEyeSlash /> : <FaEye />}
+                      />
                     </InputRightElement>
                   </InputGroup>
                   <FormErrorMessage>{form.errors.password}</FormErrorMessage>

@@ -7,8 +7,10 @@ import {
   InputRightElement,
   Box,
   Button,
+  IconButton,
   useToast
 } from '@chakra-ui/react';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import * as Yup from 'yup';
 import { Formik, Form, Field } from 'formik';
 import { useState } from 'react';
@@ -94,13 +96,11 @@ const Login = () => {
                   <InputGroup size="md">
                     <Input type={showPass ? 'text' : 'password'} {...field} />
                     <InputRightElement width="4.5rem">
-                      <Button
-                        h="1.75rem"
-                        size="sm"
+                    <IconButton
+                        size='sm'
                         onClick={handleShowPassClick}
-                      >
-                        {showPass ? 'Hide' : 'Show'}
-                      </Button>
+                        icon={showPass ? <FaEyeSlash /> : <FaEye />}
+                      />
                     </InputRightElement>
                   </InputGroup>
                   <FormErrorMessage>{form.errors.password}</FormErrorMessage>
