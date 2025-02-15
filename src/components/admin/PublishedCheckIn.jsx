@@ -6,13 +6,12 @@ import {
   StatLabel,
   StatNumber,
   StatHelpText,
-  IconButton,
-  useToast
+  useToast,
+  Button
 } from '@chakra-ui/react';
 import { Card, CardBody, CardFooter } from '@chakra-ui/react';
 import { useAdmin } from '../../context/AdminProvider';
 import { useEffect, useState } from 'react';
-import { IoIosRefresh } from 'react-icons/io';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import { Link as ChakraLink } from '@chakra-ui/react';
 import Loading from '../shared/Loading';
@@ -25,16 +24,17 @@ const PublishedCheckIn = () => {
   const [checkInAnalytics, setCheckInAnalytics] = useState({});
   const toast = useToast();
 
-  const {mutate: fetchCheckInAnalyticMutate, isPending } = useMutation({
+  const {
+    mutate: fetchCheckInAnalyticMutate,
+    isPending,
+    isLoading
+  } = useMutation({
     mutationFn: fetchPublishedCheckInAnalytics,
     onSuccess: (response) => {
       if (response) {
         console.log('analyitcs response ', response);
         setCheckInAnalytics(response);
-        LocalStorageService.setItem(
-          'publishedCheckInAnalytics',
-          response
-        );
+        LocalStorageService.setItem('publishedCheckInAnalytics', response);
       }
     },
     onError: () => {
@@ -49,7 +49,9 @@ const PublishedCheckIn = () => {
 
   useEffect(() => {
     console.log('inside useEffectsss');
-    const cachedAnalytics = LocalStorageService.getItem('publishedCheckInAnalytics');
+    const cachedAnalytics = LocalStorageService.getItem(
+      'publishedCheckInAnalytics'
+    );
     if (cachedAnalytics) {
       setCheckInAnalytics(cachedAnalytics);
     } else {
@@ -60,7 +62,7 @@ const PublishedCheckIn = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setCheckInAnalytics, fetchCheckInAnalyticMutate]);
 
-  if (isPending) {
+  if (isLoading) {
     return <Loading />;
   }
 
@@ -86,7 +88,11 @@ const PublishedCheckIn = () => {
           <>
             <Divider />
 
-            <CardFooter display="flex" justifyContent="space-between">
+            <CardFooter
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
               <ChakraLink
                 as={ReactRouterLink}
                 to="/admin/publishedCheckIn"
@@ -94,11 +100,19 @@ const PublishedCheckIn = () => {
               >
                 View
               </ChakraLink>
-              <IconButton
-                aria-label="Search database"
-                icon={<IoIosRefresh />}
-                onClick={() => fetchCheckInAnalyticMutate({ checkInId: publishedCheckIn.checkInId })}
-              />
+              <Button
+                isLoading={isPending}
+                loadingText="Refreshing"
+                colorScheme="orange"
+                variant="outline"
+                onClick={() =>
+                  fetchCheckInAnalyticMutate({
+                    checkInId: publishedCheckIn.checkInId
+                  })
+                }
+              >
+                Refresh
+              </Button>
             </CardFooter>
           </>
         )}
