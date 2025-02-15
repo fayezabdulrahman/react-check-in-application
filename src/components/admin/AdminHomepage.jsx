@@ -12,27 +12,22 @@ import { useEffect } from 'react';
 import { useAdmin } from '../../context/AdminProvider';
 import PublishedCheckIn from './PublishedCheckIn';
 import Loading from '../shared/Loading';
-import { fetchPublishedCheckin } from '../../services/userService';
 import { INTIAL_CHECKIN_STATE } from '../../constants/application';
-import { useQuery } from '@tanstack/react-query';
 import LocalStorageService from '../../util/LocalStorageService';
+import usePublishedCheckInQuery from '../../hooks/usePublishedCheckInQuery';
 
 const AdminHomepage = () => {
   // when page loads - call api to fetch db to check for publishedChekIn
   // if no published check in - render code to ask admin to create check in
   // if published check in - load check in for admin to view it
   const { setPublishedCheckIn, publishedCheckIn } = useAdmin();
-  // const [loading, setLoading] = useState(true);
   const toast = useToast();
 
   const {
     data: publishedCheckinData,
     isPending: publishedCheckinIsPending,
     error: PublishedCheckinError
-  } = useQuery({
-    queryKey: ['publishedCheckin'],
-    queryFn: fetchPublishedCheckin
-  });
+  } = usePublishedCheckInQuery();
 
   useEffect(() => {
     const cachedPublishedCheckIn = LocalStorageService.getItem('publishedCheckIn');

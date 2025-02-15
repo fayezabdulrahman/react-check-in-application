@@ -4,14 +4,14 @@ import { useEffect, useState, useRef } from 'react';
 import { useUser } from '../../context/UserProvider';
 import Loading from '../shared/Loading';
 import { useAuth } from '../../context/AuthProvider';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { INTIAL_CHECKIN_STATE } from '../../constants/application';
 import {
   fetchAnsweredCheckin,
-  fetchPublishedCheckin,
   submitCheckIn
 } from '../../services/userService';
 import LocalStorageService from '../../util/LocalStorageService';
+import usePublishedCheckInQuery from '../../hooks/usePublishedCheckInQuery';
 
 const CheckInForm = () => {
   const {
@@ -25,16 +25,13 @@ const CheckInForm = () => {
   const [answeredCheckIn, setAnsweredCheckIn] = useState(false);
   const toast = useToast();
   const hasFetchedPublishedCheckin = useRef(false); // Prevent duplicate calls
+  const queryClient = useQueryClient();
 
   const {
     data: publishedCheckinData,
     isPending: publishedCheckinIsPending,
     error: PublishedCheckinError
-  } = useQuery({
-    queryKey: ['publishedCheckin'],
-    queryFn: fetchPublishedCheckin,
-    staleTime: 1000 * 60 * 10 // Cache for 10 minutes
-  });
+  } = usePublishedCheckInQuery();
 
   const {
     data: answeredCheckinData,
@@ -62,6 +59,7 @@ const CheckInForm = () => {
       });
 
       setAnsweredCheckIn(true);
+      queryClient.invalidateQueries({queryKey: ['answeredCheckin']});
     },
     onError: (error) => {
       console.error('Error submitting check-in:', error);
