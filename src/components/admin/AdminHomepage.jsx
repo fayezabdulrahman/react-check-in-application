@@ -15,6 +15,7 @@ import Loading from '../shared/Loading';
 import { fetchPublishedCheckin } from '../../services/userService';
 import { INTIAL_CHECKIN_STATE } from '../../constants/application';
 import { useQuery } from '@tanstack/react-query';
+import LocalStorageService from '../../util/LocalStorageService';
 
 const AdminHomepage = () => {
   // when page loads - call api to fetch db to check for publishedChekIn
@@ -34,16 +35,16 @@ const AdminHomepage = () => {
   });
 
   useEffect(() => {
-    const cachedPublishedCheckIn = localStorage.getItem('publishedCheckIn');
+    const cachedPublishedCheckIn = LocalStorageService.getItem('publishedCheckIn');
     if (cachedPublishedCheckIn) {
-      setPublishedCheckIn(JSON.parse(cachedPublishedCheckIn));
+      setPublishedCheckIn(cachedPublishedCheckIn);
     } else {
       if (publishedCheckinData?.checkIn) {
         const publishedCheckInDB = publishedCheckinData.checkIn;
         setPublishedCheckIn(publishedCheckInDB);
-        localStorage.setItem(
+        LocalStorageService.setItem(
           'publishedCheckIn',
-          JSON.stringify(publishedCheckInDB)
+          publishedCheckInDB
         );
       } else {
         setPublishedCheckIn(INTIAL_CHECKIN_STATE);

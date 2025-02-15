@@ -18,6 +18,7 @@ import { Link as ChakraLink } from '@chakra-ui/react';
 import Loading from '../shared/Loading';
 import { useMutation } from '@tanstack/react-query';
 import { fetchPublishedCheckInAnalytics } from '../../services/adminService';
+import LocalStorageService from '../../util/LocalStorageService';
 
 const PublishedCheckIn = () => {
   const { publishedCheckIn } = useAdmin();
@@ -30,9 +31,9 @@ const PublishedCheckIn = () => {
       if (response) {
         console.log('analyitcs response ', response);
         setCheckInAnalytics(response);
-        localStorage.setItem(
+        LocalStorageService.setItem(
           'publishedCheckInAnalytics',
-          JSON.stringify(response)
+          response
         );
       }
     },
@@ -48,9 +49,9 @@ const PublishedCheckIn = () => {
 
   useEffect(() => {
     console.log('inside useEffectsss');
-    const cachedAnalytics = localStorage.getItem('publishedCheckInAnalytics');
+    const cachedAnalytics = LocalStorageService.getItem('publishedCheckInAnalytics');
     if (cachedAnalytics) {
-      setCheckInAnalytics(JSON.parse(cachedAnalytics));
+      setCheckInAnalytics(cachedAnalytics);
     } else {
       const payload = { checkInId: publishedCheckIn.checkInId };
       // trigger mutate API Call
@@ -96,7 +97,7 @@ const PublishedCheckIn = () => {
               <IconButton
                 aria-label="Search database"
                 icon={<IoIosRefresh />}
-                onClick={fetchPublishedCheckInAnalytics}
+                onClick={() => fetchCheckInAnalyticMutate({ checkInId: publishedCheckIn.checkInId })}
               />
             </CardFooter>
           </>

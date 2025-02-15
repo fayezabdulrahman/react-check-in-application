@@ -10,6 +10,7 @@ import { client } from '../util/axios-util.js';
 import Loading from '../components/shared/Loading.jsx';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 
 const AuthContext = createContext();
 const INITIAL_USER_STATE = {
@@ -35,6 +36,7 @@ const AuthProvider = ({ children }) => {
   const [userState, setUserState] = useState(INITIAL_USER_STATE);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   // this gets called one time when app launches to determine if user is logged in or not.
   useEffect(() => {
@@ -95,8 +97,9 @@ const AuthProvider = ({ children }) => {
   const logout = async () => {
     await client
       .post('/auth/logout')
-      .then((response) => {
-        console.log(response.data.message);
+      .then(() => {
+        localStorage.clear();
+        queryClient.clear();
         setToken(undefined);
         setUserState(INITIAL_USER_STATE);
       })

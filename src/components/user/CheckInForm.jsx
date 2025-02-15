@@ -1,6 +1,6 @@
 import { Container, useToast, Heading } from '@chakra-ui/react';
 import FormFactory from '../shared/FormFactory';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useUser } from '../../context/UserProvider';
 import Loading from '../shared/Loading';
 import { useAuth } from '../../context/AuthProvider';
@@ -11,6 +11,7 @@ import {
   fetchPublishedCheckin,
   submitCheckIn
 } from '../../services/userService';
+import LocalStorageService from '../../util/LocalStorageService';
 
 const CheckInForm = () => {
   const {
@@ -23,6 +24,7 @@ const CheckInForm = () => {
   const { userState } = useAuth();
   const [answeredCheckIn, setAnsweredCheckIn] = useState(false);
   const toast = useToast();
+  const hasFetchedPublishedCheckin = useRef(false); // Prevent duplicate calls
 
   const {
     data: publishedCheckinData,
@@ -30,7 +32,8 @@ const CheckInForm = () => {
     error: PublishedCheckinError
   } = useQuery({
     queryKey: ['publishedCheckin'],
-    queryFn: fetchPublishedCheckin
+    queryFn: fetchPublishedCheckin,
+    staleTime: 1000 * 60 * 10 // Cache for 10 minutes
   });
 
   const {
@@ -40,7 +43,8 @@ const CheckInForm = () => {
   } = useQuery({
     queryKey: ['answeredCheckin'],
     queryFn: fetchAnsweredCheckin,
-    enabled: !!publishedCheckinData?.checkIn
+    enabled: !!publishedCheckinData?.checkIn && !answeredCheckIn,
+    staleTime: 1000 * 60 * 10 // Cache for 10 minutes
   });
 
   const {
@@ -73,23 +77,36 @@ const CheckInForm = () => {
 
   // Update published check-in state when data is available
   useEffect(() => {
-    if (publishedCheckinData?.checkIn) {
-      setPublishedCheckIn(publishedCheckinData.checkIn);
-    } else {
-      setPublishedCheckIn(INTIAL_CHECKIN_STATE);
+    if (hasFetchedPublishedCheckin.current === true) {
+      const publishedCheckInInLocalStorage =
+        LocalStorageService.getItem('publishedCheckIn');
+      if (publishedCheckInInLocalStorage) {
+        setPublishedCheckIn(publishedCheckInInLocalStorage);
+      } else if (publishedCheckinData?.checkIn) {
+        console.log('save published check in to local storage');
+        setPublishedCheckIn(publishedCheckinData.checkIn);
+        LocalStorageService.setItem(
+          'publishedCheckIn',
+          publishedCheckinData.checkIn
+        );
+      } else {
+        console.log('inside else block');
+        setPublishedCheckIn(INTIAL_CHECKIN_STATE);
+      }
     }
-  }, [publishedCheckinData, publishedCheckIn, setPublishedCheckIn]);
+
+    return () => {
+      hasFetchedPublishedCheckin.current = true; // Mark as fetched
+    };
+  }, [publishedCheckinData, setPublishedCheckIn]);
 
   // Update answered check-in state when data is available
   useEffect(() => {
     if (answeredCheckinData?.existingCheckIn) {
       setAnsweredCheckIn(answeredCheckinData?.existingCheckIn?.answered);
     }
-  }, [answeredCheckinData, publishedCheckIn]);
+  }, [answeredCheckinData]);
 
-  if (publishedCheckinIsPending) {
-    return <Loading />;
-  }
   if (PublishedCheckinError) {
     toast({
       title: 'An error occured.',
@@ -98,10 +115,6 @@ const CheckInForm = () => {
       isClosable: true
     });
     return <p>Failed to fetch published check in. Please try again later...</p>;
-  }
-
-  if (answeredCheckinIsFetching) {
-    return <Loading />;
   }
 
   if (answeredCheckinError) {
@@ -114,12 +127,11 @@ const CheckInForm = () => {
     return <p>Failed to fetch answered check in. Please try again later...</p>;
   }
 
-  console.log('answered check in data', answeredCheckinData);
-  console.log('published check in response', publishedCheckinData);
-  console.log('check in state', publishedCheckIn);
-  console.log('answered boolean ', answeredCheckIn);
-
-  if (submitUserCheckinIsPending) {
+  if (
+    publishedCheckinIsPending ||
+    answeredCheckinIsFetching ||
+    submitUserCheckinIsPending
+  ) {
     return <Loading />;
   }
 
@@ -137,25 +149,29 @@ const CheckInForm = () => {
     submitUserCheckinMutate(updatedResponse);
   }
 
+  console.log('published check in state', publishedCheckIn);
+  console.log('published check in data api call', publishedCheckinData);
+
   return (
     <Container>
-      {publishedCheckIn?.questions.length > 0 && !answeredCheckIn && (
+      {publishedCheckIn?.questions?.length > 0 && answeredCheckIn && (
+        <>
+          <Heading>Your response was submitted! Thank you</Heading>
+        </>
+      )}
+
+      {publishedCheckIn?.questions?.length === 0 && !answeredCheckIn && (
+        <>
+          <Heading>No Check-in available</Heading>
+        </>
+      )}
+      {publishedCheckIn?.questions?.length > 0 && !answeredCheckIn && (
         <>
           <Heading>Check-in available</Heading>
           <FormFactory
             publishedCheckIn={publishedCheckIn}
             onSubmit={submitDetails}
           />
-        </>
-      )}
-      {publishedCheckIn?.questions?.length === 0 && !answeredCheckIn && (
-        <>
-          <Heading>No Check-in available</Heading>
-        </>
-      )}
-      {publishedCheckIn?.questions?.length > 0 && answeredCheckIn && (
-        <>
-          <Heading>Your response was submitted! Thank you</Heading>
         </>
       )}
     </Container>

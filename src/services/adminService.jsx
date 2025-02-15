@@ -25,7 +25,7 @@ export const fetchPublishedCheckInAnalytics = async (payload) => {
     const response = await client.post(API_URLS.publishedCheckInAnalytic, payload);
     return response.data;
   } catch (error) {
-    console.error('Error fetching published check-in analytics');
+    console.error('Error fetching published check-in analytics', error) ;
     throw error;
   }
 };

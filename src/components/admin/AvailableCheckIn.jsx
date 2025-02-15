@@ -19,6 +19,8 @@ import {
 } from '../../services/adminService';
 import CreatedCheckInCard from './CreatedCheckInCard';
 import { INITIAL_PERFORMING_ACTION_STATE } from '../../constants/application';
+import LocalStorageService from '../../util/LocalStorageService';
+
 const AvailableCheckIn = () => {
   const {
     submittedCheckIns,
@@ -56,11 +58,11 @@ const AvailableCheckIn = () => {
         queryCleint.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
 
         // remove old cache for analytics first
-        localStorage.removeItem('publishedCheckInAnalytics');
+        LocalStorageService.removeItem('publishedCheckInAnalytics');
         // set new cache for published check-in
-        localStorage.setItem(
+        LocalStorageService.setItem(
           'publishedCheckIn',
-          JSON.stringify(serverPublishedCheckIn)
+          serverPublishedCheckIn
         );
       }
 
@@ -89,8 +91,8 @@ const AvailableCheckIn = () => {
       const message = response.message;
       // if we get a successfull response, remove cache and update state
       if (response.checkIn) {
-        localStorage.removeItem('publishedCheckInAnalytics');
-        localStorage.removeItem('publishedCheckIn');
+        LocalStorageService.removeItem('publishedCheckInAnalytics');
+        LocalStorageService.removeItem('publishedCheckIn');
         const serverPublishedCheckIn = response.checkIn;
         setPublishedCheckIn(serverPublishedCheckIn);
 
@@ -122,7 +124,7 @@ const AvailableCheckIn = () => {
   const { mutate: deleteCheckInMutate } = useMutation({
     mutationFn: deleteCheckIn,
     onMutate: (payload) => {
-      const isPublishedCheckIn = localStorage.getItem('publishedCheckIn');
+      const isPublishedCheckIn = LocalStorageService.getItem('publishedCheckIn');
       if (isPublishedCheckIn) {
         // check if deleted check in is the published one
         const publishedCheckInId = isPublishedCheckIn.publishCheckIn;
@@ -139,8 +141,8 @@ const AvailableCheckIn = () => {
       setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
 
       if (context?.removeLocalStorage) {
-        localStorage.removeItem('publishedCheckInAnalytics');
-        localStorage.removeItem('publishedCheckIn');
+        LocalStorageService.removeItem('publishedCheckInAnalytics');
+        LocalStorageService.removeItem('publishedCheckIn');
       }
 
       // invalidate cache and refetch
