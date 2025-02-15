@@ -28,7 +28,7 @@ const Signup = ({ switchToLoginTab }) => {
   const toast = useToast();
 
   // validation for signing up
-  const validationSchema = Yup.object({
+  const registerSchema = Yup.object({
     email: Yup.string()
       .required('Email is required')
       .email('Invalid email address'),
@@ -40,7 +40,11 @@ const Signup = ({ switchToLoginTab }) => {
   });
 
   const submitForm = async (values, actions) => {
-    console.log('formValues', values);
+    const transformedUserInput = {
+      ...values,
+      email: values.email.trim().toLowerCase()
+    };
+
 
     const toastId = toast({
       title: 'Signing up...',
@@ -50,7 +54,7 @@ const Signup = ({ switchToLoginTab }) => {
     });
 
     try {
-      await signUp(values);
+      await signUp(transformedUserInput);
 
       toast.update(toastId, {
         title: 'Signup Successful',
@@ -77,7 +81,7 @@ const Signup = ({ switchToLoginTab }) => {
       <Formik
         initialValues={INITIAL_STATE}
         onSubmit={submitForm}
-        validationSchema={validationSchema}
+        validationSchema={registerSchema}
       >
         {() => (
           <Form>

@@ -25,7 +25,7 @@ const Login = () => {
   const toast = useToast();
 
   // validatoin for form
-  const validationSchema = Yup.object({
+  const loginSchema = Yup.object({
     email: Yup.string()
       .required('Email is required')
       .email('Invalid email address'),
@@ -34,6 +34,11 @@ const Login = () => {
       .min(3, 'Must be greater than 3 characters')
   });
   const handleLogin = async (values) => {
+
+    const transformedUserInput = {
+      ...values,
+      email: values.email.trim().toLowerCase()
+    };
     const toastId = toast({
       title: 'Logging in..',
       status: 'loading',
@@ -41,7 +46,7 @@ const Login = () => {
       duration: null
     });
     try {
-      await login(values);
+      await login(transformedUserInput);
 
       toast.update(toastId, {
         title: 'Login Successful',
@@ -62,7 +67,7 @@ const Login = () => {
       <Formik
         initialValues={INITIAL_STATE}
         onSubmit={handleLogin}
-        validationSchema={validationSchema}
+        validationSchema={loginSchema}
       >
         {() => (
           <Form>
