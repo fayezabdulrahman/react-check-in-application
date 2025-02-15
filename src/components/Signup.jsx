@@ -20,7 +20,7 @@ const INITIAL_STATE = {
   password: ''
 };
 
-const Signup = ({ switchToLoginTab }) => {
+const Signup = () => {
   const { signUp } = useAuth();
   const [showPass, setShowPass] = useState(false);
   const handleShowPassClick = () => setShowPass(!showPass);
@@ -63,9 +63,6 @@ const Signup = ({ switchToLoginTab }) => {
       });
 
       actions.resetForm(); // resetForm After submit
-      setTimeout(() => {
-        switchToLoginTab();
-      }, 500);
     } catch (error) {
       toast.update(toastId, {
         title: 'Signup Failed',

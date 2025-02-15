@@ -11,18 +11,8 @@ import {
 
 import Login from '../components/Login';
 import Signup from '../components/Signup';
-import { useState } from 'react';
 import backgroundLogo from '../assets/b2b_second.jpg';
 const Registration = () => {
-  const [tabIndex, setTabIndex] = useState(0);
-
-  const handleTabChange = (index) => {
-    setTabIndex(index);
-  };
-
-  const switchToLoginTab = () => {
-    setTabIndex(0);
-  };
 
   return (
     <>
@@ -50,8 +40,6 @@ const Registration = () => {
             <Tabs
               variant="soft-rounded"
               colorScheme="orange"
-              index={tabIndex}
-              onChange={handleTabChange}
             >
               <TabList mb="1rem">
                 <Tab w="50%">Login</Tab>
@@ -62,7 +50,7 @@ const Registration = () => {
                   <Login />
                 </TabPanel>
                 <TabPanel>
-                  <Signup switchToLoginTab={switchToLoginTab} />
+                  <Signup />
                 </TabPanel>
               </TabPanels>
             </Tabs>
