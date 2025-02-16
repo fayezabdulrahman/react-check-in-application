@@ -14,7 +14,7 @@ const CreatedCheckInCard = ({availableCheckIn, publishCheckIn, unPublishCheckIn,
   const {performingAdminAction, setPerformingAdminAction} = useAdmin();
   
   const handleAction = (checkInId, actionType) => {
-    setPerformingAdminAction({actionInProgress: true, actionType: actionType});
+    setPerformingAdminAction({actionInProgress: true, actionType: actionType, checkInId: checkInId});
 
     if (actionType === 'publish') {
       const payload = {
@@ -39,37 +39,31 @@ const CreatedCheckInCard = ({availableCheckIn, publishCheckIn, unPublishCheckIn,
       deleteCheckIn(payload);
     }
   };
+
+  const isCurrentlyPublished = availableCheckIn.published;
+  const isProcessing = performingAdminAction.actionInProgress && performingAdminAction.checkInId === availableCheckIn.checkInId;
+  const isPublishing = isProcessing && performingAdminAction.actionType === 'publish';
+  const isUnpublishing = isProcessing && performingAdminAction.actionType === 'unpublish';
   
   return (
     <Card mt="1rem">
       <CardHeader>Check-in name: {availableCheckIn.checkInId}</CardHeader>
       <CardBody>
         <Text>Created By: {availableCheckIn.createdBy}</Text>
-        <Text>Published: {availableCheckIn.published ? 'Yes' : 'No'} </Text>
+        <Text>Published: {isCurrentlyPublished ? 'Yes' : 'No'} </Text>
         <Text>Questions: {availableCheckIn.questions.length}</Text>
       </CardBody>
       <CardFooter justifyContent="space-between">
         <ButtonGroup>
           <Button
-            isLoading={performingAdminAction.actionInProgress}
-            loadingText="Publishing"
+            isLoading={isPublishing || isUnpublishing}
+            loadingText={isPublishing ? 'Publishing...' : isUnpublishing ? 'Unpublishing...' : ''}
             variant="solid"
             colorScheme="orange"
-            isDisabled={availableCheckIn.published}
-            onClick={() => handleAction(availableCheckIn.checkInId, 'publish')}
+            onClick={() => handleAction(availableCheckIn.checkInId, isCurrentlyPublished ? 'unpublish' : 'publish')}
           >
-            Publish
+            {isCurrentlyPublished ? 'Unpublish' : 'Publish'}
           </Button>
-          {availableCheckIn.published && (
-            <Button
-              variant="solid"
-              colorScheme="orange"
-              onClick={() => handleAction(availableCheckIn.checkInId, 'unpublish')}
-            >
-              Unpublish
-            </Button>
-          )}
-
           <Button
             as={ReactRouterLink}
             to="/admin/editCheckIn"
@@ -81,8 +75,6 @@ const CreatedCheckInCard = ({availableCheckIn, publishCheckIn, unPublishCheckIn,
           </Button>
         </ButtonGroup>
         <Button
-          isLoading={performingAdminAction.actionInProgress}
-          loadingText="Unpublishing..."
           leftIcon={<MdDeleteOutline />}
           onClick={() => handleAction(availableCheckIn.checkInId, 'delete')}
         >

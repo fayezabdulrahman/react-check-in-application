@@ -36,6 +36,7 @@ const AvailableCheckIn = () => {
   const {
     data: allAdminCheckInData,
     isFetching,
+    isLoading,
     error
   } = useQuery({
     queryKey: ['allAdminCheckIn'],
@@ -189,7 +190,7 @@ const AvailableCheckIn = () => {
     }
   }, [setSubmittedCheckIns, allAdminCheckInData]);
 
-  if (isFetching) {
+  if (isLoading) {
     return <Loading />;
   }
   if (error) {

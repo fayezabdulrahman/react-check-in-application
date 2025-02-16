@@ -23,7 +23,8 @@ export const INITIAL_QUESTION_RESPONSE = {
 
 export const INITIAL_PERFORMING_ACTION_STATE = {
     actionInProgress: false,
-    actionType: ''
+    actionType: '',
+    checkInId: ''
 }
 
 export const API_URLS = {
