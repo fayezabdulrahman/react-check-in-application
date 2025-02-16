@@ -1,16 +1,8 @@
-import {
-  Container,
-  Heading,
-  useToast
-} from '@chakra-ui/react';
+import { Container, Heading, useToast } from '@chakra-ui/react';
 import { useAdmin } from '../../context/AdminProvider';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Loading from '../shared/Loading';
-import {
-  useMutation,
-  useQuery,
-  useQueryClient
-} from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   deleteCheckIn,
   fetchAllAdminCheckIn,
@@ -20,6 +12,7 @@ import {
 import CreatedCheckInCard from './CreatedCheckInCard';
 import { INITIAL_PERFORMING_ACTION_STATE } from '../../constants/application';
 import LocalStorageService from '../../util/LocalStorageService';
+import PopUpModal from '../shared/PopUpModal';
 
 const AvailableCheckIn = () => {
   const {
@@ -32,10 +25,15 @@ const AvailableCheckIn = () => {
   const queryCleint = useQueryClient();
 
   const toast = useToast();
+  const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
+  const [deleteCheckInPayload, setDeleteCheckInPayload] = useState(null);
+  const modalConfig = {
+    modalHeader: 'Deleting Checkin',
+    modalBody: 'Deleting this will delete for all users.'
+  };
 
   const {
     data: allAdminCheckInData,
-    isFetching,
     isLoading,
     error
   } = useQuery({
@@ -61,10 +59,7 @@ const AvailableCheckIn = () => {
         // remove old cache for analytics first
         LocalStorageService.removeItem('publishedCheckInAnalytics');
         // set new cache for published check-in
-        LocalStorageService.setItem(
-          'publishedCheckIn',
-          serverPublishedCheckIn
-        );
+        LocalStorageService.setItem('publishedCheckIn', serverPublishedCheckIn);
       }
 
       toast({
@@ -125,14 +120,15 @@ const AvailableCheckIn = () => {
   const { mutate: deleteCheckInMutate } = useMutation({
     mutationFn: deleteCheckIn,
     onMutate: (payload) => {
-      const isPublishedCheckIn = LocalStorageService.getItem('publishedCheckIn');
+      const isPublishedCheckIn =
+        LocalStorageService.getItem('publishedCheckIn');
       if (isPublishedCheckIn) {
         // check if deleted check in is the published one
         const publishedCheckInId = isPublishedCheckIn.publishCheckIn;
         if (payload.checkInToDelete === publishedCheckInId) {
           // we need to remove the local storage and analytical check
           // gets sent as context to onSuccess
-          return {removeLocalStorage: true};
+          return { removeLocalStorage: true };
         }
       }
     },
@@ -177,9 +173,19 @@ const AvailableCheckIn = () => {
     unPublishCheckInMutate(payload);
   };
 
-  const handleDeleteCheckIn = (payload) => {
-    // Call mutate() to trigger API call
-    deleteCheckInMutate(payload);
+  const handleDeleteCheckIn = (payload, modalConfirmationStatus) => {
+    if (!openConfirmationModal) {
+      setDeleteCheckInPayload(payload);
+      console.log('open confirmation modal');
+
+      // open confirmation modal first
+      setOpenConfirmationModal(true);
+    }
+    if (modalConfirmationStatus) {
+      console.log('calling delete api with payload', deleteCheckInPayload);
+      // Call mutate() to trigger API call
+      deleteCheckInMutate(deleteCheckInPayload);
+    }
   };
 
   useEffect(() => {
@@ -210,10 +216,16 @@ const AvailableCheckIn = () => {
           availableCheckIn={available}
           publishCheckIn={(payload) => handlePublishCheckIn(payload)}
           unPublishCheckIn={(payload) => handleUnPublishCheckIn(payload)}
-          deleteCheckIn={(payload) => handleDeleteCheckIn(payload)}
+          deleteCheckIn={(payload) => handleDeleteCheckIn(payload, null)}
           key={index}
         />
       ))}
+      <PopUpModal
+        openModal={openConfirmationModal}
+        modalConfig={modalConfig}
+        onConfirm={(output) => handleDeleteCheckIn(null, output)}
+        onClose={() => setOpenConfirmationModal(false)}
+      />
     </Container>
   );
 };
