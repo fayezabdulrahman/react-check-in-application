@@ -25,7 +25,6 @@ const FormFactory = ({ publishedCheckIn, onSubmit }) => {
   );
 
   const handleSubmit = (values) => {
-    console.log(values);
     // Transform the values into an array format
     const answers = Object.entries(values).map(([question, answer]) => ({
       question,

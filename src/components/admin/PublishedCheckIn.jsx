@@ -68,19 +68,19 @@ const PublishedCheckIn = () => {
 
   return (
     <Container>
-      <Heading color="gray.500" m="1rem 0 1rem 1rem">
-        Your published check-in
+      <Heading>
+        Your Published Check-in
       </Heading>
-      <Card>
+      <Card mt="1rem">
         <CardBody>
           <Heading size="md" mb="1rem">
-            {publishedCheckIn.checkInId}
+            Check-in name: {publishedCheckIn.checkInId}
           </Heading>
           <Stat>
             <StatLabel>Responses</StatLabel>
             <StatNumber>{checkInAnalytics.count}</StatNumber>
             <StatHelpText>
-              As of {new Date().toLocaleString() + ''}
+              As of {new Date().toLocaleString('en-GB')}
             </StatHelpText>
           </Stat>
         </CardBody>
@@ -98,7 +98,7 @@ const PublishedCheckIn = () => {
                 to="/admin/publishedCheckIn"
                 state={{ checkInAnalytics: checkInAnalytics }}
               >
-                View
+                View Results
               </ChakraLink>
               <Button
                 isLoading={isPending}
