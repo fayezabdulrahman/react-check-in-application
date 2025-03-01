@@ -70,6 +70,7 @@ const CreatedCheckInCard = ({availableCheckIn, publishCheckIn, unPublishCheckIn,
             state={{ checkInId: availableCheckIn.checkInId }}
             variant="ghost"
             colorScheme="orange"
+            isDisabled={isCurrentlyPublished}
           >
             Edit
           </Button>
