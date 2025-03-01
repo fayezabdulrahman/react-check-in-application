@@ -122,14 +122,14 @@ const NewQuestion = () => {
                 <Stack direction="row">
                   <Radio value="text">Text</Radio>
                   <Radio value="textarea">Text Area</Radio>
-                  <Radio value="select">Dropdown</Radio>
-                  <Radio value="radio">Radio</Radio>
+                  <Radio value="select">Multi Choice</Radio>
+                  <Radio value="radio">Checkbox</Radio>
                 </Stack>
               </RadioGroup>
             </FormControl>
             {questionType === 'select' ? (
               <FormControl mt="1rem">
-                <FormLabel>Enter the dropdown options</FormLabel>
+                <FormLabel>Enter the multi choice options</FormLabel>
                 <Input
                   type="text"
                   ref={selectOptionsRef}
@@ -148,7 +148,7 @@ const NewQuestion = () => {
             {questionType === 'radio' ? (
               <>
                 <FormControl mt="1rem">
-                  <FormLabel>Enter the radio options</FormLabel>
+                  <FormLabel>Enter the checkbox options</FormLabel>
                   <Input
                     type="text"
                     ref={radioOptionsRef}

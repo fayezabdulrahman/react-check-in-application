@@ -12,6 +12,7 @@ import {
 } from '@chakra-ui/react';
 import EditQuestion from './EditQuestion';
 const QuestionsSummary = ({ checkIn, setCheckIn, isSubmitted }) => {
+  console.log('checkIn questions ', checkIn?.questions);
   return (
     <>
       <Card mt="1rem" overflowY="auto" maxH='500px'>
@@ -29,14 +30,14 @@ const QuestionsSummary = ({ checkIn, setCheckIn, isSubmitted }) => {
                   Question Required: {question.isRequired ? 'Yes' : 'No'}
                 </Text>
 
-                {question.selectOptions?.length > 0 ? 'Select Options' : null}
+                {question.selectOptions?.length > 0 ? 'Multi Choice Options' : null}
                 <UnorderedList>
                   {question.selectOptions?.map((selectOption, index) => (
                     <ListItem key={index}>{selectOption}</ListItem>
                   ))}
                 </UnorderedList>
 
-                {question.radioOptions?.length > 0 ? 'Radio Options' : null}
+                {question.radioOptions?.length > 0 ? 'Checkbox Options' : null}
 
                 <UnorderedList>
                   {question.radioOptions?.map((radioOption, index) => (

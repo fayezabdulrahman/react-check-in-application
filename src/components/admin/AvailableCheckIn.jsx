@@ -29,7 +29,7 @@ const AvailableCheckIn = () => {
   const [deleteCheckInPayload, setDeleteCheckInPayload] = useState(null);
   const modalConfig = {
     modalHeader: 'Deleting Checkin',
-    modalBody: 'Deleting this will delete for all users.'
+    modalBody: 'Deleting this will delete for all admin users.'
   };
 
   const {
@@ -210,7 +210,7 @@ const AvailableCheckIn = () => {
 
   return (
     <Container>
-      <Heading> Your Created Check-ins</Heading>
+      <Heading>Created Check-ins</Heading>
       {submittedCheckIns?.map((available, index) => (
         <CreatedCheckInCard
           availableCheckIn={available}

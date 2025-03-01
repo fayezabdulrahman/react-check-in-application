@@ -51,7 +51,7 @@ const SubmittedCheckIn = () => {
   return (
     <>
       <Container>
-        <Heading pb="8">Your submitted check-ins</Heading>
+        <Heading pb="8">Your submitted Check-ins</Heading>
         <Flex gap="4" direction="column">
           {submittedCheckIns?.map((checkin) => (
             <Card key={checkin?._id}>
@@ -60,7 +60,7 @@ const SubmittedCheckIn = () => {
                   Check-in name: {checkin?.data?.checkInId}
                 </Heading>
                 <Text pt="2" fontSize="sm">
-                  Submitted: {new Date(checkin.createdAt).toLocaleString()}
+                  Submitted: {new Date(checkin.createdAt).toLocaleString('en-GB')}
                 </Text>
               </CardBody>
             </Card>

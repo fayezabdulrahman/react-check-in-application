@@ -35,21 +35,23 @@ const EditQuestion = ({ questionId, checkIn, setCheckIn, isSubmitted }) => {
 
   function handleSelectOptions(event) {
     const input = event.target.value;
-    const separatedValues = input.split(',');
+    const separatedValues = input.trim().split(',');
     setEditQuestion((prevState) => ({
       ...prevState,
       componentType: 'select',
-      selectOptions: separatedValues
+      selectOptions: separatedValues,
+      radioOptions: []
     }));
   }
 
   function handleRadioOptions(event) {
     const input = event.target.value;
-    const separatedValues = input.split(',');
+    const separatedValues = input.trim().split(',');
     setEditQuestion((prevState) => ({
       ...prevState,
       componentType: 'radio',
-      selectOptions: separatedValues
+      radioOptions: separatedValues,
+      selectOptions: []
     }));
   }
 
@@ -108,6 +110,13 @@ const EditQuestion = ({ questionId, checkIn, setCheckIn, isSubmitted }) => {
     onClose();
   }
 
+  function closeModal() {
+    // reset question
+    setEditQuestion(checkIn.questions[questionId]);
+    setQuestionType(editQuestion.componentType);
+    onClose();
+  }
+
   return (
     <>
       <Button
@@ -124,7 +133,7 @@ const EditQuestion = ({ questionId, checkIn, setCheckIn, isSubmitted }) => {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Edit your question</ModalHeader>
-          <ModalCloseButton />
+          <ModalCloseButton onClick={closeModal}/>
 
           <ModalBody>
             <FormControl>
@@ -139,14 +148,14 @@ const EditQuestion = ({ questionId, checkIn, setCheckIn, isSubmitted }) => {
                 <Stack direction="row">
                   <Radio value="text">Text</Radio>
                   <Radio value="textarea">Text Area</Radio>
-                  <Radio value="select">Dropdown</Radio>
-                  <Radio value="radio">Radio</Radio>
+                  <Radio value="select">Multi Choice</Radio>
+                  <Radio value="radio">Checkbox</Radio>
                 </Stack>
               </RadioGroup>
             </FormControl>
             {questionType === 'select' ? (
               <FormControl mt="1rem">
-                <FormLabel>Enter the dropdown options</FormLabel>
+                <FormLabel>Enter the Multi Choice options</FormLabel>
                 <Input type="text" onChange={handleSelectOptions} />
                 <FormHelperText>Separate each option by a comma</FormHelperText>
                 <Select placeholder="Preview your options" mt="1rem">
@@ -161,7 +170,7 @@ const EditQuestion = ({ questionId, checkIn, setCheckIn, isSubmitted }) => {
             {questionType === 'radio' ? (
               <>
                 <FormControl mt="1rem">
-                  <FormLabel>Enter the radio options</FormLabel>
+                  <FormLabel>Enter the Checkbox options</FormLabel>
                   <Input type="text" onChange={handleRadioOptions} />
                   <FormHelperText>
                     Separate each option by a comma
@@ -196,7 +205,7 @@ const EditQuestion = ({ questionId, checkIn, setCheckIn, isSubmitted }) => {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="orange" mr={3} onClick={onClose}>
+            <Button colorScheme="orange" mr={3} onClick={closeModal}>
               Close
             </Button>
             <Button variant="ghost" onClick={handleSaveQuestion}>

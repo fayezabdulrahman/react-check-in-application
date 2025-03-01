@@ -88,7 +88,7 @@ const CreateCheckIn = () => {
     <>
       <Container>
         <Card>
-          <CardHeader color="gray.500">No Published Check-ins</CardHeader>
+          <CardHeader color="gray.500">There is currently no published Check-in</CardHeader>
           <CardBody>
             {checkIn.questions?.length > 0 ? (
               <>
@@ -105,7 +105,7 @@ const CreateCheckIn = () => {
                     onClick={handleCreateCheckIn}
                     rightIcon={<MdPublish />}
                   >
-                    Create Check-in
+                    Create
                   </Button>
                 </CardFooter>
               </>
