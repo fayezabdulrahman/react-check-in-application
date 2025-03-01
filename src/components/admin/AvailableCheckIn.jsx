@@ -43,23 +43,38 @@ const AvailableCheckIn = () => {
 
   const { mutate: publishCheckInMutate } = useMutation({
     mutationFn: publishNewCheckIn,
-    onSuccess: (response) => {
+    onMutate: (payload) => {
+      let contextToReturn = {};
+      const isPublishedCheckIn =
+      LocalStorageService.getItem('publishedCheckIn');
+      if (isPublishedCheckIn) {
+        if (isPublishedCheckIn.checkInId !== payload.checkInToPublish) {
+          contextToReturn['removeLocalStorage'] = true;
+        }
+      }
+      return contextToReturn; // Ensure context is never undefined
+    },
+    onSuccess: (response, payload, context) => {
       const message = response.message;
+      // remove old cache first
+      if (context?.removeLocalStorage) {
+        LocalStorageService.removeItem('publishedCheckInAnalytics');
+        LocalStorageService.removeItem('publishedCheckIn');
+      }
       // if we get a successful response, set cache and update state
       if (response.checkIn) {
         const serverPublishedCheckIn = response.checkIn;
+        console.log('response from from publishing ', serverPublishedCheckIn);
+
         // set new state
         setPublishedCheckIn(serverPublishedCheckIn);
+        // set new cache for published check-in
+        LocalStorageService.setItem('publishedCheckIn', serverPublishedCheckIn);
         // reset performing action
         setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
 
         // invalidate cache and refetch
         queryCleint.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
-
-        // remove old cache for analytics first
-        LocalStorageService.removeItem('publishedCheckInAnalytics');
-        // set new cache for published check-in
-        LocalStorageService.setItem('publishedCheckIn', serverPublishedCheckIn);
       }
 
       toast({

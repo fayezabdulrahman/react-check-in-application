@@ -17,6 +17,7 @@ const AdminProvider = ({ children }) => {
   const [checkIn, setCheckIn] = useState(INTIAL_CHECKIN_STATE);
   const [submittedCheckIns, setSubmittedCheckIns] = useState([]);
   const [publishedCheckIn, setPublishedCheckIn] = useState(INTIAL_CHECKIN_STATE);
+  const [checkInAnalytics, setCheckInAnalytics] = useState({});
   // used to trigger loading state for delete/publish/unpublish actions
   const [performingAdminAction, setPerformingAdminAction] = useState(INITIAL_PERFORMING_ACTION_STATE);
 
@@ -37,7 +38,9 @@ const AdminProvider = ({ children }) => {
     publishedCheckIn,
     setPublishedCheckIn,
     performingAdminAction,
-    setPerformingAdminAction
+    setPerformingAdminAction,
+    checkInAnalytics,
+    setCheckInAnalytics
   };
 
   return (

@@ -30,11 +30,14 @@ const AdminHomepage = () => {
   } = usePublishedCheckInQuery();
 
   useEffect(() => {
+    console.log('inside use effect admin homepage');
     const cachedPublishedCheckIn = LocalStorageService.getItem('publishedCheckIn');
+    console.log('cached published check in admin homepage ', cachedPublishedCheckIn);
     if (cachedPublishedCheckIn) {
       setPublishedCheckIn(cachedPublishedCheckIn);
     } else {
       if (publishedCheckinData?.checkIn) {
+        console.log('use mutation check in data complete admin homepage', publishedCheckinData);
         const publishedCheckInDB = publishedCheckinData.checkIn;
         setPublishedCheckIn(publishedCheckInDB);
         LocalStorageService.setItem(

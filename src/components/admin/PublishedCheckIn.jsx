@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react';
 import { Card, CardBody, CardFooter } from '@chakra-ui/react';
 import { useAdmin } from '../../context/AdminProvider';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import { Link as ChakraLink } from '@chakra-ui/react';
 import Loading from '../shared/Loading';
@@ -20,8 +20,7 @@ import { fetchPublishedCheckInAnalytics } from '../../services/adminService';
 import LocalStorageService from '../../util/LocalStorageService';
 
 const PublishedCheckIn = () => {
-  const { publishedCheckIn } = useAdmin();
-  const [checkInAnalytics, setCheckInAnalytics] = useState({});
+  const { publishedCheckIn, checkInAnalytics, setCheckInAnalytics  } = useAdmin();
   const toast = useToast();
 
   const {
@@ -59,8 +58,7 @@ const PublishedCheckIn = () => {
       // trigger mutate API Call
       fetchCheckInAnalyticMutate(payload);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setCheckInAnalytics, fetchCheckInAnalyticMutate]);
+  }, [setCheckInAnalytics, fetchCheckInAnalyticMutate, publishedCheckIn]);
 
   if (isLoading) {
     return <Loading />;
