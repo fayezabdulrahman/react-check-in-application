@@ -105,6 +105,14 @@ const CheckInForm = () => {
     }
   }, [answeredCheckinData]);
 
+  useEffect(() => {
+    if (questionResponse.submittedBy) {
+      // Call mutate() to trigger API call
+      submitUserCheckinMutate(questionResponse);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [questionResponse]);
+
   if (PublishedCheckinError) {
     toast({
       title: 'An error occured.',
@@ -134,17 +142,14 @@ const CheckInForm = () => {
   }
 
   function submitDetails() {
-    const updatedResponse = {
-      ...questionResponse,
-      checkInId: publishedCheckIn.checkInId,
-      submittedBy: userState.firstName + ' ' + userState.lastName
-    };
-    setQuestionResponse(() => ({
-      updatedResponse
-    }));
-
-    // Call mutate() to trigger API call
-    submitUserCheckinMutate(updatedResponse);
+    setQuestionResponse((prevState) => {
+      const updatedResponse = {
+        ...prevState,
+        checkInId: publishedCheckIn.checkInId,
+        submittedBy: userState.firstName + ' ' + userState.lastName
+      };
+      return updatedResponse;
+    });
   }
 
   console.log('published check in state', publishedCheckIn);
