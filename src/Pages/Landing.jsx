@@ -39,7 +39,6 @@ const Landing = () => {
           <Box p={4} borderRadius="lg" borderWidth="2px" w="100%">
             <Tabs
               variant="soft-rounded"
-              colorScheme="orange"
             >
               <TabList mb="1rem">
                 <Tab w="50%">Login</Tab>

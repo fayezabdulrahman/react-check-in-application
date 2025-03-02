@@ -97,7 +97,6 @@ const NewQuestion = () => {
     <>
       <Button
         leftIcon={<IoMdAdd />}
-        colorScheme="orange"
         variant="solid"
         size="sm"
         mt="1rem"
@@ -179,10 +178,10 @@ const NewQuestion = () => {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="orange" mr={3} onClick={onClose}>
+            <Button variant="ghost" mr={3} onClick={onClose}>
               Close
             </Button>
-            <Button variant="ghost" onClick={handleSaveQuestion}>
+            <Button variant="solid" onClick={handleSaveQuestion}>
               Save
             </Button>
           </ModalFooter>

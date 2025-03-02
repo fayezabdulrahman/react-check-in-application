@@ -32,6 +32,9 @@ const EditQuestion = ({ questionId, checkIn, setCheckIn, isSubmitted }) => {
   const toast = useToast();
 
   const isError = editQuestion.label === '';
+  console.log('edit questino state ', editQuestion);
+  console.log('edit questino type state ', questionType);
+
 
   function handleSelectOptions(event) {
     const input = event.target.value;
@@ -121,7 +124,7 @@ const EditQuestion = ({ questionId, checkIn, setCheckIn, isSubmitted }) => {
     <>
       <Button
         leftIcon={<CiEdit />}
-        variant="solid"
+        variant="outline"
         size="sm"
         ml={3}
         mt={1}
@@ -205,10 +208,10 @@ const EditQuestion = ({ questionId, checkIn, setCheckIn, isSubmitted }) => {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="orange" mr={3} onClick={closeModal}>
+            <Button variant='ghost' mr={3} onClick={closeModal}>
               Close
             </Button>
-            <Button variant="ghost" onClick={handleSaveQuestion}>
+            <Button onClick={handleSaveQuestion}>
               Save
             </Button>
           </ModalFooter>

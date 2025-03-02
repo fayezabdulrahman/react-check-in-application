@@ -101,7 +101,6 @@ const PublishedCheckIn = () => {
               <Button
                 isLoading={isPending}
                 loadingText="Refreshing"
-                colorScheme="orange"
                 variant="outline"
                 onClick={() =>
                   fetchCheckInAnalyticMutate({

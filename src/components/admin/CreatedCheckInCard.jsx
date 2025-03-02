@@ -59,7 +59,6 @@ const CreatedCheckInCard = ({availableCheckIn, publishCheckIn, unPublishCheckIn,
             isLoading={isPublishing || isUnpublishing}
             loadingText={isPublishing ? 'Publishing...' : isUnpublishing ? 'Unpublishing...' : ''}
             variant="solid"
-            colorScheme="orange"
             onClick={() => handleAction(availableCheckIn.checkInId, isCurrentlyPublished ? 'unpublish' : 'publish')}
           >
             {isCurrentlyPublished ? 'Unpublish' : 'Publish'}
@@ -69,7 +68,6 @@ const CreatedCheckInCard = ({availableCheckIn, publishCheckIn, unPublishCheckIn,
             to="/admin/editCheckIn"
             state={{ checkInId: availableCheckIn.checkInId }}
             variant="ghost"
-            colorScheme="orange"
             isDisabled={isCurrentlyPublished}
           >
             Edit
@@ -77,6 +75,7 @@ const CreatedCheckInCard = ({availableCheckIn, publishCheckIn, unPublishCheckIn,
         </ButtonGroup>
         <Button
           leftIcon={<MdDeleteOutline />}
+          variant='outline'
           onClick={() => handleAction(availableCheckIn.checkInId, 'delete')}
         >
           Delete

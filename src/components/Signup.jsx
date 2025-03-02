@@ -140,7 +140,7 @@ const Signup = () => {
               )}
             </Field>
             <Box display="flex" justifyContent="center" width="100%">
-              <Button mt={4} colorScheme="orange" type="submit" width="50%">
+              <Button mt={4} type="submit" width="50%">
                 Submit
               </Button>
             </Box>

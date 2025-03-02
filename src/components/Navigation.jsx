@@ -45,7 +45,6 @@ const Navigation = () => {
       <Flex gap="8" alignItems="center" justifyContent="space-between" p={4}>
         <IconButton
           variant="outline"
-          colorScheme="teal"
           aria-label="Call Sage"
           fontSize="20px"
           ref={btnRef}

@@ -35,7 +35,7 @@ const PopUpModal = ({ openModal, modalConfig, onConfirm, onClose }) => {
           <ModalBody>{modalConfig?.modalBody}</ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="orange" mr={3} onClick={handleConfirm}>
+            <Button mr={3} onClick={handleConfirm}>
               Confirm
             </Button>
             <Button variant="ghost" onClick={onClose}>
