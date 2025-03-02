@@ -62,9 +62,10 @@ const FormFactory = ({ publishedCheckIn, onSubmit }) => {
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
+        validateOnMount={true}
         onSubmit={handleSubmit}
       >
-        {({ values, setFieldValue }) => (
+        {({ values, setFieldValue, isValid }) => (
           <Form>
             {publishedCheckIn.questions?.map((question, index) => (
               <Field key={index} name={question.label}>
@@ -117,7 +118,7 @@ const FormFactory = ({ publishedCheckIn, onSubmit }) => {
               </Field>
             ))}
             <Box display="flex" justifyContent="center" width="100%">
-              <Button mt={4} colorScheme="orange" type="submit" width="50%">
+              <Button mt={4} type="submit" width="50%" isDisabled={!isValid}>
                 Submit
               </Button>
             </Box>
