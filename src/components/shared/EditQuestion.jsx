@@ -7,7 +7,6 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  useDisclosure,
   FormControl,
   FormLabel,
   Input,
@@ -19,43 +18,40 @@ import {
   FormHelperText,
   useToast
 } from '@chakra-ui/react';
-import { useState } from 'react';
-import { CiEdit } from 'react-icons/ci';
+import { useState, useRef } from 'react';
 
-const EditQuestion = ({ questionId, checkIn, setCheckIn, isSubmitted }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+const EditQuestion = ({checkIn, setCheckIn, questionIndex, isSubmitted, isOpen, onClose }) => {
   const [editQuestion, setEditQuestion] = useState(
-    checkIn.questions[questionId]
+    checkIn.questions[questionIndex]
   );
+  const [previewOptions, setPreviewOptions] = useState({
+    selectOptions: editQuestion.selectOptions,
+    radioOptions: editQuestion.radioOptions
+  });
   const [questionType, setQuestionType] = useState(editQuestion.componentType);
+  const selectOptionsRef = useRef(editQuestion.selectOptions);
+  const radioOptionsRef = useRef(editQuestion.radioOptions);
 
   const toast = useToast();
 
   const isError = editQuestion.label === '';
-  console.log('edit questino state ', editQuestion);
-  console.log('edit questino type state ', questionType);
 
 
-  function handleSelectOptions(event) {
-    const input = event.target.value;
-    const separatedValues = input.trim().split(',');
-    setEditQuestion((prevState) => ({
-      ...prevState,
-      componentType: 'select',
-      selectOptions: separatedValues,
-      radioOptions: []
-    }));
-  }
-
-  function handleRadioOptions(event) {
-    const input = event.target.value;
-    const separatedValues = input.trim().split(',');
-    setEditQuestion((prevState) => ({
-      ...prevState,
-      componentType: 'radio',
-      radioOptions: separatedValues,
-      selectOptions: []
-    }));
+  function handlePreview() {
+    if (selectOptionsRef.current?.value) {
+      console.log('select options ref in handle preview ', selectOptionsRef.current.value);
+      setPreviewOptions((prevState) => ({
+        ...prevState,
+        selectOptions: selectOptionsRef.current.value.trim().split(',')
+      }));
+    }
+    if (radioOptionsRef.current?.value) {
+      console.log('radio options ref in handle preview ', radioOptionsRef.current);
+      setPreviewOptions((prevState) => ({
+        ...prevState,
+        radioOptions: radioOptionsRef.current.value.trim().split(',')
+      }));
+    }
   }
 
   function handleQuestionName(event) {
@@ -76,6 +72,21 @@ const EditQuestion = ({ questionId, checkIn, setCheckIn, isSubmitted }) => {
       });
     }
 
+    console.log('preview options ',previewOptions);
+  
+    // Create the updated question object
+    const updatedQuestion = {
+      ...editQuestion,
+      componentType: questionType,
+      selectOptions: questionType === 'select' ? previewOptions.selectOptions: [],
+      radioOptions: questionType === 'radio' ? previewOptions.radioOptions : []
+      // isRequired: checkBoxRef.current.checked
+    };
+    console.log('updated question ', updatedQuestion);
+
+    // Update state using the new object
+    setEditQuestion(updatedQuestion);
+
     if (isSubmitted) {
       setCheckIn((prevState) => {
         const updatedCheckIns = prevState.map((updatedCheckIn) => {
@@ -83,7 +94,7 @@ const EditQuestion = ({ questionId, checkIn, setCheckIn, isSubmitted }) => {
             return {
               ...updatedCheckIn,
               questions: updatedCheckIn.questions.map((q) =>
-                q.id === editQuestion.id ? editQuestion : q
+                q.id === editQuestion.id ? updatedQuestion : q
               )
             };
           }
@@ -96,7 +107,7 @@ const EditQuestion = ({ questionId, checkIn, setCheckIn, isSubmitted }) => {
         ...prevState,
         questions: [
           ...prevState.questions.map((q) =>
-            q.id === editQuestion.id ? editQuestion : q
+            q.id === editQuestion.id ? updatedQuestion : q
           )
         ]
       }));
@@ -108,35 +119,18 @@ const EditQuestion = ({ questionId, checkIn, setCheckIn, isSubmitted }) => {
       duration: 2000,
       isClosable: true
     });
-    // reset questionType
-    setQuestionType('text');
-    onClose();
-  }
-
-  function closeModal() {
-    // reset question
-    setEditQuestion(checkIn.questions[questionId]);
-    setQuestionType(editQuestion.componentType);
+    // reset preview options
+    setPreviewOptions({selectOptions: [], radioOptions: []});
     onClose();
   }
 
   return (
     <>
-      <Button
-        leftIcon={<CiEdit />}
-        variant="outline"
-        size="sm"
-        ml={3}
-        mt={1}
-        onClick={onOpen}
-      >
-        Edit Question
-      </Button>
       <Modal isOpen={isOpen} onClose={onClose} size="xl">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Edit your question</ModalHeader>
-          <ModalCloseButton onClick={closeModal}/>
+          <ModalCloseButton onClick={onClose}/>
 
           <ModalBody>
             <FormControl>
@@ -159,10 +153,10 @@ const EditQuestion = ({ questionId, checkIn, setCheckIn, isSubmitted }) => {
             {questionType === 'select' ? (
               <FormControl mt="1rem">
                 <FormLabel>Enter the Multi Choice options</FormLabel>
-                <Input type="text" onChange={handleSelectOptions} />
+                <Input type="text" ref={selectOptionsRef} onChange={handlePreview} />
                 <FormHelperText>Separate each option by a comma</FormHelperText>
                 <Select placeholder="Preview your options" mt="1rem">
-                  {editQuestion.selectOptions.map((selectOption, index) => (
+                  {previewOptions.selectOptions?.map((selectOption, index) => (
                     <option key={index} value={selectOption}>
                       {selectOption}
                     </option>
@@ -174,14 +168,14 @@ const EditQuestion = ({ questionId, checkIn, setCheckIn, isSubmitted }) => {
               <>
                 <FormControl mt="1rem">
                   <FormLabel>Enter the Checkbox options</FormLabel>
-                  <Input type="text" onChange={handleRadioOptions} />
+                  <Input type="text" ref={radioOptionsRef} onChange={handlePreview} />
                   <FormHelperText>
                     Separate each option by a comma
                   </FormHelperText>
 
                   <RadioGroup mt="1rem">
                     <Stack direction="row">
-                      {editQuestion.radioOptions.map((radioOption, index) => (
+                      {previewOptions.radioOptions?.map((radioOption, index) => (
                         <Radio key={index} value={radioOption}>
                           {radioOption}
                         </Radio>
@@ -208,7 +202,7 @@ const EditQuestion = ({ questionId, checkIn, setCheckIn, isSubmitted }) => {
           </ModalBody>
 
           <ModalFooter>
-            <Button variant='ghost' mr={3} onClick={closeModal}>
+            <Button variant='ghost' mr={3} onClick={onClose}>
               Close
             </Button>
             <Button onClick={handleSaveQuestion}>
