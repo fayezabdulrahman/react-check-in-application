@@ -13,6 +13,7 @@ import CreatedCheckInCard from './CreatedCheckInCard';
 import { INITIAL_PERFORMING_ACTION_STATE } from '../../constants/application';
 import LocalStorageService from '../../util/LocalStorageService';
 import PopUpModal from '../shared/PopUpModal';
+import { INTIAL_CHECKIN_STATE } from '../../constants/application';
 
 const AvailableCheckIn = () => {
   const {
@@ -135,26 +136,29 @@ const AvailableCheckIn = () => {
   const { mutate: deleteCheckInMutate } = useMutation({
     mutationFn: deleteCheckIn,
     onMutate: (payload) => {
+      let contextToReturn = {};
       const isPublishedCheckIn =
         LocalStorageService.getItem('publishedCheckIn');
       if (isPublishedCheckIn) {
         // check if deleted check in is the published one
-        const publishedCheckInId = isPublishedCheckIn.publishCheckIn;
+        const publishedCheckInId = isPublishedCheckIn.checkInId;
         if (payload.checkInToDelete === publishedCheckInId) {
           // we need to remove the local storage and analytical check
           // gets sent as context to onSuccess
-          return { removeLocalStorage: true };
+          contextToReturn['removeLocalStorage'] = true;
         }
       }
+      return contextToReturn;
     },
-    onSuccess: (response, context) => {
+    onSuccess: (response, payload, context) => {
       const message = response.message;
-      // reset performing action
-      setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
 
-      if (context?.removeLocalStorage) {
+      if (context.removeLocalStorage) {
         LocalStorageService.removeItem('publishedCheckInAnalytics');
         LocalStorageService.removeItem('publishedCheckIn');
+
+        // reset published check in state
+        setPublishedCheckIn(INTIAL_CHECKIN_STATE);
       }
 
       // invalidate cache and refetch
@@ -165,6 +169,8 @@ const AvailableCheckIn = () => {
         duration: 3000,
         isClosable: true
       });
+      // reset performing action
+      setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
     },
     onError: (error) => {
       // reset performing action
