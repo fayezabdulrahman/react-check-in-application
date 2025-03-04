@@ -119,8 +119,8 @@ const NewQuestion = () => {
               <FormLabel>Type of Answer</FormLabel>
               <RadioGroup value={questionType} onChange={setQuestionType}>
                 <Stack direction="row">
-                  <Radio value="text">Text</Radio>
-                  <Radio value="textarea">Text Area</Radio>
+                  <Radio value="text">Short Text</Radio>
+                  <Radio value="textarea">Long Text</Radio>
                   <Radio value="select">Multi Choice</Radio>
                   <Radio value="radio">Checkbox</Radio>
                 </Stack>

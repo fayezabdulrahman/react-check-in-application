@@ -82,7 +82,7 @@ const QuestionsSummary = ({ checkIn, setCheckIn, isSubmitted }) => {
                     mt={1}
                     onClick={() => handleEditQuestion(question, index)}
                   >
-                    Edit Question
+                    Edit
                   </Button>
                   <Button
                     leftIcon={<MdDeleteOutline />}

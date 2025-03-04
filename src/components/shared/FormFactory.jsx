@@ -8,6 +8,7 @@ import {
   Stack,
   Box,
   Button,
+  Textarea,
   FormErrorMessage
 } from '@chakra-ui/react';
 import { useUser } from '../../context/UserProvider';
@@ -81,6 +82,9 @@ const FormFactory = ({ publishedCheckIn, onSubmit }) => {
                     <FormLabel>{question.label}</FormLabel>
                     {question.componentType === 'text' && (
                       <Input type="text" {...field} />
+                    )}
+                    {question.componentType === 'textarea' && (
+                      <Textarea {...field} />
                     )}
                     {question.componentType === 'select' && (
                       <Select placeholder="Select Option" {...field}>
