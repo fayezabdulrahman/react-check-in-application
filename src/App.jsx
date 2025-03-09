@@ -8,7 +8,6 @@ import AdminProvider from './context/AdminProvider';
 import UserProvider from './context/UserProvider';
 import DetailedPublishedCheckIn from './components/admin/DetailedPublishedCheckIn';
 import EditCheckIn from './components/admin/EditCheckIn';
-import ChatPage from './Pages/ChatPage';
 import { Auth0Provider } from '@auth0/auth0-react';
 
 function App() {
@@ -34,7 +33,6 @@ function App() {
                 <Route path="/" element={<Landing />} />
                 <Route element={<ProtectedRoute allowedRoles={['user']} />}>
                   <Route path="/home" index element={<Homepage />} />
-                  <Route path="/chat" element={<ChatPage />} />
                 </Route>
                 <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
                   <Route path="/admin" element={<AdminHomepage />} />
