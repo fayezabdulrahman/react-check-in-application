@@ -57,7 +57,8 @@ const CheckInForm = () => {
       });
 
       setAnsweredCheckIn(true);
-      queryClient.invalidateQueries({ queryKey: ['answeredCheckin'] });
+      // TODO Figure out why allUserSubmittedCheckin is not invalidating!!!!
+      queryClient.invalidateQueries({ queryKey: ['answeredCheckin', 'allUserSubmittedCheckin'] });
     },
     onError: (error) => {
       console.error('Error submitting check-in:', error);
