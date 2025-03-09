@@ -1,6 +1,7 @@
 // import { client } from '../util/axios-util';
-import { API_AUTH_URLS } from '../constants/application';
-import useAxiosClient from '../util/axios-util';
+import { API_AUTH_URLS } from '../../constants/application';
+import useAxiosClient from '../../hooks/useAxiosClient';
+
 
 // export const registerUser = async (payload) => {
 //   try {

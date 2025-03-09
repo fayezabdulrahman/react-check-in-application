@@ -17,7 +17,7 @@ import QuestionsSummary from '../shared/QuestionsSummary';
 import { useRef } from 'react';
 import { INTIAL_CHECKIN_STATE } from '../../constants/application';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import useAdminService from '../../services/adminService';
+import useAdminService from '../../hooks/services/useAdminService';
 import Loading from '../shared/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 

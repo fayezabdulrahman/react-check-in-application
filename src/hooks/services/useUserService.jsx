@@ -38,8 +38,8 @@
 //   return response.data;
 // };
 
-import { API_URLS } from '../constants/application';
-import useAxiosClient from '../util/axios-util';
+import { API_URLS } from '../../constants/application';
+import useAxiosClient from '../../hooks/useAxiosClient';
 
 const useUserService = () => {
   const client = useAxiosClient(); // Get the Axios client with interceptors

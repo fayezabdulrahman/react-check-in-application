@@ -5,7 +5,7 @@ import { useUser } from '../../context/UserProvider';
 import Loading from '../shared/Loading';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { INTIAL_CHECKIN_STATE } from '../../constants/application';
-import useUserService from '../../services/userService';
+import useUserService from '../../hooks/services/useUserService';
 import LocalStorageService from '../../util/LocalStorageService';
 import usePublishedCheckInQuery from '../../hooks/usePublishedCheckInQuery';
 import { useAuth0 } from '@auth0/auth0-react';

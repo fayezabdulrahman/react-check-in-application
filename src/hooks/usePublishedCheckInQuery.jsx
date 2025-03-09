@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import useUserService from '../services/userService';
+import useUserService from '../hooks/services/useUserService';
 const usePublishedCheckInQuery = () => {
   const { fetchPublishedCheckin } = useUserService();
   return useQuery({

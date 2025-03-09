@@ -7,7 +7,7 @@ import {
 } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useMutation } from '@tanstack/react-query';
-import useAuthService from '../services/authService.jsx';
+import useAuthService from '../hooks/services/useAuthService';
 
 import Loading from '../components/shared/Loading.jsx';
 

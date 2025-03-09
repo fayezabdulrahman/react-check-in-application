@@ -1,6 +1,7 @@
 // import { client } from '../util/axios-util';
-import { API_URLS } from '../constants/application';
-import useAxiosClient from '../util/axios-util';
+import { API_URLS } from '../../constants/application';
+import useAxiosClient from '../../hooks/useAxiosClient';
+
 
 const useAdminService = () => {
   const client = useAxiosClient(); // Get the Axios client with interceptors
@@ -27,10 +28,13 @@ const useAdminService = () => {
 
   const fetchPublishedCheckInAnalytics = async (payload) => {
     try {
-      const response = await client.post(API_URLS.publishedCheckInAnalytic, payload);
+      const response = await client.post(
+        API_URLS.publishedCheckInAnalytic,
+        payload
+      );
       return response.data;
     } catch (error) {
-      console.error('Error fetching published check-in analytics', error) ;
+      console.error('Error fetching published check-in analytics', error);
       throw error;
     }
   };
@@ -44,7 +48,7 @@ const useAdminService = () => {
       throw error;
     }
   };
-  
+
   const unPublishCheckIn = async (payload) => {
     try {
       const response = await client.post(API_URLS.unPublishCheckIn, payload);
@@ -54,7 +58,7 @@ const useAdminService = () => {
       throw error;
     }
   };
-  
+
   const deleteCheckIn = async (payload) => {
     try {
       const response = await client.post(API_URLS.deleteCheckIn, payload);
@@ -64,11 +68,11 @@ const useAdminService = () => {
       throw error;
     }
   };
-  
+
   const updateCheckIn = async (payload) => {
     try {
-       const response = await client.post(API_URLS.updateCheckIn, payload);
-       return response.data;
+      const response = await client.post(API_URLS.updateCheckIn, payload);
+      return response.data;
     } catch (error) {
       console.error('Error updating check in ', error);
       throw error;
@@ -84,7 +88,6 @@ const useAdminService = () => {
     deleteCheckIn,
     updateCheckIn
   };
-  
 };
 export default useAdminService;
 // export const createAdminCheckIn = async (payload) => {

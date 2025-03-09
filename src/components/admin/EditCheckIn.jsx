@@ -15,7 +15,7 @@ import QuestionsSummary from '../shared/QuestionsSummary';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useRef } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import useAdminService from '../../services/adminService';
+import useAdminService from '../../hooks/services/useAdminService';
 
 const EditCheckIn = () => {
   const location = useLocation();

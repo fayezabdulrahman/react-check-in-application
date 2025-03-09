@@ -11,7 +11,7 @@ import { useEffect } from 'react';
 import { useUser } from '../../context/UserProvider';
 import Loading from '../shared/Loading';
 import { useQuery } from '@tanstack/react-query';
-import useUserService from '../../services/userService';
+import useUserService from '../../hooks/services/useUserService';
 import LocalStorageService from '../../util/LocalStorageService';
 const SubmittedCheckIn = () => {
   const { submittedCheckIns, setSubmittedCheckIns } = useUser();

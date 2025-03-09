@@ -14,7 +14,7 @@ import { INITIAL_PERFORMING_ACTION_STATE } from '../../constants/application';
 import LocalStorageService from '../../util/LocalStorageService';
 import PopUpModal from '../shared/PopUpModal';
 import { INTIAL_CHECKIN_STATE } from '../../constants/application';
-import useAdminService from '../../services/adminService';
+import useAdminService from '../../hooks/services/useAdminService';
 
 const AvailableCheckIn = () => {
   const {
