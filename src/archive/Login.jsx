@@ -14,7 +14,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import * as Yup from 'yup';
 import { Formik, Form, Field } from 'formik';
 import { useState } from 'react';
-import { useAuth } from '../context/AuthProvider';
+// import { useAuth } from '../context/AuthProvider';
 const Login = () => {
   const INITIAL_STATE = {
     email: '',
@@ -22,7 +22,7 @@ const Login = () => {
   };
   const [showPass, setShowPass] = useState(false);
   const handleShowPassClick = () => setShowPass(!showPass);
-  const { login } = useAuth();
+  // const { login } = useAuth();
 
   const toast = useToast();
 
@@ -48,7 +48,7 @@ const Login = () => {
       duration: null
     });
     try {
-      await login(transformedUserInput);
+      // await login(transformedUserInput);
 
       toast.update(toastId, {
         title: 'Login Successful',

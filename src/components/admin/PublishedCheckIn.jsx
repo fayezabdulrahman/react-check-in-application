@@ -16,11 +16,12 @@ import { Link as ReactRouterLink } from 'react-router-dom';
 import { Link as ChakraLink } from '@chakra-ui/react';
 import Loading from '../shared/Loading';
 import { useMutation } from '@tanstack/react-query';
-import { fetchPublishedCheckInAnalytics } from '../../services/adminService';
+import useAdminService from '../../services/adminService';
 import LocalStorageService from '../../util/LocalStorageService';
 
 const PublishedCheckIn = () => {
   const { publishedCheckIn, checkInAnalytics, setCheckInAnalytics  } = useAdmin();
+  const {fetchPublishedCheckInAnalytics} = useAdminService();
   const toast = useToast();
 
   const {

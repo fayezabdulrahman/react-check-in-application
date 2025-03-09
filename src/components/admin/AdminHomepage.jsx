@@ -26,31 +26,29 @@ const AdminHomepage = () => {
   const {
     data: publishedCheckinData,
     isPending: publishedCheckinIsPending,
+    isLoading,
     error: PublishedCheckinError
   } = usePublishedCheckInQuery();
 
   useEffect(() => {
-    console.log('inside use effect admin homepage');
     const cachedPublishedCheckIn = LocalStorageService.getItem('publishedCheckIn');
-    console.log('cached published check in admin homepage ', cachedPublishedCheckIn);
     if (cachedPublishedCheckIn) {
+      console.log('cached published check-in ', cachedPublishedCheckIn);
       setPublishedCheckIn(cachedPublishedCheckIn);
+    } else if (publishedCheckinData?.checkIn) {
+      console.log('use mutation check in data complete admin homepage', publishedCheckinData);
+      const publishedCheckInDB = publishedCheckinData.checkIn;
+      setPublishedCheckIn(publishedCheckInDB);
+      LocalStorageService.setItem(
+        'publishedCheckIn',
+        publishedCheckInDB
+      );
     } else {
-      if (publishedCheckinData?.checkIn) {
-        console.log('use mutation check in data complete admin homepage', publishedCheckinData);
-        const publishedCheckInDB = publishedCheckinData.checkIn;
-        setPublishedCheckIn(publishedCheckInDB);
-        LocalStorageService.setItem(
-          'publishedCheckIn',
-          publishedCheckInDB
-        );
-      } else {
-        setPublishedCheckIn(INTIAL_CHECKIN_STATE);
-      }
+      setPublishedCheckIn(INTIAL_CHECKIN_STATE);
     }
   }, [publishedCheckinData, setPublishedCheckIn]);
 
-  if (publishedCheckinIsPending) {
+  if (isLoading) {
     return <Loading />;
   }
   if (PublishedCheckinError) {
@@ -63,7 +61,7 @@ const AdminHomepage = () => {
     return <p>Failed to fetch published check in. Please try again later...</p>;
   }
 
-  const isPublishCheckIn = publishedCheckIn && publishedCheckIn.published;
+  const isPublishCheckIn = publishedCheckIn.checkInId && publishedCheckIn.published;
   let content = (
     <>{!isPublishCheckIn ? <CreateCheckIn /> : <PublishedCheckIn />}</>
   );

@@ -11,10 +11,11 @@ import { useEffect } from 'react';
 import { useUser } from '../../context/UserProvider';
 import Loading from '../shared/Loading';
 import { useQuery } from '@tanstack/react-query';
-import { fetchAllUserSubmittedCheckIns } from '../../services/userService';
+import useUserService from '../../services/userService';
 import LocalStorageService from '../../util/LocalStorageService';
 const SubmittedCheckIn = () => {
   const { submittedCheckIns, setSubmittedCheckIns } = useUser();
+  const {fetchAllUserSubmittedCheckIns} = useUserService();
   const toast = useToast();
 
   const { data, isPending, error } = useQuery({

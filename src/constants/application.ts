@@ -34,8 +34,15 @@ export const API_URLS = {
     publishedCheckInAnalytic: '/admin/checkInAnayltics',
     deleteCheckIn: '/admin/deleteCheckIn',
     createCheckIn: '/admin/createCheckin',
+    updateCheckIn: '/admin/updateCheckIn',
     allAdminCheckIn: '/admin/allCheckins',
     answeredCheckIn: '/user/answeredCheckIn',
     submtitCheckIn: '/user/submitCheckIn',
     allUserSubmittedCheckIn: '/user/getAllSubmittedCheckIn'
+}
+
+export const API_AUTH_URLS = {
+    register: '/auth/register',
+    login: '/auth/login',
+    findUser: '/auth/users'
 }

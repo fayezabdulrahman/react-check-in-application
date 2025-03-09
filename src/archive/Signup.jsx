@@ -11,7 +11,7 @@ import {
   IconButton
 } from '@chakra-ui/react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { useAuth } from '../context/AuthProvider';
+// import { useAuth } from '../context/AuthProvider';
 import { Formik, Form, Field } from 'formik';
 import { useState } from 'react';
 import * as Yup from 'yup';
@@ -23,7 +23,7 @@ const INITIAL_STATE = {
 };
 
 const Signup = () => {
-  const { signUp } = useAuth();
+  // const { signUp } = useAuth();
   const [showPass, setShowPass] = useState(false);
   const handleShowPassClick = () => setShowPass(!showPass);
 
@@ -55,7 +55,7 @@ const Signup = () => {
     });
 
     try {
-      await signUp(transformedUserInput);
+      // await signUp(transformedUserInput);
 
       toast.update(toastId, {
         title: 'Signup Successful',

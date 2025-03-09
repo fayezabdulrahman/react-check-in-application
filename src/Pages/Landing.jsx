@@ -2,61 +2,68 @@ import {
   Box,
   Container,
   Text,
-  Tabs,
-  TabList,
-  Tab,
-  TabPanels,
-  TabPanel
+  Button,
+  VStack,
+  useColorModeValue
 } from '@chakra-ui/react';
 
-import Login from '../components/Login';
-import Signup from '../components/Signup';
+import { useAuth0 } from '@auth0/auth0-react';
+import { FaLock } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import backgroundLogo from '../assets/b2b_second.jpg';
 const Landing = () => {
+  const { loginWithRedirect, isAuthenticated, user, isLoading } = useAuth0();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated && !isLoading) {
+      const userRoles = user?.['https://ez-check-in/roles'];
+
+      console.log('user roles in landing ', userRoles);
+      console.log('user in landing ', user);
+
+      if (userRoles.includes('admin')) {
+        navigate('/admin', { replace: true });
+      } else {
+        navigate('/home', { replace: true });
+      }
+    }
+  }, [isAuthenticated, isLoading, user, navigate]);
 
   return (
-    <>
-      <Box
-        bgImage={`url(${backgroundLogo})`}
-        bgSize="cover"
-        bgPosition="center"
-        height="100vh"
-        padding={'5rem'}
+    <Box
+      bgImage={`url(${backgroundLogo})`}
+      bgSize="cover"
+      bgPosition="center"
+      height="100vh"
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      p={6}
+    >
+      <Container
+        maxW="md"
+        centerContent
+        p={8}
+        bg={useColorModeValue('white', 'gray.800')}
+        rounded="lg"
+        shadow="lg"
       >
-        <Container maxW="2xl" centerContent p={6} bg={'white'} >
-          <Box
-            display="flex"
-            justifyContent="center"
-            p={3}
-            w="100%"
-            m="40px 0 15px 0"
-            borderRadius="lg"
-            borderWidth="2px"
-          >
-            <Text fontSize="2xl">Ez Check-ins</Text>
-          </Box>
-
-          <Box p={4} borderRadius="lg" borderWidth="2px" w="100%">
-            <Tabs
-              variant="soft-rounded"
-            >
-              <TabList mb="1rem">
-                <Tab w="50%">Login</Tab>
-                <Tab w="50%">Sign Up</Tab>
-              </TabList>
-              <TabPanels>
-                <TabPanel>
-                  <Login />
-                </TabPanel>
-                <TabPanel>
-                  <Signup />
-                </TabPanel>
-              </TabPanels>
-            </Tabs>
-          </Box>
-        </Container>
-      </Box>
-    </>
+        <VStack spacing={4} textAlign="center">
+          <FaLock size={50} color={useColorModeValue('#2D3748', '#CBD5E0')} />
+          <Text fontSize="2xl" fontWeight="bold">
+            Welcome to Ez Check-ins
+          </Text>
+          <Text fontSize="md" color={useColorModeValue('gray.600', 'gray.400')}>
+            Log in to access your dashboard
+          </Text>
+          <Button size="lg" onClick={() => loginWithRedirect()}>
+            Log In
+          </Button>
+        </VStack>
+      </Container>
+    </Box>
   );
 };
 

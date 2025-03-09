@@ -3,15 +3,12 @@ import FormFactory from '../shared/FormFactory';
 import { useEffect, useState, useRef } from 'react';
 import { useUser } from '../../context/UserProvider';
 import Loading from '../shared/Loading';
-import { useAuth } from '../../context/AuthProvider';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { INTIAL_CHECKIN_STATE } from '../../constants/application';
-import {
-  fetchAnsweredCheckin,
-  submitCheckIn
-} from '../../services/userService';
+import useUserService from '../../services/userService';
 import LocalStorageService from '../../util/LocalStorageService';
 import usePublishedCheckInQuery from '../../hooks/usePublishedCheckInQuery';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const CheckInForm = () => {
   const {
@@ -21,7 +18,8 @@ const CheckInForm = () => {
     setQuestionResponse
   } = useUser();
 
-  const { userState } = useAuth();
+  const { fetchAnsweredCheckin, submitCheckIn } = useUserService();
+  const { user } = useAuth0();
   const [answeredCheckIn, setAnsweredCheckIn] = useState(false);
   const toast = useToast();
   const hasFetchedPublishedCheckin = useRef(false); // Prevent duplicate calls
@@ -59,7 +57,7 @@ const CheckInForm = () => {
       });
 
       setAnsweredCheckIn(true);
-      queryClient.invalidateQueries({queryKey: ['answeredCheckin']});
+      queryClient.invalidateQueries({ queryKey: ['answeredCheckin'] });
     },
     onError: (error) => {
       console.error('Error submitting check-in:', error);
@@ -110,7 +108,7 @@ const CheckInForm = () => {
       // Call mutate() to trigger API call
       submitUserCheckinMutate(questionResponse);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questionResponse]);
 
   if (PublishedCheckinError) {
@@ -146,7 +144,7 @@ const CheckInForm = () => {
       const updatedResponse = {
         ...prevState,
         checkInId: publishedCheckIn.checkInId,
-        submittedBy: userState.firstName + ' ' + userState.lastName
+        submittedBy: user?.nickname
       };
       return updatedResponse;
     });

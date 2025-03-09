@@ -1,8 +1,8 @@
 import { Box, VStack, Text, Heading, Button, Flex } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import { client } from '../../util/axios-util';
+// import { client } from '../../util/axios-util';
 import { useChat } from '../../context/ChatProvider';
-import { useAuth } from '../../context/AuthProvider';
+// import { useAuth } from '../../context/AuthProvider';
 import { getSender } from '../../util/chat-logic';
 import Loading from '../shared/Loading';
 
@@ -23,26 +23,26 @@ const MyChats = () => {
   const { setUserChats, userChats } = useChat();
   const [loading, setLoading] = useState(true);
 
-  const { userState } = useAuth();
-  useEffect(() => {
-    const fetchChats = async () => {
-      await client
-        .get('/chats/fetchChats')
-        .then((response) => {
-          if (response.data) {
-            const chatsRetrieved = response.data.chats;
-            setUserChats(chatsRetrieved);
-          }
-        })
-        .catch((error) => {
-          console.log('error fetching user chats');
-          console.log(error);
-        })
-        .finally(() => setLoading(false));
-    };
+  // const { userState } = useAuth();
+  // useEffect(() => {
+  //   const fetchChats = async () => {
+  //     await client
+  //       .get('/chats/fetchChats')
+  //       .then((response) => {
+  //         if (response.data) {
+  //           const chatsRetrieved = response.data.chats;
+  //           setUserChats(chatsRetrieved);
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.log('error fetching user chats');
+  //         console.log(error);
+  //       })
+  //       .finally(() => setLoading(false));
+  //   };
 
-    fetchChats();
-  }, []);
+  //   fetchChats();
+  // }, []);
   console.log(userChats);
 
   if (loading) {
@@ -70,11 +70,11 @@ const MyChats = () => {
               cursor="pointer"
               _hover={{ bg: 'gray.100' }}
             >
-              <Text>
+              {/* <Text>
                 {!chat.isGroupChat
                   ? getSender(userState, chat.users)
                   : chat.chatName}
-              </Text>
+              </Text> */}
               {chat.latestMessage && (
                 <Text fontSize="xs">
                   <b>{chat.latestMessage.sender.firstName} : </b>

@@ -16,19 +16,20 @@ import { useAdmin } from '../../context/AdminProvider';
 import QuestionsSummary from '../shared/QuestionsSummary';
 import { useRef } from 'react';
 import { INTIAL_CHECKIN_STATE } from '../../constants/application';
-import { useAuth } from '../../context/AuthProvider';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createAdminCheckIn } from '../../services/adminService';
+import useAdminService from '../../services/adminService';
 import Loading from '../shared/Loading';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const CreateCheckIn = () => {
   const { checkIn, setCheckIn } = useAdmin();
-  const { userState } = useAuth();
+  const { createAdminCheckIn } = useAdminService();
+  const { user } = useAuth0();
   const checkInNameRef = useRef();
   const toast = useToast();
   const queryClient = useQueryClient();
 
-  const {mutate: createCheckIn, isPending} = useMutation({
+  const { mutate: createCheckIn, isPending } = useMutation({
     mutationFn: createAdminCheckIn,
     onSuccess: (response) => {
       console.log('response from creating check in ', response);
@@ -42,8 +43,7 @@ const CreateCheckIn = () => {
       setCheckIn(INTIAL_CHECKIN_STATE);
 
       // invalidate cache so we get latest created check ins
-      queryClient.invalidateQueries({queryKey: ['allAdminCheckIn']});
-
+      queryClient.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
     },
     onError: (error) => {
       toast({
@@ -55,7 +55,6 @@ const CreateCheckIn = () => {
       });
     }
   });
-
 
   if (isPending) {
     return <Loading />;
@@ -74,13 +73,13 @@ const CreateCheckIn = () => {
 
     const checkinToCreate = {
       ...checkIn,
-      createdBy: userState.firstName + ' ' + userState.lastName,
+      createdBy: user?.nickname,
       checkInId: checkInNameRef.current.value
     };
 
     setCheckIn(checkinToCreate);
 
-     // Call mutate() to trigger API call
+    // Call mutate() to trigger API call
     createCheckIn(checkinToCreate);
   }
 
@@ -88,7 +87,9 @@ const CreateCheckIn = () => {
     <>
       <Container>
         <Card>
-          <CardHeader color="gray.500">There is currently no published Check-in</CardHeader>
+          <CardHeader color="gray.500">
+            There is currently no published Check-in
+          </CardHeader>
           <CardBody>
             {checkIn.questions?.length > 0 ? (
               <>

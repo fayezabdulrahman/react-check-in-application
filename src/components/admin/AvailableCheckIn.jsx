@@ -3,17 +3,18 @@ import { useAdmin } from '../../context/AdminProvider';
 import { useEffect, useState } from 'react';
 import Loading from '../shared/Loading';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  deleteCheckIn,
-  fetchAllAdminCheckIn,
-  publishNewCheckIn,
-  unPublishCheckIn
-} from '../../services/adminService';
+// import {
+//   deleteCheckIn,
+//   fetchAllAdminCheckIn,
+//   publishNewCheckIn,
+//   unPublishCheckIn
+// } from '../../services/adminService';
 import CreatedCheckInCard from './CreatedCheckInCard';
 import { INITIAL_PERFORMING_ACTION_STATE } from '../../constants/application';
 import LocalStorageService from '../../util/LocalStorageService';
 import PopUpModal from '../shared/PopUpModal';
 import { INTIAL_CHECKIN_STATE } from '../../constants/application';
+import useAdminService from '../../services/adminService';
 
 const AvailableCheckIn = () => {
   const {
@@ -22,6 +23,7 @@ const AvailableCheckIn = () => {
     setPublishedCheckIn,
     setPerformingAdminAction
   } = useAdmin();
+  const {fetchAllAdminCheckIn, publishNewCheckIn, unPublishCheckIn, deleteCheckIn} = useAdminService();
 
   const queryCleint = useQueryClient();
 

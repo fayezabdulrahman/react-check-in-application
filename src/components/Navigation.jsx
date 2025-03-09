@@ -23,23 +23,20 @@ import { GiHamburgerMenu } from 'react-icons/gi';
 import { CiLogout } from 'react-icons/ci';
 import { IoHomeOutline } from 'react-icons/io5';
 import { useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthProvider';
+import { useLocalAuth } from '../context/LocalAuthProvider';
 import logo from '../assets/b2b.png';
+import { useAuth0 } from '@auth0/auth0-react';
 const Navigation = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef();
-  const { logout, userState } = useAuth();
-  const isAdmin = userState.role === 'admin';
+  const { logout } = useLocalAuth();
+  const { user } = useAuth0();
+  const userRoles = user?.['https://ez-check-in/roles'] || [];
 
-  const userName = userState.firstName + ' ' + userState.lastName;
+  const isAdmin = userRoles.includes('admin');
 
-  const navigate = useNavigate();
+  const userName = user?.nickname;
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/');
-  };
   return (
     <>
       <Flex gap="8" alignItems="center" justifyContent="space-between" p={4}>
@@ -66,7 +63,7 @@ const Navigation = () => {
           <DrawerHeader display="flex" gap="4" alignItems="center">
             <Wrap>
               <WrapItem>
-                <Avatar name={userName} src=""></Avatar>
+                <Avatar name={userName} src={user.picture}></Avatar>
               </WrapItem>
             </Wrap>
             <Box>{userName}</Box>
@@ -90,7 +87,7 @@ const Navigation = () => {
               </Box>
               <Box display="flex" alignItems="center" gap="2">
                 <Icon as={CiLogout} boxSize={6} />
-                <Link as={ReactRouterLink} onClick={handleLogout}>
+                <Link as={ReactRouterLink} onClick={logout}>
                   Logout
                 </Link>
               </Box>
