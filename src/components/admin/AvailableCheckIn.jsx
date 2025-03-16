@@ -3,12 +3,6 @@ import { useAdmin } from '../../context/AdminProvider';
 import { useEffect, useState } from 'react';
 import Loading from '../shared/Loading';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-// import {
-//   deleteCheckIn,
-//   fetchAllAdminCheckIn,
-//   publishNewCheckIn,
-//   unPublishCheckIn
-// } from '../../services/adminService';
 import CreatedCheckInCard from './CreatedCheckInCard';
 import { INITIAL_PERFORMING_ACTION_STATE } from '../../constants/application';
 import LocalStorageService from '../../util/LocalStorageService';
@@ -108,7 +102,10 @@ const AvailableCheckIn = () => {
         LocalStorageService.removeItem('publishedCheckInAnalytics');
         LocalStorageService.removeItem('publishedCheckIn');
         const serverPublishedCheckIn = response.checkIn;
-        setPublishedCheckIn(serverPublishedCheckIn);
+        console.log('server unpublished check in response ', serverPublishedCheckIn);
+
+        // reset state
+        setPublishedCheckIn(INTIAL_CHECKIN_STATE);
 
         // reset performing action
         setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
