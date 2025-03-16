@@ -1,62 +1,74 @@
-import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
+import {
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
+  useToast
+} from '@chakra-ui/react';
 import AvailableCheckIn from './AvailableCheckIn';
 import CreateCheckIn from './CreateCheckIn';
-import { useEffect, useState } from 'react';
-import { client } from '../../util/axios-util';
+import { useEffect } from 'react';
 import { useAdmin } from '../../context/AdminProvider';
 import PublishedCheckIn from './PublishedCheckIn';
 import Loading from '../shared/Loading';
+import { INTIAL_CHECKIN_STATE } from '../../constants/application';
+import LocalStorageService from '../../util/LocalStorageService';
+import usePublishedCheckInQuery from '../../hooks/usePublishedCheckInQuery';
 
 const AdminHomepage = () => {
   // when page loads - call api to fetch db to check for publishedChekIn
   // if no published check in - render code to ask admin to create check in
   // if published check in - load check in for admin to view it
-  const { setPublishedCheckIn, publishedCheckIn, checkIn } = useAdmin();
-  const [loading, setLoading] = useState(true);
+  const { setPublishedCheckIn, publishedCheckIn } = useAdmin();
+  const toast = useToast();
+
+  const {
+    data: publishedCheckinData,
+    isPending: publishedCheckinIsPending,
+    isLoading,
+    error: PublishedCheckinError
+  } = usePublishedCheckInQuery();
+
   useEffect(() => {
-    const fetchPublishedCheckin = async () => {
-      await client
-        .get('/admin/publishedCheckin')
-        .then((response) => {
-          console.log('response from server', response.data);
-          const serverResponse = response.data;
-          if (serverResponse.checkIn !== null) {
-            const publishedCheckInDB = serverResponse.checkIn;
-            setPublishedCheckIn(publishedCheckInDB);
-            localStorage.setItem('publishedCheckIn', JSON.stringify(publishedCheckInDB));
-          }
-        })
-        .catch((error) => {
-          console.log('error fetching published check-in', error);
-        });
-    };
+    const cachedPublishedCheckIn = LocalStorageService.getItem('publishedCheckIn');
+    if (cachedPublishedCheckIn) {
+      console.log('cached published check-in ', cachedPublishedCheckIn);
+      setPublishedCheckIn(cachedPublishedCheckIn);
+    } else if (publishedCheckinData?.checkIn) {
+      console.log('use mutation check in data complete admin homepage', publishedCheckinData);
+      const publishedCheckInDB = publishedCheckinData.checkIn;
+      setPublishedCheckIn(publishedCheckInDB);
+      LocalStorageService.setItem(
+        'publishedCheckIn',
+        publishedCheckInDB
+      );
+    } else {
+      setPublishedCheckIn(INTIAL_CHECKIN_STATE);
+    }
+  }, [publishedCheckinData, setPublishedCheckIn]);
 
-    const fetchData = async () => {
-      const cachedPublishedCheckIn = localStorage.getItem('publishedCheckIn');
-      if (cachedPublishedCheckIn) {
-        setPublishedCheckIn(JSON.parse(cachedPublishedCheckIn));
-      } else {
-        await fetchPublishedCheckin();
-      }
-      setLoading(false);
-    };
+  if (isLoading || publishedCheckinIsPending) {
+    return <Loading />;
+  }
+  if (PublishedCheckinError) {
+    toast({
+      title: 'An error occured.',
+      status: 'error',
+      duration: 3000,
+      isClosable: true
+    });
+    return <p>Failed to fetch published check in. Please try again later...</p>;
+  }
 
-    fetchData();
-  }, [setPublishedCheckIn]);
-
-  console.log('admin homepage state value ', checkIn);
-  const isPublishCheckIn = publishedCheckIn && publishedCheckIn.published;
+  const isPublishCheckIn = publishedCheckIn.checkInId && publishedCheckIn.published;
   let content = (
     <>{!isPublishCheckIn ? <CreateCheckIn /> : <PublishedCheckIn />}</>
   );
 
-  if (loading) {
-    return <Loading />;
-  }
-
   return (
     <>
-      <Tabs isFitted variant="enclosed" m={4} isLazy>
+      <Tabs isFitted variant="enclosed" m={4}>
         <TabList mb="1em">
           <Tab>Active Check-ins</Tab>
           <Tab>Created Check-ins</Tab>

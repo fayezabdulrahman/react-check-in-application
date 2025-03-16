@@ -6,72 +6,80 @@ import {
   StatLabel,
   StatNumber,
   StatHelpText,
-  IconButton
+  useToast,
+  Button
 } from '@chakra-ui/react';
 import { Card, CardBody, CardFooter } from '@chakra-ui/react';
 import { useAdmin } from '../../context/AdminProvider';
-import { useEffect, useState } from 'react';
-import { client } from '../../util/axios-util';
-import { IoIosRefresh } from 'react-icons/io';
+import { useEffect } from 'react';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import { Link as ChakraLink } from '@chakra-ui/react';
 import Loading from '../shared/Loading';
+import { useMutation } from '@tanstack/react-query';
+import useAdminService from '../../hooks/services/useAdminService';
+import LocalStorageService from '../../util/LocalStorageService';
 
 const PublishedCheckIn = () => {
-  const { publishedCheckIn } = useAdmin();
-  const [checkInAnalytics, setCheckInAnalytics] = useState({});
-  const [loading, setLoading] = useState(true);
+  const { publishedCheckIn, checkInAnalytics, setCheckInAnalytics  } = useAdmin();
+  const {fetchPublishedCheckInAnalytics} = useAdminService();
+  const toast = useToast();
+
+  const {
+    mutate: fetchCheckInAnalyticMutate,
+    isPending,
+    isLoading
+  } = useMutation({
+    mutationFn: fetchPublishedCheckInAnalytics,
+    onSuccess: (response) => {
+      if (response) {
+        console.log('analyitcs response ', response);
+        setCheckInAnalytics(response);
+        LocalStorageService.setItem('publishedCheckInAnalytics', response);
+      }
+    },
+    onError: () => {
+      toast({
+        title: 'Failed to get published check in responses.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true
+      });
+    }
+  });
 
   useEffect(() => {
-    const cachedAnalytics = localStorage.getItem('publishedCheckInAnalytics');
+    console.log('inside useEffectsss');
+    const cachedAnalytics = LocalStorageService.getItem(
+      'publishedCheckInAnalytics'
+    );
     if (cachedAnalytics) {
-      setCheckInAnalytics(JSON.parse(cachedAnalytics));
+      setCheckInAnalytics(cachedAnalytics);
     } else {
-      fetchPublishedCheckInAnalytics();
+      const payload = { checkInId: publishedCheckIn.checkInId };
+      // trigger mutate API Call
+      fetchCheckInAnalyticMutate(payload);
     }
-    setLoading(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [publishedCheckIn]);
+  }, [setCheckInAnalytics, fetchCheckInAnalyticMutate, publishedCheckIn]);
 
-  const fetchPublishedCheckInAnalytics = async () => {
-    setLoading(true);
-    const payload = { checkInId: publishedCheckIn.checkInId };
-
-    await client
-      .post('/admin/checkInAnayltics', payload)
-      .then((response) => {
-        setCheckInAnalytics(response.data);
-        console.log('response from server for analytics', response.data);
-        localStorage.setItem(
-          'publishedCheckInAnalytics',
-          JSON.stringify(response.data)
-        );
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => setLoading(false));
-  };
-
-  if (loading) {
+  if (isLoading) {
     return <Loading />;
   }
 
   return (
     <Container>
-      <Heading color="gray.500" m="1rem 0 0 1rem">
-        Your published check-in
+      <Heading>
+        Your Published Check-in
       </Heading>
-      <Card>
+      <Card mt="1rem">
         <CardBody>
           <Heading size="md" mb="1rem">
-            {publishedCheckIn.checkInId}
+            Check-in name: {publishedCheckIn.checkInId}
           </Heading>
           <Stat>
             <StatLabel>Responses</StatLabel>
             <StatNumber>{checkInAnalytics.count}</StatNumber>
             <StatHelpText>
-              As of {new Date().toLocaleString() + ''}
+              As of {new Date().toLocaleString('en-GB')}
             </StatHelpText>
           </Stat>
         </CardBody>
@@ -79,19 +87,30 @@ const PublishedCheckIn = () => {
           <>
             <Divider />
 
-            <CardFooter display="flex" justifyContent="space-between">
+            <CardFooter
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
               <ChakraLink
                 as={ReactRouterLink}
                 to="/admin/publishedCheckIn"
                 state={{ checkInAnalytics: checkInAnalytics }}
               >
-                View
+                View Results
               </ChakraLink>
-              <IconButton
-                aria-label="Search database"
-                icon={<IoIosRefresh />}
-                onClick={fetchPublishedCheckInAnalytics}
-              />
+              <Button
+                isLoading={isPending}
+                loadingText="Refreshing"
+                variant="outline"
+                onClick={() =>
+                  fetchCheckInAnalyticMutate({
+                    checkInId: publishedCheckIn.checkInId
+                  })
+                }
+              >
+                Refresh
+              </Button>
             </CardFooter>
           </>
         )}

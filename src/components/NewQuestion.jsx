@@ -97,7 +97,6 @@ const NewQuestion = () => {
     <>
       <Button
         leftIcon={<IoMdAdd />}
-        colorScheme="orange"
         variant="solid"
         size="sm"
         mt="1rem"
@@ -120,16 +119,16 @@ const NewQuestion = () => {
               <FormLabel>Type of Answer</FormLabel>
               <RadioGroup value={questionType} onChange={setQuestionType}>
                 <Stack direction="row">
-                  <Radio value="text">Text</Radio>
-                  <Radio value="textarea">Text Area</Radio>
-                  <Radio value="select">Dropdown</Radio>
-                  <Radio value="radio">Radio</Radio>
+                  <Radio value="text">Short Text</Radio>
+                  <Radio value="textarea">Long Text</Radio>
+                  <Radio value="select">Multi Choice</Radio>
+                  <Radio value="radio">Checkbox</Radio>
                 </Stack>
               </RadioGroup>
             </FormControl>
             {questionType === 'select' ? (
               <FormControl mt="1rem">
-                <FormLabel>Enter the dropdown options</FormLabel>
+                <FormLabel>Enter the multi choice options</FormLabel>
                 <Input
                   type="text"
                   ref={selectOptionsRef}
@@ -148,7 +147,7 @@ const NewQuestion = () => {
             {questionType === 'radio' ? (
               <>
                 <FormControl mt="1rem">
-                  <FormLabel>Enter the radio options</FormLabel>
+                  <FormLabel>Enter the checkbox options</FormLabel>
                   <Input
                     type="text"
                     ref={radioOptionsRef}
@@ -179,10 +178,10 @@ const NewQuestion = () => {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="orange" mr={3} onClick={onClose}>
+            <Button variant="ghost" mr={3} onClick={onClose}>
               Close
             </Button>
-            <Button variant="ghost" onClick={handleSaveQuestion}>
+            <Button variant="solid" onClick={handleSaveQuestion}>
               Save
             </Button>
           </ModalFooter>

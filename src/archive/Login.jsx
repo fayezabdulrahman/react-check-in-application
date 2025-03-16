@@ -7,12 +7,14 @@ import {
   InputRightElement,
   Box,
   Button,
+  IconButton,
   useToast
 } from '@chakra-ui/react';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import * as Yup from 'yup';
 import { Formik, Form, Field } from 'formik';
 import { useState } from 'react';
-import { useAuth } from '../context/AuthProvider';
+// import { useAuth } from '../context/AuthProvider';
 const Login = () => {
   const INITIAL_STATE = {
     email: '',
@@ -20,12 +22,12 @@ const Login = () => {
   };
   const [showPass, setShowPass] = useState(false);
   const handleShowPassClick = () => setShowPass(!showPass);
-  const { login } = useAuth();
+  // const { login } = useAuth();
 
   const toast = useToast();
 
   // validatoin for form
-  const validationSchema = Yup.object({
+  const loginSchema = Yup.object({
     email: Yup.string()
       .required('Email is required')
       .email('Invalid email address'),
@@ -34,6 +36,11 @@ const Login = () => {
       .min(3, 'Must be greater than 3 characters')
   });
   const handleLogin = async (values) => {
+
+    const transformedUserInput = {
+      ...values,
+      email: values.email.trim().toLowerCase()
+    };
     const toastId = toast({
       title: 'Logging in..',
       status: 'loading',
@@ -41,7 +48,7 @@ const Login = () => {
       duration: null
     });
     try {
-      await login(values);
+      // await login(transformedUserInput);
 
       toast.update(toastId, {
         title: 'Login Successful',
@@ -62,7 +69,7 @@ const Login = () => {
       <Formik
         initialValues={INITIAL_STATE}
         onSubmit={handleLogin}
-        validationSchema={validationSchema}
+        validationSchema={loginSchema}
       >
         {() => (
           <Form>
@@ -70,6 +77,7 @@ const Login = () => {
               {({ field, form }) => (
                 <FormControl
                   isInvalid={form.errors.email && form.touched.email}
+                  paddingTop='0.5rem'
                 >
                   <FormLabel>Email</FormLabel>
                   <Input {...field} />
@@ -82,18 +90,17 @@ const Login = () => {
               {({ field, form }) => (
                 <FormControl
                   isInvalid={form.errors.password && form.touched.password}
+                  paddingTop='0.5rem'
                 >
                   <FormLabel>Password</FormLabel>
                   <InputGroup size="md">
                     <Input type={showPass ? 'text' : 'password'} {...field} />
                     <InputRightElement width="4.5rem">
-                      <Button
-                        h="1.75rem"
-                        size="sm"
+                    <IconButton
+                        size='sm'
                         onClick={handleShowPassClick}
-                      >
-                        {showPass ? 'Hide' : 'Show'}
-                      </Button>
+                        icon={showPass ? <FaEyeSlash /> : <FaEye />}
+                      />
                     </InputRightElement>
                   </InputGroup>
                   <FormErrorMessage>{form.errors.password}</FormErrorMessage>

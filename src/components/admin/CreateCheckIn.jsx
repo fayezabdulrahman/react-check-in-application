@@ -14,54 +14,51 @@ import { MdPublish } from 'react-icons/md';
 import NewQuestion from '../NewQuestion';
 import { useAdmin } from '../../context/AdminProvider';
 import QuestionsSummary from '../shared/QuestionsSummary';
-import { useEffect, useRef } from 'react';
-import { client } from '../../util/axios-util';
+import { useRef } from 'react';
 import { INTIAL_CHECKIN_STATE } from '../../constants/application';
-import { useAuth } from '../../context/AuthProvider';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import useAdminService from '../../hooks/services/useAdminService';
+import Loading from '../shared/Loading';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const CreateCheckIn = () => {
   const { checkIn, setCheckIn } = useAdmin();
-  const { userState } = useAuth();
+  const { createAdminCheckIn } = useAdminService();
+  const { user } = useAuth0();
   const checkInNameRef = useRef();
   const toast = useToast();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const createCheckInApiCall = async () => {
-      if (!checkIn.checkInId) return;
-      try {
-        const serverResponse = await client.post(
-          '/admin/createCheckin',
-          checkIn
-        );
-        console.log(
-          'sucess from server on creating checkin',
-          serverResponse.data
-        );
+  const { mutate: createCheckIn, isPending } = useMutation({
+    mutationFn: createAdminCheckIn,
+    onSuccess: (response) => {
+      console.log('response from creating check in ', response);
+      toast({
+        title: 'Successfully Created Check-in',
+        status: 'success',
+        duration: 3000,
+        isClosable: true
+      });
 
-        toast({
-          title: 'Successfully Created Check-in',
-          status: 'success',
-          duration: 3000,
-          isClosable: true
-        });
+      setCheckIn(INTIAL_CHECKIN_STATE);
 
-        setCheckIn(INTIAL_CHECKIN_STATE);
-      } catch (error) {
-        console.log('error from server on creating checkin ', error);
-        toast({
-          title: 'Failed to Create Check-in',
-          description: error.response?.data?.message || 'An error occurred',
-          status: 'error',
-          duration: 3000,
-          isClosable: true
-        });
-      }
-    };
+      // invalidate cache so we get latest created check ins
+      queryClient.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Failed to Create Check-in',
+        description: error.response?.data?.message || 'An error occurred',
+        status: 'error',
+        duration: 3000,
+        isClosable: true
+      });
+    }
+  });
 
-    createCheckInApiCall();
-  }, [checkIn, toast, setCheckIn]);
-
-  console.log('check in state inside CreateCheckIn', checkIn);
+  if (isPending) {
+    return <Loading />;
+  }
 
   function handleCreateCheckIn() {
     const emptyChecckInName = checkInNameRef.current.value === '';
@@ -74,18 +71,25 @@ const CreateCheckIn = () => {
       });
     }
 
-    setCheckIn((prevState) => ({
-      ...prevState,
-      createdBy: userState.firstName + ' ' + userState.lastName,
+    const checkinToCreate = {
+      ...checkIn,
+      createdBy: user?.nickname,
       checkInId: checkInNameRef.current.value
-    }));
+    };
+
+    setCheckIn(checkinToCreate);
+
+    // Call mutate() to trigger API call
+    createCheckIn(checkinToCreate);
   }
 
   return (
     <>
       <Container>
         <Card>
-          <CardHeader color="gray.500">No Published Check-ins</CardHeader>
+          <CardHeader color="gray.500">
+            There is currently no published Check-in
+          </CardHeader>
           <CardBody>
             {checkIn.questions?.length > 0 ? (
               <>
@@ -102,7 +106,7 @@ const CreateCheckIn = () => {
                     onClick={handleCreateCheckIn}
                     rightIcon={<MdPublish />}
                   >
-                    Create Check-in
+                    Create
                   </Button>
                 </CardFooter>
               </>

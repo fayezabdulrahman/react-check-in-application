@@ -8,6 +8,7 @@ import {
   Stack,
   Box,
   Button,
+  Textarea,
   FormErrorMessage
 } from '@chakra-ui/react';
 import { useUser } from '../../context/UserProvider';
@@ -25,7 +26,6 @@ const FormFactory = ({ publishedCheckIn, onSubmit }) => {
   );
 
   const handleSubmit = (values) => {
-    console.log(values);
     // Transform the values into an array format
     const answers = Object.entries(values).map(([question, answer]) => ({
       question,
@@ -63,9 +63,10 @@ const FormFactory = ({ publishedCheckIn, onSubmit }) => {
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
+        validateOnMount={true}
         onSubmit={handleSubmit}
       >
-        {({ values, setFieldValue }) => (
+        {({ values, setFieldValue, isValid }) => (
           <Form>
             {publishedCheckIn.questions?.map((question, index) => (
               <Field key={index} name={question.label}>
@@ -81,6 +82,9 @@ const FormFactory = ({ publishedCheckIn, onSubmit }) => {
                     <FormLabel>{question.label}</FormLabel>
                     {question.componentType === 'text' && (
                       <Input type="text" {...field} />
+                    )}
+                    {question.componentType === 'textarea' && (
+                      <Textarea {...field} />
                     )}
                     {question.componentType === 'select' && (
                       <Select placeholder="Select Option" {...field}>
@@ -118,7 +122,7 @@ const FormFactory = ({ publishedCheckIn, onSubmit }) => {
               </Field>
             ))}
             <Box display="flex" justifyContent="center" width="100%">
-              <Button mt={4} colorScheme="orange" type="submit" width="50%">
+              <Button mt={4} type="submit" width="50%" isDisabled={!isValid}>
                 Submit
               </Button>
             </Box>

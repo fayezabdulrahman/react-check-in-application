@@ -1,222 +1,251 @@
-import {
-  Button,
-  ButtonGroup,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Container,
-  Heading,
-  Text,
-  useToast
-} from '@chakra-ui/react';
-import { MdDeleteOutline } from 'react-icons/md';
-import { Link as ReactRouterLink } from 'react-router-dom';
+import { Container, Heading, useToast } from '@chakra-ui/react';
 import { useAdmin } from '../../context/AdminProvider';
-import { client } from '../../util/axios-util';
 import { useEffect, useState } from 'react';
 import Loading from '../shared/Loading';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import CreatedCheckInCard from './CreatedCheckInCard';
+import { INITIAL_PERFORMING_ACTION_STATE } from '../../constants/application';
+import LocalStorageService from '../../util/LocalStorageService';
+import PopUpModal from '../shared/PopUpModal';
+import { INTIAL_CHECKIN_STATE } from '../../constants/application';
+import useAdminService from '../../hooks/services/useAdminService';
 
 const AvailableCheckIn = () => {
   const {
     submittedCheckIns,
     setSubmittedCheckIns,
     setPublishedCheckIn,
-    publishedCheckIn
+    setPerformingAdminAction
   } = useAdmin();
-  const [loading, setLoading] = useState(true);
-  const [publishing, setPublishing] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const [unpublishing, setUnpublishing] = useState(false);
+  const {fetchAllAdminCheckIn, publishNewCheckIn, unPublishCheckIn, deleteCheckIn} = useAdminService();
+
+  const queryCleint = useQueryClient();
 
   const toast = useToast();
+  const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
+  const [deleteCheckInPayload, setDeleteCheckInPayload] = useState(null);
+  const modalConfig = {
+    modalHeader: 'Deleting Checkin',
+    modalBody: 'Deleting this will delete for all admin users.'
+  };
+
+  const {
+    data: allAdminCheckInData,
+    isLoading,
+    error
+  } = useQuery({
+    queryKey: ['allAdminCheckIn'],
+    queryFn: fetchAllAdminCheckIn
+  });
+
+  const { mutate: publishCheckInMutate } = useMutation({
+    mutationFn: publishNewCheckIn,
+    onMutate: (payload) => {
+      let contextToReturn = {};
+      const isPublishedCheckIn =
+      LocalStorageService.getItem('publishedCheckIn');
+      if (isPublishedCheckIn) {
+        if (isPublishedCheckIn.checkInId !== payload.checkInToPublish) {
+          contextToReturn['removeLocalStorage'] = true;
+        }
+      }
+      return contextToReturn; // Ensure context is never undefined
+    },
+    onSuccess: (response, payload, context) => {
+      const message = response.message;
+      // remove old cache first
+      if (context?.removeLocalStorage) {
+        LocalStorageService.removeItem('publishedCheckInAnalytics');
+        LocalStorageService.removeItem('publishedCheckIn');
+      }
+      // if we get a successful response, set cache and update state
+      if (response.checkIn) {
+        const serverPublishedCheckIn = response.checkIn;
+        console.log('response from from publishing ', serverPublishedCheckIn);
+
+        // set new state
+        setPublishedCheckIn(serverPublishedCheckIn);
+        // set new cache for published check-in
+        LocalStorageService.setItem('publishedCheckIn', serverPublishedCheckIn);
+        // reset performing action
+        setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
+
+        // invalidate cache and refetch
+        queryCleint.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
+      }
+
+      toast({
+        title: message,
+        status: 'success',
+        duration: 3000,
+        isClosable: true
+      });
+    },
+    onError: (error) => {
+      // reset performing action
+      setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
+      toast({
+        title: error.response?.data?.message || 'An error occurred',
+        status: 'error',
+        duration: 3000,
+        isClosable: true
+      });
+    }
+  });
+
+  const { mutate: unPublishCheckInMutate } = useMutation({
+    mutationFn: unPublishCheckIn,
+    onSuccess: (response) => {
+      const message = response.message;
+      // if we get a successfull response, remove cache and update state
+      if (response.checkIn) {
+        LocalStorageService.removeItem('publishedCheckInAnalytics');
+        LocalStorageService.removeItem('publishedCheckIn');
+        const serverPublishedCheckIn = response.checkIn;
+        console.log('server unpublished check in response ', serverPublishedCheckIn);
+
+        // reset state
+        setPublishedCheckIn(INTIAL_CHECKIN_STATE);
+
+        // reset performing action
+        setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
+        // invalidate cache and refetch
+        queryCleint.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
+      }
+
+      toast({
+        title: message,
+        status: 'success',
+        duration: 3000,
+        isClosable: true
+      });
+    },
+    onError: (error) => {
+      // reset performing action
+      setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
+      toast({
+        title: error.response?.data?.message || 'An error occurred',
+        status: 'error',
+        duration: 3000,
+        isClosable: true
+      });
+    }
+  });
+
+  const { mutate: deleteCheckInMutate } = useMutation({
+    mutationFn: deleteCheckIn,
+    onMutate: (payload) => {
+      let contextToReturn = {};
+      const isPublishedCheckIn =
+        LocalStorageService.getItem('publishedCheckIn');
+      if (isPublishedCheckIn) {
+        // check if deleted check in is the published one
+        const publishedCheckInId = isPublishedCheckIn.checkInId;
+        if (payload.checkInToDelete === publishedCheckInId) {
+          // we need to remove the local storage and analytical check
+          // gets sent as context to onSuccess
+          contextToReturn['removeLocalStorage'] = true;
+        }
+      }
+      return contextToReturn;
+    },
+    onSuccess: (response, payload, context) => {
+      const message = response.message;
+
+      if (context.removeLocalStorage) {
+        LocalStorageService.removeItem('publishedCheckInAnalytics');
+        LocalStorageService.removeItem('publishedCheckIn');
+
+        // reset published check in state
+        setPublishedCheckIn(INTIAL_CHECKIN_STATE);
+      }
+
+      // invalidate cache and refetch
+      queryCleint.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
+      toast({
+        title: message,
+        status: 'success',
+        duration: 3000,
+        isClosable: true
+      });
+      // reset performing action
+      setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
+    },
+    onError: (error) => {
+      // reset performing action
+      setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
+      toast({
+        title: error.response?.data?.message || 'An error occurred',
+        status: 'error',
+        duration: 3000,
+        isClosable: true
+      });
+    }
+  });
+
+  const handlePublishCheckIn = (payload) => {
+    // Call mutate() to trigger API call
+    publishCheckInMutate(payload);
+  };
+
+  const handleUnPublishCheckIn = (payload) => {
+    // Call mutate() to trigger API call
+    unPublishCheckInMutate(payload);
+  };
+
+  const handleDeleteCheckIn = (payload, modalConfirmationStatus) => {
+    if (!openConfirmationModal) {
+      setDeleteCheckInPayload(payload);
+      console.log('open confirmation modal');
+
+      // open confirmation modal first
+      setOpenConfirmationModal(true);
+    }
+    if (modalConfirmationStatus) {
+      console.log('calling delete api with payload', deleteCheckInPayload);
+      // Call mutate() to trigger API call
+      deleteCheckInMutate(deleteCheckInPayload);
+    }
+  };
 
   useEffect(() => {
-    const fetchCreatedCheckins = async () => {
-      await client
-        .get('/admin/allCheckins')
-        .then((response) => {
-          console.log('success fetching all checkins ', response.data);
-          const allCheckins = response.data.checkIns;
-          setSubmittedCheckIns(allCheckins);
-        })
-        .catch((error) => {
-          console.log('error fetching all checkins ', error);
-        });
-    };
-    fetchCreatedCheckins();
-    setLoading(false);
-    // added publishedCheckIn as dependecny because when we publish a check-in we want to re-render so we can disable publish button
-  }, [setSubmittedCheckIns, publishedCheckIn, deleting]);
-
-  async function handlePublishCheckIn(checkInId) {
-    setPublishing(true);
-    const payload = {
-      checkInToPublish: checkInId
-    };
-    try {
-      const response = await client.post('/admin/publishCheckIn', payload);
-      console.log('response from server', response.data);
-      const message = response.data.message;
-      // if we get a successful response, set cache and update state
-      if (response.data.checkIn) {
-        const serverPublishedCheckIn = response.data.checkIn;
-        // remove old cache for analytics first
-        localStorage.removeItem('publishedCheckInAnalytics');
-        // set new cache for published check-in
-        localStorage.setItem(
-          'publishedCheckIn',
-          JSON.stringify(serverPublishedCheckIn)
-        );
-        setPublishedCheckIn(serverPublishedCheckIn);
-      }
-
-      toast({
-        title: message,
-        status: 'success',
-        duration: 3000,
-        isClosable: true
-      });
-    } catch (error) {
-      console.log('error');
-      toast({
-        title: error.response?.data?.message || 'An error occurred',
-        status: 'error',
-        duration: 3000,
-        isClosable: true
-      });
-    } finally {
-      setPublishing(false);
+    if (allAdminCheckInData?.checkIns) {
+      setSubmittedCheckIns(allAdminCheckInData.checkIns);
+    } else {
+      setSubmittedCheckIns([]);
     }
-  }
+  }, [setSubmittedCheckIns, allAdminCheckInData]);
 
-  async function handleDeleteCheckIn(checkInId) {
-    setDeleting(true);
-
-    console.log('checkIn to delet', checkInId);
-
-    const payload = {
-      checkInToDelete: checkInId
-    };
-    try {
-      const response = await client.post('/admin/deleteCheckIn', payload);
-      console.log('response from server', response.data);
-      const message = response.data.message;
-
-      toast({
-        title: message,
-        status: 'success',
-        duration: 3000,
-        isClosable: true
-      });
-    } catch (error) {
-      console.log('error');
-      toast({
-        title: error.response?.data?.message || 'An error occurred',
-        status: 'error',
-        duration: 3000,
-        isClosable: true
-      });
-    } finally {
-      setDeleting(false);
-    }
-  }
-
-  async function handleUnPublishCheckIn(checkInId) {
-    setUnpublishing(true);
-    const payload = {
-      checkInToUnpublish: checkInId
-    };
-    try {
-      const response = await client.post('/admin/unPublishCheckIn', payload);
-      const message = response.data.message;
-      // if we get a successfull response, remove cache and update state
-      if (response.data.checkIn) {
-        localStorage.removeItem('publishedCheckInAnalytics');
-        localStorage.removeItem('publishedCheckIn');
-        const serverPublishedCheckIn = response.data.checkIn;
-        setPublishedCheckIn(serverPublishedCheckIn);
-      }
-
-      toast({
-        title: message,
-        status: 'success',
-        duration: 3000,
-        isClosable: true
-      });
-    } catch (error) {
-      console.log('error');
-      toast({
-        title: error.response?.data?.message || 'An error occurred',
-        status: 'error',
-        duration: 3000,
-        isClosable: true
-      });
-    } finally {
-      setUnpublishing(false);
-    }
-  }
-
-  if (loading) {
+  if (isLoading) {
     return <Loading />;
+  }
+  if (error) {
+    toast({
+      title: 'Failed to load all created check in',
+      status: 'error',
+      duration: 3000,
+      isClosable: true
+    });
   }
 
   return (
     <Container>
-      <Heading> Your Created Check-ins</Heading>
-      {submittedCheckIns?.map((availableCheckIn, index) => (
-        <Card key={index} mt="1rem">
-          <CardHeader>Check-in name: {availableCheckIn.checkInId}</CardHeader>
-          <CardBody>
-            <Text>Created By: {availableCheckIn.createdBy}</Text>
-            <Text>Published: {availableCheckIn.published ? 'Yes' : 'No'} </Text>
-            <Text>Questions length: {availableCheckIn.questions.length}</Text>
-          </CardBody>
-          <CardFooter justifyContent="space-between">
-            <ButtonGroup>
-              <Button
-                isLoading={publishing}
-                loadingText="Publishing"
-                variant="solid"
-                colorScheme="orange"
-                isDisabled={availableCheckIn.published}
-                onClick={() => handlePublishCheckIn(availableCheckIn.checkInId)}
-              >
-                Publish
-              </Button>
-              {availableCheckIn.published && (
-                <Button
-                  variant="solid"
-                  colorScheme="orange"
-                  onClick={() =>
-                    handleUnPublishCheckIn(availableCheckIn.checkInId)
-                  }
-                >
-                  Unpublish
-                </Button>
-              )}
-
-              <Button
-                as={ReactRouterLink}
-                to="/admin/editCheckIn"
-                state={{ checkInId: availableCheckIn.checkInId }}
-                variant="ghost"
-                colorScheme="orange"
-              >
-                Edit
-              </Button>
-            </ButtonGroup>
-            <Button
-              isLoading={unpublishing}
-              loadingText="Unpublishing..."
-              leftIcon={<MdDeleteOutline />}
-              onClick={() => handleDeleteCheckIn(availableCheckIn.checkInId)}
-            >
-              Delete
-            </Button>
-          </CardFooter>
-        </Card>
+      <Heading>Created Check-ins</Heading>
+      {submittedCheckIns?.map((available, index) => (
+        <CreatedCheckInCard
+          availableCheckIn={available}
+          publishCheckIn={(payload) => handlePublishCheckIn(payload)}
+          unPublishCheckIn={(payload) => handleUnPublishCheckIn(payload)}
+          deleteCheckIn={(payload) => handleDeleteCheckIn(payload, null)}
+          key={index}
+        />
       ))}
+      <PopUpModal
+        openModal={openConfirmationModal}
+        modalConfig={modalConfig}
+        onConfirm={(output) => handleDeleteCheckIn(null, output)}
+        onClose={() => setOpenConfirmationModal(false)}
+      />
     </Container>
   );
 };

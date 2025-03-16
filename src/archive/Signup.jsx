@@ -7,9 +7,11 @@ import {
   InputGroup,
   InputRightElement,
   Box,
-  useToast
+  useToast,
+  IconButton
 } from '@chakra-ui/react';
-import { useAuth } from '../context/AuthProvider';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+// import { useAuth } from '../context/AuthProvider';
 import { Formik, Form, Field } from 'formik';
 import { useState } from 'react';
 import * as Yup from 'yup';
@@ -20,15 +22,15 @@ const INITIAL_STATE = {
   password: ''
 };
 
-const Signup = ({ switchToLoginTab }) => {
-  const { signUp } = useAuth();
+const Signup = () => {
+  // const { signUp } = useAuth();
   const [showPass, setShowPass] = useState(false);
   const handleShowPassClick = () => setShowPass(!showPass);
 
   const toast = useToast();
 
   // validation for signing up
-  const validationSchema = Yup.object({
+  const registerSchema = Yup.object({
     email: Yup.string()
       .required('Email is required')
       .email('Invalid email address'),
@@ -40,7 +42,10 @@ const Signup = ({ switchToLoginTab }) => {
   });
 
   const submitForm = async (values, actions) => {
-    console.log('formValues', values);
+    const transformedUserInput = {
+      ...values,
+      email: values.email.trim().toLowerCase()
+    };
 
     const toastId = toast({
       title: 'Signing up...',
@@ -50,7 +55,7 @@ const Signup = ({ switchToLoginTab }) => {
     });
 
     try {
-      await signUp(values);
+      // await signUp(transformedUserInput);
 
       toast.update(toastId, {
         title: 'Signup Successful',
@@ -59,9 +64,6 @@ const Signup = ({ switchToLoginTab }) => {
       });
 
       actions.resetForm(); // resetForm After submit
-      setTimeout(() => {
-        switchToLoginTab();
-      }, 500);
     } catch (error) {
       toast.update(toastId, {
         title: 'Signup Failed',
@@ -77,7 +79,7 @@ const Signup = ({ switchToLoginTab }) => {
       <Formik
         initialValues={INITIAL_STATE}
         onSubmit={submitForm}
-        validationSchema={validationSchema}
+        validationSchema={registerSchema}
       >
         {() => (
           <Form>
@@ -96,6 +98,7 @@ const Signup = ({ switchToLoginTab }) => {
               {({ field, form }) => (
                 <FormControl
                   isInvalid={form.errors.firstName && form.touched.firstName}
+                  paddingTop="0.25rem"
                 >
                   <FormLabel>First Name</FormLabel>
                   <Input {...field} />
@@ -107,6 +110,7 @@ const Signup = ({ switchToLoginTab }) => {
               {({ field, form }) => (
                 <FormControl
                   isInvalid={form.errors.lastName && form.touched.lastName}
+                  paddingTop="0.25rem"
                 >
                   <FormLabel>Surname</FormLabel>
                   <Input {...field} />
@@ -118,18 +122,17 @@ const Signup = ({ switchToLoginTab }) => {
               {({ field, form }) => (
                 <FormControl
                   isInvalid={form.errors.password && form.touched.password}
+                  paddingTop="0.25rem"
                 >
                   <FormLabel>Password</FormLabel>
                   <InputGroup size="md">
                     <Input type={showPass ? 'text' : 'password'} {...field} />
                     <InputRightElement width="4.5rem">
-                      <Button
-                        h="1.75rem"
-                        size="sm"
+                      <IconButton
+                        size='sm'
                         onClick={handleShowPassClick}
-                      >
-                        {showPass ? 'Hide' : 'Show'}
-                      </Button>
+                        icon={showPass ? <FaEyeSlash /> : <FaEye />}
+                      />
                     </InputRightElement>
                   </InputGroup>
                   <FormErrorMessage>{form.errors.password}</FormErrorMessage>
@@ -137,7 +140,7 @@ const Signup = ({ switchToLoginTab }) => {
               )}
             </Field>
             <Box display="flex" justifyContent="center" width="100%">
-              <Button mt={4} colorScheme="orange" type="submit" width="50%">
+              <Button mt={4} type="submit" width="50%">
                 Submit
               </Button>
             </Box>

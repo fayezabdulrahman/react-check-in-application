@@ -1,5 +1,5 @@
 import { useContext, createContext, useState } from 'react';
-import { INTIAL_CHECKIN_STATE } from '../constants/application';
+import { INTIAL_CHECKIN_STATE, INITIAL_PERFORMING_ACTION_STATE } from '../constants/application';
 
 const AdminContext = createContext();
 
@@ -17,6 +17,9 @@ const AdminProvider = ({ children }) => {
   const [checkIn, setCheckIn] = useState(INTIAL_CHECKIN_STATE);
   const [submittedCheckIns, setSubmittedCheckIns] = useState([]);
   const [publishedCheckIn, setPublishedCheckIn] = useState(INTIAL_CHECKIN_STATE);
+  const [checkInAnalytics, setCheckInAnalytics] = useState({});
+  // used to trigger loading state for delete/publish/unpublish actions
+  const [performingAdminAction, setPerformingAdminAction] = useState(INITIAL_PERFORMING_ACTION_STATE);
 
   function publishCheckIn() {
     setCheckIn((prevState) => ({
@@ -33,7 +36,11 @@ const AdminProvider = ({ children }) => {
     submittedCheckIns,
     setSubmittedCheckIns,
     publishedCheckIn,
-    setPublishedCheckIn
+    setPublishedCheckIn,
+    performingAdminAction,
+    setPerformingAdminAction,
+    checkInAnalytics,
+    setCheckInAnalytics
   };
 
   return (
