@@ -48,7 +48,7 @@ const AdminHomepage = () => {
     }
   }, [publishedCheckinData, setPublishedCheckIn]);
 
-  if (isLoading) {
+  if (isLoading || publishedCheckinIsPending) {
     return <Loading />;
   }
   if (PublishedCheckinError) {
