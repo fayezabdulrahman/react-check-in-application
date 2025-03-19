@@ -9,6 +9,7 @@ import UserProvider from './context/UserProvider';
 import DetailedPublishedCheckIn from './components/admin/DetailedPublishedCheckIn';
 import EditCheckIn from './components/admin/EditCheckIn';
 import { Auth0Provider } from '@auth0/auth0-react';
+import CaptureUserDetails from './components/shared/CaptureUserDetails';
 
 function App() {
   const auth0Domain = import.meta.env.VITE_AUTH0_DOMAIN;
@@ -43,6 +44,7 @@ function App() {
                   <Route path="/admin/editCheckIn" element={<EditCheckIn />} />
                 </Route>
               </Routes>
+              <CaptureUserDetails />
             </UserProvider>
           </AdminProvider>
           </LocalAuthProvider>

@@ -94,7 +94,8 @@ const LocalAuthProvider = ({ children }) => {
     isAuthenticated,
     loading,
     logout: handleLogout,
-    userDetails
+    userDetails,
+    setUserDetails
   };
 
   return (
