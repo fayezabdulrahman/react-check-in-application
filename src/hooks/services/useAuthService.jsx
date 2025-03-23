@@ -45,9 +45,20 @@ const useAuthService = () => {
     }
   };
 
+  const updateUserDetails = async (payload) => {
+    try {
+      const response = await client.post(API_AUTH_URLS.updatUser, payload);
+      return response.data;
+    } catch (error) {
+      console.error('Error in finding user', error);
+      throw error;
+    }
+  };
+
   return {
     fetchUser,
-    registerUser
+    registerUser,
+    updateUserDetails
   };
 };
 export default useAuthService;

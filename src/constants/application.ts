@@ -44,5 +44,6 @@ export const API_URLS = {
 export const API_AUTH_URLS = {
     register: '/auth/register',
     login: '/auth/login',
-    findUser: '/auth/users'
+    findUser: '/auth/users',
+    updatUser: '/auth/user/update'
 }
