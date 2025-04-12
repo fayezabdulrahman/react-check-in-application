@@ -14,33 +14,33 @@ import {
   FormHelperText,
   useToast
 } from '@chakra-ui/react';
-import { useCheckin } from '../../context/CheckinContext';
-import { useEffect } from 'react';
-import { useAdmin } from '../../context/AdminProvider';
+import { useEffect, useState } from 'react';
+import useCheckInStore from '../../store/checkin-store';
+import { INITAL_QUESTION_STATE } from '../../constants/application';
 
 export const QuestionModal = () => {
-  const {
-    isModalOpen,
-    actions,
-    editingQuestion,
-    selectedQuestionType,
-    formData,
-    setFormData,
-    submittedCheckInToEdit
-  } = useCheckin();
   const toast = useToast();
+  const [formData, setFormData] = useState(INITAL_QUESTION_STATE);
+
+  const questionType = useCheckInStore((state) => state.questionType);
+  const toggleModal = useCheckInStore((state) => state.toggleModal);
+  const setToggleModal = useCheckInStore((state) => state.setToggleModal);
+  const addQuestion = useCheckInStore((state) => state.addQuestion);
+  const questionToEdit = useCheckInStore((state) => state.questionToEdit);
+  const updateQuestion = useCheckInStore((state) => state.updateQuestion);
+
 
   useEffect(() => {
-    if (editingQuestion) {
-      setFormData(editingQuestion);
+    if (questionToEdit) {
+      setFormData(questionToEdit);
     }
-  }, [editingQuestion, setFormData]);
+  }, [questionToEdit, setFormData]);
 
-  useEffect(() => {
-    if (submittedCheckInToEdit) {
-      actions.startEdittingSubmittedCheckIn(submittedCheckInToEdit);
-    }
-  }, [submittedCheckInToEdit]);
+  // useEffect(() => {
+  //   if (submittedCheckInToEdit) {
+  //     actions.startEdittingSubmittedCheckIn(submittedCheckInToEdit);
+  //   }
+  // }, [submittedCheckInToEdit]);
 
   const handleSave = () => {
     if (!formData.label.trim()) {
@@ -49,29 +49,33 @@ export const QuestionModal = () => {
 
     const question = {
       label: formData.label,
-      componentType: selectedQuestionType,
+      componentType: questionType,
       isRequired: formData.isRequired,
       radioOptions: formData.radioOptions,
       selectOptions: formData.selectOptions
     };
 
-    console.log('question to save ', question);
-
-    if (editingQuestion) {
-      console.log('editing question ', editingQuestion);
-      actions.editQuestion(editingQuestion.id, question);
+    if (questionToEdit) {
+      const updatedEquestion = {
+        ...question,
+        id: questionToEdit.id
+      };
+      updateQuestion(updatedEquestion);
     } else {
-      actions.addQuestion(question);
+      addQuestion(question);
     }
-    actions.closeModal();
+
+    setToggleModal();
+    setFormData(INITAL_QUESTION_STATE);
   };
 
   return (
-    <Modal isOpen={isModalOpen} onClose={actions.closeModal} size="xl">x
+    <Modal isOpen={toggleModal} onClose={setToggleModal} size="xl">
+      x
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          {editingQuestion ? 'Edit Question' : 'New Question'}
+          {questionToEdit ? 'Edit Question' : 'New Question'}
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={6}>
@@ -86,7 +90,7 @@ export const QuestionModal = () => {
             />
           </FormControl>
 
-          {selectedQuestionType === 'select' && (
+          {questionType === 'select' && (
             <FormControl mb={4}>
               <FormLabel>Options (comma-separated)</FormLabel>
               <Input
@@ -102,7 +106,7 @@ export const QuestionModal = () => {
             </FormControl>
           )}
 
-          {selectedQuestionType === 'radio' && (
+          {questionType === 'radio' && (
             <FormControl mb={4}>
               <FormLabel>Options (comma-separated)</FormLabel>
               <Input
@@ -129,7 +133,7 @@ export const QuestionModal = () => {
 
           <Flex justify="flex-end" mt={8}>
             <Button colorScheme="blue" onClick={handleSave}>
-              {editingQuestion ? 'Save Changes' : 'Add Question'}
+              {questionToEdit ? 'Save Changes' : 'Add Question'}
             </Button>
           </Flex>
         </ModalBody>

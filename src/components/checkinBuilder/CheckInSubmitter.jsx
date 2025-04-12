@@ -3,11 +3,13 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useAdminService from '../../hooks/services/useAdminService';
 import { useRef } from 'react';
 import { useLocalAuth } from '../../context/LocalAuthProvider';
-import { useCheckin } from '../../context/CheckinContext';
 import { MdPublish } from 'react-icons/md';
+import useCheckInStore from '../../store/checkin-store';
 
 export const CheckInSubmitter = () => {
-  const { actions, formQuestions } = useCheckin();
+  const questions = useCheckInStore((state) => state.questions);
+  const resetQuestions = useCheckInStore((state) => state.resetQuestions);
+
   const { userDetails } = useLocalAuth();
   const { createAdminCheckIn } = useAdminService();
   const queryClient = useQueryClient();
@@ -23,7 +25,7 @@ export const CheckInSubmitter = () => {
         duration: 3000
       });
       queryClient.invalidateQueries(['allAdminCheckIn']);
-      actions.resetForm();
+      resetQuestions();
     },
     onError: (error) => {
       toast({
@@ -48,7 +50,7 @@ export const CheckInSubmitter = () => {
     const checkInToSave = {
       checkInId: checkInNameRef.current.value.trim(),
       createdBy: `${userDetails.firstName} ${userDetails.lastName}`,
-      questions: formQuestions,
+      questions: questions,
       published: false
     };
 
@@ -57,7 +59,7 @@ export const CheckInSubmitter = () => {
 
   return (
     <>
-      {formQuestions?.length > 0 ? (
+      {questions.length > 0 ? (
         <>
           <Input
             placeholder="Enter check-in name"

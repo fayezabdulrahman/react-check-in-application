@@ -16,16 +16,21 @@ import {
   AlertDialogFooter
 } from '@chakra-ui/react';
 import { MdEdit, MdDelete } from 'react-icons/md';
-import { useCheckin } from '../../context/CheckinContext';
 import { useRef, useState } from 'react';
-const QuestionCard = ({question}) => {
-  const { actions } = useCheckin();
+import useCheckInStore from '../../store/checkin-store';
+const QuestionCard = ({ question }) => {
   const [questionToDelete, setQuestionToDelete] = useState(null);
   const cancelRef = useRef();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const removeQuestion = useCheckInStore((state) => state.removeQuestion);
+  const setQuestionToEdit = useCheckInStore((state) => state.setQuestionToEdit);
+
+  const handleEdit = (question) => {
+    setQuestionToEdit(question);
+  };
 
   const handleDelete = () => {
-    actions.deleteQuestion(questionToDelete);
+    removeQuestion(questionToDelete);
     onClose();
   };
   return (
@@ -55,7 +60,7 @@ const QuestionCard = ({question}) => {
               <IconButton
                 icon={<MdEdit />}
                 aria-label="Edit question"
-                onClick={() => actions.startEditing(question)}
+                onClick={() => handleEdit(question)}
                 variant="ghost"
               />
               <IconButton

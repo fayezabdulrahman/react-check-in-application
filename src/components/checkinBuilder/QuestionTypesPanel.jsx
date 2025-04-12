@@ -1,10 +1,13 @@
 import { Button, Flex, Text } from '@chakra-ui/react';
-import { useCheckin } from '../../context/CheckinContext';
-
+import useCheckInStore from '../../store/checkin-store';
 
 export const QuestionTypesPanel = () => {
-  const { actions } = useCheckin();
-  
+  const setToggleModal = useCheckInStore((state) => state.setToggleModal);
+  const setQuestionType = useCheckInStore((state) => state.setQuestionType);
+
+  const store = useCheckInStore();
+  console.log('Store:', store); // check if anything shows up
+
   const questionTypes = [
     { type: 'text', label: 'Short Text' },
     { type: 'textarea', label: 'Long Text' },
@@ -22,7 +25,10 @@ export const QuestionTypesPanel = () => {
           key={question.type}
           justifyContent="flex-start"
           variant="outline"
-          onClick={() => actions.openModal(question.type)}
+          onClick={() => {
+            setToggleModal();
+            setQuestionType(question.type);
+          }}
         >
           {question.label}
         </Button>
