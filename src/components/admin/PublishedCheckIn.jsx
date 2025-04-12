@@ -1,121 +1,121 @@
 import {
-  Container,
+  IconButton,
+  Skeleton,
+  Flex,
+  Link,
   Divider,
   Heading,
   Stat,
   StatLabel,
   StatNumber,
   StatHelpText,
-  useToast,
-  Button
+  Box,
+  Text,
+  useToast
 } from '@chakra-ui/react';
 import { Card, CardBody, CardFooter } from '@chakra-ui/react';
 import { useAdmin } from '../../context/AdminProvider';
 import { useEffect } from 'react';
 import { Link as ReactRouterLink } from 'react-router-dom';
-import { Link as ChakraLink } from '@chakra-ui/react';
+import { MdRefresh } from 'react-icons/md';
 import Loading from '../shared/Loading';
 import { useMutation } from '@tanstack/react-query';
 import useAdminService from '../../hooks/services/useAdminService';
 import LocalStorageService from '../../util/LocalStorageService';
+import usePublishedCheckInAnalytics from '../../hooks/usePublishedCheckInAnalytics';
+import usePublishedCheckInQuery from '../../hooks/usePublishedCheckInQuery';
 
 const PublishedCheckIn = () => {
-  const { publishedCheckIn, checkInAnalytics, setCheckInAnalytics  } = useAdmin();
-  const {fetchPublishedCheckInAnalytics} = useAdminService();
+  const { publishedCheckIn, checkInAnalytics } = useAdmin();
   const toast = useToast();
 
+  const { isLoading: publishedCheckinIsLoading } = usePublishedCheckInQuery();
+
   const {
-    mutate: fetchCheckInAnalyticMutate,
-    isPending,
-    isLoading
-  } = useMutation({
-    mutationFn: fetchPublishedCheckInAnalytics,
-    onSuccess: (response) => {
-      if (response) {
-        console.log('analyitcs response ', response);
-        setCheckInAnalytics(response);
-        LocalStorageService.setItem('publishedCheckInAnalytics', response);
-      }
-    },
-    onError: () => {
+    isLoading: publishedAnalyticsLoading,
+    isPending: publishedAnalyticsPending,
+    error: publishedCheckInAnalyticsError,
+    refetch
+  } = usePublishedCheckInAnalytics();
+
+  useEffect(() => {
+    if (publishedCheckInAnalyticsError) {
+      console.log('error ', publishedCheckInAnalyticsError);
       toast({
-        title: 'Failed to get published check in responses.',
+        title: 'Failed to get published check-in responses.',
         status: 'error',
         duration: 3000,
         isClosable: true
       });
     }
-  });
+  }, [publishedCheckInAnalyticsError, toast]);
 
-  useEffect(() => {
-    console.log('inside useEffectsss');
-    const cachedAnalytics = LocalStorageService.getItem(
-      'publishedCheckInAnalytics'
-    );
-    if (cachedAnalytics) {
-      setCheckInAnalytics(cachedAnalytics);
-    } else {
-      const payload = { checkInId: publishedCheckIn.checkInId };
-      // trigger mutate API Call
-      fetchCheckInAnalyticMutate(payload);
-    }
-  }, [setCheckInAnalytics, fetchCheckInAnalyticMutate, publishedCheckIn]);
-
-  if (isLoading) {
+  if (publishedAnalyticsLoading || publishedCheckinIsLoading) {
     return <Loading />;
   }
 
   return (
-    <Container>
-      <Heading>
-        Your Published Check-in
-      </Heading>
-      <Card mt="1rem">
-        <CardBody>
-          <Heading size="md" mb="1rem">
-            Check-in name: {publishedCheckIn.checkInId}
-          </Heading>
-          <Stat>
-            <StatLabel>Responses</StatLabel>
-            <StatNumber>{checkInAnalytics.count}</StatNumber>
-            <StatHelpText>
-              As of {new Date().toLocaleString('en-GB')}
-            </StatHelpText>
-          </Stat>
-        </CardBody>
-        {checkInAnalytics.count !== 0 && (
+    <Card variant="outline" width="100%">
+      <CardBody>
+        {!publishedCheckIn ? (
+          <Box textAlign="center" py={8}>
+            <Text fontSize="lg" color="gray.500">
+              No check-in currently published
+            </Text>
+            <Text mt={2} fontSize="sm" color="gray.400">
+              Publish a check-in to view responses
+            </Text>
+          </Box>
+        ) : (
           <>
-            <Divider />
+            <Heading size="md" mb={4} color="gray.700">
+              {publishedCheckIn.checkInId}
+            </Heading>
 
-            <CardFooter
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <ChakraLink
-                as={ReactRouterLink}
-                to="/admin/publishedCheckIn"
-                state={{ checkInAnalytics: checkInAnalytics }}
-              >
-                View Results
-              </ChakraLink>
-              <Button
-                isLoading={isPending}
-                loadingText="Refreshing"
-                variant="outline"
-                onClick={() =>
-                  fetchCheckInAnalyticMutate({
-                    checkInId: publishedCheckIn.checkInId
-                  })
-                }
-              >
-                Refresh
-              </Button>
-            </CardFooter>
+            <Stat>
+              <StatLabel color="gray.600">Total Responses</StatLabel>
+              <Skeleton isLoaded={!publishedAnalyticsPending}>
+                <StatNumber fontSize="2xl">
+                  {checkInAnalytics?.count || 0}
+                </StatNumber>
+              </Skeleton>
+              <StatHelpText color="gray.500">
+                Last updated: {new Date().toLocaleTimeString('en-GB')}
+              </StatHelpText>
+            </Stat>
           </>
         )}
-      </Card>
-    </Container>
+      </CardBody>
+
+      {publishedCheckIn && checkInAnalytics?.count > 0 && (
+        <>
+          <Divider />
+          <CardFooter>
+            <Flex justify="space-between" width="100%" align="center">
+              <Link
+                as={ReactRouterLink}
+                to="/admin/publishedCheckIn"
+                state={{ checkInAnalytics }}
+                color="blue.500"
+                fontWeight="500"
+                _hover={{ textDecoration: 'underline' }}
+              >
+                View Results
+              </Link>
+
+              <IconButton
+                icon={<MdRefresh />}
+                variant="outline"
+                aria-label="Refresh analytics"
+                size="sm"
+                isLoading={publishedAnalyticsPending}
+                onClick={() => refetch()}
+              />
+            </Flex>
+          </CardFooter>
+        </>
+      )}
+    </Card>
   );
 };
 

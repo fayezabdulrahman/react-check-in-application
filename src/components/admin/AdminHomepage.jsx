@@ -1,86 +1,44 @@
-import {
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
-  useToast
-} from '@chakra-ui/react';
-import AvailableCheckIn from './AvailableCheckIn';
+import { Heading, Grid, Box, Flex } from '@chakra-ui/react';
 import CreateCheckIn from './CreateCheckIn';
-import { useEffect } from 'react';
-import { useAdmin } from '../../context/AdminProvider';
 import PublishedCheckIn from './PublishedCheckIn';
-import Loading from '../shared/Loading';
-import { INTIAL_CHECKIN_STATE } from '../../constants/application';
-import LocalStorageService from '../../util/LocalStorageService';
-import usePublishedCheckInQuery from '../../hooks/usePublishedCheckInQuery';
 
 const AdminHomepage = () => {
-  // when page loads - call api to fetch db to check for publishedChekIn
-  // if no published check in - render code to ask admin to create check in
-  // if published check in - load check in for admin to view it
-  const { setPublishedCheckIn, publishedCheckIn } = useAdmin();
-  const toast = useToast();
-
-  const {
-    data: publishedCheckinData,
-    isPending: publishedCheckinIsPending,
-    isLoading,
-    error: PublishedCheckinError
-  } = usePublishedCheckInQuery();
-
-  useEffect(() => {
-    const cachedPublishedCheckIn = LocalStorageService.getItem('publishedCheckIn');
-    if (cachedPublishedCheckIn) {
-      console.log('cached published check-in ', cachedPublishedCheckIn);
-      setPublishedCheckIn(cachedPublishedCheckIn);
-    } else if (publishedCheckinData?.checkIn) {
-      console.log('use mutation check in data complete admin homepage', publishedCheckinData);
-      const publishedCheckInDB = publishedCheckinData.checkIn;
-      setPublishedCheckIn(publishedCheckInDB);
-      LocalStorageService.setItem(
-        'publishedCheckIn',
-        publishedCheckInDB
-      );
-    } else {
-      setPublishedCheckIn(INTIAL_CHECKIN_STATE);
-    }
-  }, [publishedCheckinData, setPublishedCheckIn]);
-
-  if (isLoading || publishedCheckinIsPending) {
-    return <Loading />;
-  }
-  if (PublishedCheckinError) {
-    toast({
-      title: 'An error occured.',
-      status: 'error',
-      duration: 3000,
-      isClosable: true
-    });
-    return <p>Failed to fetch published check in. Please try again later...</p>;
-  }
-
-  const isPublishCheckIn = publishedCheckIn.checkInId && publishedCheckIn.published;
-  let content = (
-    <>{!isPublishCheckIn ? <CreateCheckIn /> : <PublishedCheckIn />}</>
-  );
-
   return (
-    <>
-      <Tabs isFitted variant="enclosed" m={4}>
-        <TabList mb="1em">
-          <Tab>Active Check-ins</Tab>
-          <Tab>Created Check-ins</Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel>{content}</TabPanel>
-          <TabPanel>
-            <AvailableCheckIn />
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
-    </>
+    <Flex direction="column" p={8} gap={8} minH="100vh" bg="gray.50">
+      <Heading size="xl" mb={4}>
+        Check-in Dashboard
+      </Heading>
+
+      <Grid
+        templateColumns={{ base: '1fr', lg: '300px 1fr' }}
+        gap={8}
+        alignItems="start"
+      >
+        {/* Left Column - Status & Existing Check-ins */}
+        <Box
+          position={{ lg: 'sticky' }}
+          top={{ lg: '8' }}
+          display="flex"
+          flexDirection="column"
+          gap={6}
+        >
+          <Box bg="white" borderRadius="lg" p={6} boxShadow="md">
+            <Heading size="md" mb={4}>
+              Published Status
+            </Heading>
+            <PublishedCheckIn />
+          </Box>
+        </Box>
+
+        {/* Right Column - Check-in Builder */}
+        <Box bg="white" borderRadius="lg" boxShadow="md" p={6}>
+          <Heading size="md" mb={6}>
+            Create New Check-in
+          </Heading>
+          <CreateCheckIn />
+        </Box>
+      </Grid>
+    </Flex>
   );
 };
 

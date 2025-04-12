@@ -26,12 +26,13 @@ const useAdminService = () => {
     }
   };
 
-  const fetchPublishedCheckInAnalytics = async (payload) => {
+  const fetchPublishedCheckInAnalytics = async (checkInId) => {
+    console.log('making an api call to fetch check in analytics ');
     try {
-      const response = await client.post(
-        API_URLS.publishedCheckInAnalytic,
-        payload
+      const response = await client.get(
+        `${API_URLS.publishedCheckInAnalytic}?checkInId=${checkInId}`
       );
+      console.log('response from published checkIn analytics ', response);
       return response.data;
     } catch (error) {
       console.error('Error fetching published check-in analytics', error);

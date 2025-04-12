@@ -15,7 +15,7 @@ export const useUser = () => {
 };
 
 const UserProvider = ({ children }) => {
-  const [publishedCheckIn, setPublishedCheckIn] = useState(INTIAL_CHECKIN_STATE);
+  const [publishedCheckIn, setPublishedCheckIn] = useState(null);
   const [questionResponse, setQuestionResponse] = useState(INITIAL_QUESTION_RESPONSE);
   const [submittedCheckIns, setSubmittedCheckIns] = useState(undefined);
 

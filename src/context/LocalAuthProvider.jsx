@@ -30,10 +30,10 @@ const LocalAuthProvider = ({ children }) => {
 
   // Ensure app only renders after Auth0 is initialized
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && (!isAuthenticated || userDetails !== null)) {
       setLoading(false);
     }
-  }, [isLoading]);
+  }, [isLoading, isAuthenticated, userDetails]);
 
   const { mutate: fetchUserMutate } = useMutation({
     mutationFn: fetchUser,
@@ -87,6 +87,7 @@ const LocalAuthProvider = ({ children }) => {
   const handleLogout = () => {
     logout({ returnTo: window.location.origin });
     localStorage.clear();
+    setUserDetails(null);
   };
 
   const ctxValue = {

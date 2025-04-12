@@ -1,22 +1,55 @@
 import {
-  Button,
   ButtonGroup,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Text
+  Tooltip,
+  Icon,
+  Box,
+  Flex,
+  IconButton,
+  Text,
+  Badge,
+  useDisclosure
 } from '@chakra-ui/react';
-import { MdDeleteOutline } from 'react-icons/md';
-import { Link as ReactRouterLink } from 'react-router-dom';
+import {
+  MdDeleteOutline,
+  MdEdit,
+  MdUnpublished,
+  MdPublish,
+  MdOutlineQuestionAnswer
+} from 'react-icons/md';
+// import { Link as ReactRouterLink } from 'react-router-dom';
 import { useAdmin } from '../../context/AdminProvider';
+import EditCheckInModal from './EditCheckInModal';
+import { useCheckin } from '../../context/CheckinContext';
 const CreatedCheckInCard = ({
   availableCheckIn,
   publishCheckIn,
   unPublishCheckIn,
   deleteCheckIn
 }) => {
-  const { performingAdminAction, setPerformingAdminAction } = useAdmin();
+  const {
+    performingAdminAction,
+    setPerformingAdminAction,
+    submittedCheckIns
+  } = useAdmin();
+  const {setSubmittedCheckInToEdit, actions} = useCheckin();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const handleEditCheckIn = (checkInId) => {
+    const checkInToEdit = submittedCheckIns.find(
+      (checkIn) => checkIn.checkInId === checkInId
+    );
+    actions.startEdittingSubmittedCheckIn(checkInToEdit);
+    onOpen();
+    // setCheckInToEdit(checkInToEdit);
+    // setSubmittedCheckInToEdit(checkInToEdit);
+  };
+
+  const handleEditCheckInModalClose = () => {
+    console.log('resetting check in to edit ');
+    // setCheckInToEdit(null);
+    actions.resetSubmittedCheckInToEdit();
+    onClose();
+  };
 
   const handleAction = (checkInId, actionType) => {
     setPerformingAdminAction({
@@ -57,59 +90,183 @@ const CreatedCheckInCard = ({
   const isUnpublishing =
     isProcessing && performingAdminAction.actionType === 'unpublish';
 
+  // return (
+  //   <Card mt="1rem">
+  //     <CardHeader>Check-in name: {availableCheckIn.checkInId}</CardHeader>
+  //     <CardBody>
+  //       <Text>Created By: {availableCheckIn.createdBy}</Text>
+  //       <Text>Published: {isCurrentlyPublished ? 'Yes' : 'No'} </Text>
+  //       <Text>Questions: {availableCheckIn.questions.length}</Text>
+  //     </CardBody>
+  //     <CardFooter justifyContent="space-between">
+  //       <ButtonGroup>
+  //         <Button
+  //           isLoading={isPublishing || isUnpublishing}
+  //           loadingText={
+  //             isPublishing
+  //               ? 'Publishing...'
+  //               : isUnpublishing
+  //               ? 'Unpublishing...'
+  //               : ''
+  //           }
+  //           variant="solid"
+  //           onClick={() =>
+  //             handleAction(
+  //               availableCheckIn.checkInId,
+  //               isCurrentlyPublished ? 'unpublish' : 'publish'
+  //             )
+  //           }
+  //         >
+  //           {isCurrentlyPublished ? 'Unpublish' : 'Publish'}
+  //         </Button>
+  //         <Button
+  //           as={ReactRouterLink}
+  //           to={isCurrentlyPublished ? '#' : '/admin/editCheckIn'}
+  //           state={{ checkInId: availableCheckIn.checkInId }}
+  //           variant="ghost"
+  //           isDisabled={isCurrentlyPublished}
+  //           onClick={(e) => {
+  //             if (isCurrentlyPublished) {
+  //               e.preventDefault(); // Prevent navigation if disabled
+  //             }
+  //           }}
+  //         >
+  //           Edit
+  //         </Button>
+  //       </ButtonGroup>
+  //       <Button
+  //         leftIcon={<MdDeleteOutline />}
+  //         variant="outline"
+  //         onClick={() => handleAction(availableCheckIn.checkInId, 'delete')}
+  //       >
+  //         Delete
+  //       </Button>
+  //     </CardFooter>
+  //   </Card>
+  // );
+
   return (
-    <Card mt="1rem">
-      <CardHeader>Check-in name: {availableCheckIn.checkInId}</CardHeader>
-      <CardBody>
-        <Text>Created By: {availableCheckIn.createdBy}</Text>
-        <Text>Published: {isCurrentlyPublished ? 'Yes' : 'No'} </Text>
-        <Text>Questions: {availableCheckIn.questions.length}</Text>
-      </CardBody>
-      <CardFooter justifyContent="space-between">
-        <ButtonGroup>
-          <Button
-            isLoading={isPublishing || isUnpublishing}
-            loadingText={
-              isPublishing
-                ? 'Publishing...'
-                : isUnpublishing
-                ? 'Unpublishing...'
-                : ''
-            }
-            variant="solid"
-            onClick={() =>
-              handleAction(
-                availableCheckIn.checkInId,
-                isCurrentlyPublished ? 'unpublish' : 'publish'
-              )
-            }
+    <Box
+      p={4}
+      bg="white"
+      borderRadius="lg"
+      border="1px solid"
+      borderColor="gray.100"
+      transition="all 0.2s"
+      _hover={{ shadow: 'md' }}
+      minHeight="140px" // Fixed minimum height
+      display="flex"
+      flexDirection="column"
+      justifyContent="space-between"
+    >
+      {/* Header Section */}
+      <Box position="relative">
+        <Flex align="center" gap={2} mb={2}>
+          <Text
+            fontSize="md"
+            fontWeight="600"
+            color="gray.700"
+            isTruncated
+            maxWidth="70%"
           >
-            {isCurrentlyPublished ? 'Unpublish' : 'Publish'}
-          </Button>
-          <Button
-            as={ReactRouterLink}
-            to={isCurrentlyPublished ? '#' : '/admin/editCheckIn'}
-            state={{ checkInId: availableCheckIn.checkInId }}
-            variant="ghost"
-            isDisabled={isCurrentlyPublished}
-            onClick={(e) => {
-              if (isCurrentlyPublished) {
-                e.preventDefault(); // Prevent navigation if disabled
+            {availableCheckIn.checkInId}
+          </Text>
+          <Badge
+            colorScheme={isCurrentlyPublished ? 'green' : 'gray'}
+            variant="subtle"
+            position="absolute"
+            right="0"
+            top="0"
+            fontSize="xs"
+          >
+            {isCurrentlyPublished ? 'Live' : 'Draft'}
+          </Badge>
+        </Flex>
+      </Box>
+
+      {/* Metadata */}
+      <Box mt={2} mb={4}>
+        <Text fontSize="sm" color="gray.500" noOfLines={2}>
+          Created by {availableCheckIn.createdBy}
+        </Text>
+      </Box>
+
+      {/* Footer with Actions */}
+      <Flex
+        justify="space-between"
+        align="center"
+        borderTop="1px solid"
+        borderColor="gray.100"
+        pt={3}
+      >
+        <Flex align="center" gap={1}>
+          <Icon as={MdOutlineQuestionAnswer} color="gray.500" boxSize={4} />
+          <Text fontSize="sm" color="gray.600">
+            {availableCheckIn.questions.length}
+          </Text>
+        </Flex>
+
+        <ButtonGroup variant="ghost" size="sm" spacing={1}>
+          {/* <Tooltip label={isCurrentlyPublished ? 'Edit disabled (published)' : 'Edit'}>
+            <IconButton
+              icon={<MdEdit />}
+              aria-label="Edit"
+              as={ReactRouterLink}
+              to={isCurrentlyPublished ? '#' : '/admin/editCheckIn'}
+              state={{ checkInId: availableCheckIn.checkInId }}
+              isDisabled={isCurrentlyPublished}
+              colorScheme="gray"
+              variant="ghost"
+            />
+          </Tooltip> */}
+          <Tooltip
+            label={isCurrentlyPublished ? 'Edit disabled (published)' : 'Edit'}
+          >
+            <IconButton
+              icon={<MdEdit />}
+              aria-label="Edit"
+              onClick={() => handleEditCheckIn(availableCheckIn.checkInId)}
+              isDisabled={isCurrentlyPublished}
+              colorScheme="gray"
+              variant="ghost"
+            />
+          </Tooltip>
+
+          <Tooltip label={isCurrentlyPublished ? 'Unpublish' : 'Publish'}>
+            <IconButton
+              icon={isCurrentlyPublished ? <MdUnpublished /> : <MdPublish />}
+              aria-label={isCurrentlyPublished ? 'Unpublish' : 'Publish'}
+              isLoading={isPublishing || isUnpublishing}
+              onClick={() =>
+                handleAction(
+                  availableCheckIn.checkInId,
+                  isCurrentlyPublished ? 'unpublish' : 'publish'
+                )
               }
-            }}
-          >
-            Edit
-          </Button>
+              colorScheme={isCurrentlyPublished ? 'orange' : 'green'}
+            />
+          </Tooltip>
+
+          <Tooltip label="Delete">
+            <IconButton
+              icon={<MdDeleteOutline />}
+              aria-label="Delete"
+              colorScheme="red"
+              onClick={() => handleAction(availableCheckIn.checkInId, 'delete')}
+            />
+          </Tooltip>
         </ButtonGroup>
-        <Button
-          leftIcon={<MdDeleteOutline />}
-          variant="outline"
-          onClick={() => handleAction(availableCheckIn.checkInId, 'delete')}
-        >
-          Delete
-        </Button>
-      </CardFooter>
-    </Card>
+      </Flex>
+      <EditCheckInModal
+        isOpen={isOpen}
+        onClose={handleEditCheckInModalClose}
+        checkInId={availableCheckIn.checkInId}
+        onSuccess={() => {
+          // Add any refresh logic if needed
+          console.log('on success from created check in card ');
+        }}
+      />
+    </Box>
   );
 };
 

@@ -1,4 +1,4 @@
-import { Container, Heading, useToast } from '@chakra-ui/react';
+import { Text, Heading, useToast, Box, Grid } from '@chakra-ui/react';
 import { useAdmin } from '../../context/AdminProvider';
 import { useEffect, useState } from 'react';
 import Loading from '../shared/Loading';
@@ -7,9 +7,8 @@ import CreatedCheckInCard from './CreatedCheckInCard';
 import { INITIAL_PERFORMING_ACTION_STATE } from '../../constants/application';
 import LocalStorageService from '../../util/LocalStorageService';
 import PopUpModal from '../shared/PopUpModal';
-import { INTIAL_CHECKIN_STATE } from '../../constants/application';
 import useAdminService from '../../hooks/services/useAdminService';
-
+import useAvailableCheckInQuery from '../../hooks/useAvailableCheckInQuery';
 const AvailableCheckIn = () => {
   const {
     submittedCheckIns,
@@ -35,38 +34,39 @@ const AvailableCheckIn = () => {
     error
   } = useQuery({
     queryKey: ['allAdminCheckIn'],
-    queryFn: fetchAllAdminCheckIn
+    queryFn: fetchAllAdminCheckIn,
+    staleTime: 1000 * 60 * 10 // Cache for 10 minutes
   });
 
   const { mutate: publishCheckInMutate } = useMutation({
     mutationFn: publishNewCheckIn,
     onMutate: (payload) => {
       let contextToReturn = {};
-      const isPublishedCheckIn =
-      LocalStorageService.getItem('publishedCheckIn');
-      if (isPublishedCheckIn) {
-        if (isPublishedCheckIn.checkInId !== payload.checkInToPublish) {
-          contextToReturn['removeLocalStorage'] = true;
-        }
-      }
+      // const isPublishedCheckIn =
+      // LocalStorageService.getItem('publishedCheckIn');
+      // if (isPublishedCheckIn) {
+      //   if (isPublishedCheckIn.checkInId !== payload.checkInToPublish) {
+      //     contextToReturn['removeLocalStorage'] = true;
+      //   }
+      // }
       return contextToReturn; // Ensure context is never undefined
     },
     onSuccess: (response, payload, context) => {
       const message = response.message;
       // remove old cache first
-      if (context?.removeLocalStorage) {
-        LocalStorageService.removeItem('publishedCheckInAnalytics');
-        LocalStorageService.removeItem('publishedCheckIn');
-      }
+      // if (context?.removeLocalStorage) {
+      //   LocalStorageService.removeItem('publishedCheckInAnalytics');
+      //   LocalStorageService.removeItem('publishedCheckIn');
+      // }
       // if we get a successful response, set cache and update state
       if (response.checkIn) {
         const serverPublishedCheckIn = response.checkIn;
-        console.log('response from from publishing ', serverPublishedCheckIn);
+        console.log('response from publishing ', serverPublishedCheckIn);
 
         // set new state
         setPublishedCheckIn(serverPublishedCheckIn);
         // set new cache for published check-in
-        LocalStorageService.setItem('publishedCheckIn', serverPublishedCheckIn);
+        // LocalStorageService.setItem('publishedCheckIn', serverPublishedCheckIn);
         // reset performing action
         setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
 
@@ -99,13 +99,12 @@ const AvailableCheckIn = () => {
       const message = response.message;
       // if we get a successfull response, remove cache and update state
       if (response.checkIn) {
-        LocalStorageService.removeItem('publishedCheckInAnalytics');
-        LocalStorageService.removeItem('publishedCheckIn');
-        const serverPublishedCheckIn = response.checkIn;
-        console.log('server unpublished check in response ', serverPublishedCheckIn);
+        console.log('response.checkIn is valid ', response.checkIn);
+        // LocalStorageService.removeItem('publishedCheckInAnalytics');
+        // LocalStorageService.removeItem('publishedCheckIn');
 
         // reset state
-        setPublishedCheckIn(INTIAL_CHECKIN_STATE);
+        setPublishedCheckIn(null);
 
         // reset performing action
         setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
@@ -123,6 +122,7 @@ const AvailableCheckIn = () => {
     onError: (error) => {
       // reset performing action
       setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
+      console.error(error);
       toast({
         title: error.response?.data?.message || 'An error occurred',
         status: 'error',
@@ -157,7 +157,7 @@ const AvailableCheckIn = () => {
         LocalStorageService.removeItem('publishedCheckIn');
 
         // reset published check in state
-        setPublishedCheckIn(INTIAL_CHECKIN_STATE);
+        setPublishedCheckIn(null);
       }
 
       // invalidate cache and refetch
@@ -216,37 +216,86 @@ const AvailableCheckIn = () => {
     }
   }, [setSubmittedCheckIns, allAdminCheckInData]);
 
+  // Directly use query data instead of context state
+  // const submittedCheckIns = allAdminCheckInData?.checkIns || [];
+
+
+  useEffect(() => {
+    if (error) {
+      console.log('error loading all created check ins ', error);
+      toast({
+        title: 'Failed to load all created check in',
+        status: 'error',
+        duration: 3000,
+        isClosable: true
+      });
+    }
+  }, [error]);
+
   if (isLoading) {
     return <Loading />;
   }
-  if (error) {
-    toast({
-      title: 'Failed to load all created check in',
-      status: 'error',
-      duration: 3000,
-      isClosable: true
-    });
-  }
+
 
   return (
-    <Container>
-      <Heading>Created Check-ins</Heading>
-      {submittedCheckIns?.map((available, index) => (
-        <CreatedCheckInCard
-          availableCheckIn={available}
-          publishCheckIn={(payload) => handlePublishCheckIn(payload)}
-          unPublishCheckIn={(payload) => handleUnPublishCheckIn(payload)}
-          deleteCheckIn={(payload) => handleDeleteCheckIn(payload, null)}
-          key={index}
-        />
-      ))}
+    <Box mt={8} px={{ base: 4, md: 8 }}>
+      <Heading size="md" mb={4} fontWeight="500" color="gray.700">
+        My Check-ins
+        <Text fontSize="sm" color="gray.500" mt={1} fontWeight="normal">
+          Manage your check-in forms
+        </Text>
+      </Heading>
+  
+      {submittedCheckIns?.length === 0 ? (
+        <Box 
+          textAlign="center" 
+          p={8} 
+          borderRadius="lg" 
+          border="1px dashed" 
+          borderColor="gray.100"
+          bg="white"
+        >
+          <Text color="gray.500" mb={2}>
+            No Check-in forms created yet
+          </Text>
+        </Box>
+      ) : (
+        <Grid
+          templateColumns={{ 
+            base: '1fr', 
+            md: 'repeat(2, 1fr)', 
+            xl: 'repeat(3, 1fr)' 
+          }}
+          gap={6}
+          paddingBottom={6}
+        >
+          {submittedCheckIns?.map((available, index) => (
+            <Box
+              key={index}
+              borderRadius="lg"
+              border="1px solid"
+              borderColor="gray.100"
+              _hover={{ shadow: 'md' }}
+              transition="all 0.2s"
+            >
+              <CreatedCheckInCard
+                availableCheckIn={available}
+                publishCheckIn={handlePublishCheckIn}
+                unPublishCheckIn={handleUnPublishCheckIn}
+                deleteCheckIn={handleDeleteCheckIn}
+              />
+            </Box>
+          ))}
+        </Grid>
+      )}
+  
       <PopUpModal
         openModal={openConfirmationModal}
         modalConfig={modalConfig}
         onConfirm={(output) => handleDeleteCheckIn(null, output)}
         onClose={() => setOpenConfirmationModal(false)}
       />
-    </Container>
+    </Box>
   );
 };
 

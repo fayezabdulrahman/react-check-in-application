@@ -88,7 +88,7 @@ const CheckInForm = () => {
         );
       } else {
         console.log('inside else block');
-        setPublishedCheckIn(INTIAL_CHECKIN_STATE);
+        setPublishedCheckIn(null);
       }
     }
 
