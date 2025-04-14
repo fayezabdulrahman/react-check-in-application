@@ -46,7 +46,9 @@ const useUserService = () => {
 
   const fetchPublishedCheckin = async () => {
     try {
+      console.log('fetching published check in');
       const response = await client.get(API_URLS.publishedCheckIn);
+      console.log('response from published check in ', response);
       return response.data;
     } catch (error) {
       console.error('Error fetching published check-in', error);

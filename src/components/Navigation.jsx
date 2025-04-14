@@ -39,72 +39,11 @@ const Navigation = () => {
 
   const isAdmin = userRoles.includes('admin');
 
-  const userName = `${userDetails.firstName} ${userDetails.lastName}`;
+  const userName = `${userDetails?.firstName} ${userDetails?.lastName}`;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleMenuOpen = () => setIsMenuOpen(true);
   const handleMenuClose = () => setIsMenuOpen(false);
-
-  // return (
-  //   <>
-  //     <Flex gap="8" alignItems="center" justifyContent="space-between" p={4}>
-  //       <IconButton
-  //         variant="outline"
-  //         aria-label="Call Sage"
-  //         fontSize="20px"
-  //         ref={btnRef}
-  //         onClick={onOpen}
-  //         icon={<GiHamburgerMenu />}
-  //       />
-  //       <Image rounded="sm" src={logo} height='50px' />
-  //     </Flex>
-
-  //     <Drawer
-  //       isOpen={isOpen}
-  //       placement="left"
-  //       onClose={onClose}
-  //       finalFocusRef={btnRef}
-  //     >
-  //       <DrawerOverlay />
-  //       <DrawerContent>
-  //         <DrawerCloseButton />
-  //         <DrawerHeader display="flex" gap="4" alignItems="center">
-  //           <Wrap>
-  //             <WrapItem>
-  //               <Avatar name={userName} src={user.picture}></Avatar>
-  //             </WrapItem>
-  //           </Wrap>
-  //           <Box>{userName}</Box>
-  //         </DrawerHeader>
-
-  //         <DrawerBody>
-  //           <VStack
-  //             divider={<StackDivider borderColor="gray.200" />}
-  //             spacing={4}
-  //             align="stretch"
-  //           >
-  //             <Box display="flex" alignItems="center" gap="2">
-  //               <Icon as={IoHomeOutline} boxSize={6} />
-  //               <Link
-  //                 as={ReactRouterLink}
-  //                 to={isAdmin ? '/admin' : '/home'}
-  //                 onClick={onClose}
-  //               >
-  //                 Home
-  //               </Link>
-  //             </Box>
-  //             <Box display="flex" alignItems="center" gap="2">
-  //               <Icon as={CiLogout} boxSize={6} />
-  //               <Link as={ReactRouterLink} onClick={logout}>
-  //                 Logout
-  //               </Link>
-  //             </Box>
-  //           </VStack>
-  //         </DrawerBody>
-  //       </DrawerContent>
-  //     </Drawer>
-  //   </>
-  // );
 
   return (
     <>

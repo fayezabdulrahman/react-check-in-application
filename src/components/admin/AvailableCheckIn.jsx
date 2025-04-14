@@ -8,15 +8,22 @@ import { INITIAL_PERFORMING_ACTION_STATE } from '../../constants/application';
 import LocalStorageService from '../../util/LocalStorageService';
 import PopUpModal from '../shared/PopUpModal';
 import useAdminService from '../../hooks/services/useAdminService';
-import useAvailableCheckInQuery from '../../hooks/useAvailableCheckInQuery';
+import useCheckInStore from '../../store/checkin-store';
 const AvailableCheckIn = () => {
+  const { setPerformingAdminAction } = useAdmin();
   const {
-    submittedCheckIns,
-    setSubmittedCheckIns,
-    setPublishedCheckIn,
-    setPerformingAdminAction
-  } = useAdmin();
-  const {fetchAllAdminCheckIn, publishNewCheckIn, unPublishCheckIn, deleteCheckIn} = useAdminService();
+    fetchAllAdminCheckIn,
+    publishNewCheckIn,
+    unPublishCheckIn,
+    deleteCheckIn
+  } = useAdminService();
+
+  const setPublishedCheckIn = useCheckInStore(
+    (state) => state.setPublishedCheckIn
+  );
+  const setCheckInResponses = useCheckInStore(
+    (state) => state.setCheckInResponses
+  );
 
   const queryCleint = useQueryClient();
 
@@ -28,13 +35,12 @@ const AvailableCheckIn = () => {
     modalBody: 'Deleting this will delete for all admin users.'
   };
 
-  const {
-    data: allAdminCheckInData,
-    isLoading,
-    error
-  } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['allAdminCheckIn'],
     queryFn: fetchAllAdminCheckIn,
+    meta: {
+      ErrorMessage: 'failed to fetch all admin checkins'
+    },
     staleTime: 1000 * 60 * 10 // Cache for 10 minutes
   });
 
@@ -72,6 +78,7 @@ const AvailableCheckIn = () => {
 
         // invalidate cache and refetch
         queryCleint.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
+        queryCleint.invalidateQueries({ queryKey: ['publishedCheckin'] });
       }
 
       toast({
@@ -105,11 +112,14 @@ const AvailableCheckIn = () => {
 
         // reset state
         setPublishedCheckIn(null);
+        setCheckInResponses([]);
 
         // reset performing action
         setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
         // invalidate cache and refetch
         queryCleint.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
+        queryCleint.invalidateQueries({ queryKey: ['publishedCheckinAnalytics'] });
+        queryCleint.refetchQueries({queryKey: ['publishedCheckin']});
       }
 
       toast({
@@ -208,34 +218,18 @@ const AvailableCheckIn = () => {
     }
   };
 
-  useEffect(() => {
-    if (allAdminCheckInData?.checkIns) {
-      setSubmittedCheckIns(allAdminCheckInData.checkIns);
-    } else {
-      setSubmittedCheckIns([]);
-    }
-  }, [setSubmittedCheckIns, allAdminCheckInData]);
-
-  // Directly use query data instead of context state
-  // const submittedCheckIns = allAdminCheckInData?.checkIns || [];
-
-
-  useEffect(() => {
-    if (error) {
-      console.log('error loading all created check ins ', error);
-      toast({
-        title: 'Failed to load all created check in',
-        status: 'error',
-        duration: 3000,
-        isClosable: true
-      });
-    }
-  }, [error]);
-
   if (isLoading) {
     return <Loading />;
   }
 
+  if (error) {
+    toast({
+      title: 'Failed to load all created check in',
+      status: 'error',
+      duration: 3000,
+      isClosable: true
+    });
+  }
 
   return (
     <Box mt={8} px={{ base: 4, md: 8 }}>
@@ -245,13 +239,14 @@ const AvailableCheckIn = () => {
           Manage your check-in forms
         </Text>
       </Heading>
-  
-      {submittedCheckIns?.length === 0 ? (
-        <Box 
-          textAlign="center" 
-          p={8} 
-          borderRadius="lg" 
-          border="1px dashed" 
+
+      {/* {submittedCheckIns?.length === 0 ? ( */}
+      {data?.checkins?.length === 0 ? (
+        <Box
+          textAlign="center"
+          p={8}
+          borderRadius="lg"
+          border="1px dashed"
           borderColor="gray.100"
           bg="white"
         >
@@ -261,15 +256,16 @@ const AvailableCheckIn = () => {
         </Box>
       ) : (
         <Grid
-          templateColumns={{ 
-            base: '1fr', 
-            md: 'repeat(2, 1fr)', 
-            xl: 'repeat(3, 1fr)' 
+          templateColumns={{
+            base: '1fr',
+            md: 'repeat(2, 1fr)',
+            xl: 'repeat(3, 1fr)'
           }}
           gap={6}
           paddingBottom={6}
         >
-          {submittedCheckIns?.map((available, index) => (
+          {/* {submittedCheckIns?.map((available, index) => ( */}
+          {data?.checkIns?.map((available, index) => (
             <Box
               key={index}
               borderRadius="lg"
@@ -288,7 +284,7 @@ const AvailableCheckIn = () => {
           ))}
         </Grid>
       )}
-  
+
       <PopUpModal
         openModal={openConfirmationModal}
         modalConfig={modalConfig}

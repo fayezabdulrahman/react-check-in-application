@@ -9,6 +9,20 @@ const useCheckInStore = create((set) => ({
   questionType: '',
   toggleModal: false,
   questionToEdit: null,
+  publishedCheckIn: null,
+  checkInResponses: [],
+  setCheckInResponses: (checkInResponses) =>
+    set(
+      produce((state) => {
+        state.checkInResponses = checkInResponses;
+      })
+    ),
+  setPublishedCheckIn: (checkIn) =>
+    set(
+      produce((state) => {
+        state.publishedCheckIn = checkIn;
+      })
+    ),
   setQuestionToEdit: (question) =>
     set(
       produce((state) => {

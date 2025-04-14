@@ -1,16 +1,15 @@
-import { useLocation } from 'react-router-dom';
 import { AgGridReact } from 'ag-grid-react';
 import { useMemo } from 'react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 import { Box, Heading } from '@chakra-ui/react';
+import useCheckInStore from '../../store/checkin-store';
 const DetailedPublishedCheckIn = () => {
-  const location = useLocation();
-  const { checkInAnalytics } = location.state;
+  const checkInResponses = useCheckInStore((state) => state.checkInResponses);
 
   const transformData = (data) => {
     // Extract questions from the first set of answers
-    const questions = data[0]?.answers.map((answer) => answer.question);
+    const questions = data[0].answers.map((answer) => answer.question);
 
     // Extract answers grouped by each question
     const answers = data.map((item) => {
@@ -26,7 +25,7 @@ const DetailedPublishedCheckIn = () => {
     return { questions, answers };
   };
 
-  const { questions, answers } = transformData(checkInAnalytics.responses);
+  const { questions, answers } = transformData(checkInResponses);
 
   // Define the columns for ag-Grid
   const columnDefs = useMemo(() => {
