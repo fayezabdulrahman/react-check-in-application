@@ -16,7 +16,6 @@ import {
   MdPublish,
   MdOutlineQuestionAnswer
 } from 'react-icons/md';
-// import { Link as ReactRouterLink } from 'react-router-dom';
 import { useAdmin } from '../../context/AdminProvider';
 import EditCheckInModal from './EditCheckInModal';
 import { useCheckin } from '../../context/CheckinContext';
@@ -26,12 +25,9 @@ const CreatedCheckInCard = ({
   unPublishCheckIn,
   deleteCheckIn
 }) => {
-  const {
-    performingAdminAction,
-    setPerformingAdminAction,
-    submittedCheckIns
-  } = useAdmin();
-  const {setSubmittedCheckInToEdit, actions} = useCheckin();
+  const { performingAdminAction, setPerformingAdminAction, submittedCheckIns } =
+    useAdmin();
+  const { actions } = useCheckin();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleEditCheckIn = (checkInId) => {
@@ -40,8 +36,6 @@ const CreatedCheckInCard = ({
     );
     actions.startEdittingSubmittedCheckIn(checkInToEdit);
     onOpen();
-    // setCheckInToEdit(checkInToEdit);
-    // setSubmittedCheckInToEdit(checkInToEdit);
   };
 
   const handleEditCheckInModalClose = () => {
@@ -89,61 +83,6 @@ const CreatedCheckInCard = ({
     isProcessing && performingAdminAction.actionType === 'publish';
   const isUnpublishing =
     isProcessing && performingAdminAction.actionType === 'unpublish';
-
-  // return (
-  //   <Card mt="1rem">
-  //     <CardHeader>Check-in name: {availableCheckIn.checkInId}</CardHeader>
-  //     <CardBody>
-  //       <Text>Created By: {availableCheckIn.createdBy}</Text>
-  //       <Text>Published: {isCurrentlyPublished ? 'Yes' : 'No'} </Text>
-  //       <Text>Questions: {availableCheckIn.questions.length}</Text>
-  //     </CardBody>
-  //     <CardFooter justifyContent="space-between">
-  //       <ButtonGroup>
-  //         <Button
-  //           isLoading={isPublishing || isUnpublishing}
-  //           loadingText={
-  //             isPublishing
-  //               ? 'Publishing...'
-  //               : isUnpublishing
-  //               ? 'Unpublishing...'
-  //               : ''
-  //           }
-  //           variant="solid"
-  //           onClick={() =>
-  //             handleAction(
-  //               availableCheckIn.checkInId,
-  //               isCurrentlyPublished ? 'unpublish' : 'publish'
-  //             )
-  //           }
-  //         >
-  //           {isCurrentlyPublished ? 'Unpublish' : 'Publish'}
-  //         </Button>
-  //         <Button
-  //           as={ReactRouterLink}
-  //           to={isCurrentlyPublished ? '#' : '/admin/editCheckIn'}
-  //           state={{ checkInId: availableCheckIn.checkInId }}
-  //           variant="ghost"
-  //           isDisabled={isCurrentlyPublished}
-  //           onClick={(e) => {
-  //             if (isCurrentlyPublished) {
-  //               e.preventDefault(); // Prevent navigation if disabled
-  //             }
-  //           }}
-  //         >
-  //           Edit
-  //         </Button>
-  //       </ButtonGroup>
-  //       <Button
-  //         leftIcon={<MdDeleteOutline />}
-  //         variant="outline"
-  //         onClick={() => handleAction(availableCheckIn.checkInId, 'delete')}
-  //       >
-  //         Delete
-  //       </Button>
-  //     </CardFooter>
-  //   </Card>
-  // );
 
   return (
     <Box
@@ -207,18 +146,6 @@ const CreatedCheckInCard = ({
         </Flex>
 
         <ButtonGroup variant="ghost" size="sm" spacing={1}>
-          {/* <Tooltip label={isCurrentlyPublished ? 'Edit disabled (published)' : 'Edit'}>
-            <IconButton
-              icon={<MdEdit />}
-              aria-label="Edit"
-              as={ReactRouterLink}
-              to={isCurrentlyPublished ? '#' : '/admin/editCheckIn'}
-              state={{ checkInId: availableCheckIn.checkInId }}
-              isDisabled={isCurrentlyPublished}
-              colorScheme="gray"
-              variant="ghost"
-            />
-          </Tooltip> */}
           <Tooltip
             label={isCurrentlyPublished ? 'Edit disabled (published)' : 'Edit'}
           >
@@ -247,11 +174,16 @@ const CreatedCheckInCard = ({
             />
           </Tooltip>
 
-          <Tooltip label="Delete">
+          <Tooltip
+            label={
+              isCurrentlyPublished ? 'Delete disabled (published)' : 'Delete'
+            }
+          >
             <IconButton
               icon={<MdDeleteOutline />}
               aria-label="Delete"
               colorScheme="red"
+              isDisabled={isCurrentlyPublished}
               onClick={() => handleAction(availableCheckIn.checkInId, 'delete')}
             />
           </Tooltip>

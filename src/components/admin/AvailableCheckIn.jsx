@@ -1,11 +1,10 @@
 import { Text, Heading, useToast, Box, Grid } from '@chakra-ui/react';
 import { useAdmin } from '../../context/AdminProvider';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Loading from '../shared/Loading';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import CreatedCheckInCard from './CreatedCheckInCard';
 import { INITIAL_PERFORMING_ACTION_STATE } from '../../constants/application';
-import LocalStorageService from '../../util/LocalStorageService';
 import PopUpModal from '../shared/PopUpModal';
 import useAdminService from '../../hooks/services/useAdminService';
 import useCheckInStore from '../../store/checkin-store';
@@ -46,24 +45,8 @@ const AvailableCheckIn = () => {
 
   const { mutate: publishCheckInMutate } = useMutation({
     mutationFn: publishNewCheckIn,
-    onMutate: (payload) => {
-      let contextToReturn = {};
-      // const isPublishedCheckIn =
-      // LocalStorageService.getItem('publishedCheckIn');
-      // if (isPublishedCheckIn) {
-      //   if (isPublishedCheckIn.checkInId !== payload.checkInToPublish) {
-      //     contextToReturn['removeLocalStorage'] = true;
-      //   }
-      // }
-      return contextToReturn; // Ensure context is never undefined
-    },
-    onSuccess: (response, payload, context) => {
+    onSuccess: (response) => {
       const message = response.message;
-      // remove old cache first
-      // if (context?.removeLocalStorage) {
-      //   LocalStorageService.removeItem('publishedCheckInAnalytics');
-      //   LocalStorageService.removeItem('publishedCheckIn');
-      // }
       // if we get a successful response, set cache and update state
       if (response.checkIn) {
         const serverPublishedCheckIn = response.checkIn;
@@ -71,14 +54,16 @@ const AvailableCheckIn = () => {
 
         // set new state
         setPublishedCheckIn(serverPublishedCheckIn);
-        // set new cache for published check-in
-        // LocalStorageService.setItem('publishedCheckIn', serverPublishedCheckIn);
+
         // reset performing action
         setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
 
         // invalidate cache and refetch
         queryCleint.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
         queryCleint.invalidateQueries({ queryKey: ['publishedCheckin'] });
+        queryCleint.invalidateQueries({
+          queryKey: ['publishedCheckinAnalytics']
+        });
       }
 
       toast({
@@ -107,8 +92,6 @@ const AvailableCheckIn = () => {
       // if we get a successfull response, remove cache and update state
       if (response.checkIn) {
         console.log('response.checkIn is valid ', response.checkIn);
-        // LocalStorageService.removeItem('publishedCheckInAnalytics');
-        // LocalStorageService.removeItem('publishedCheckIn');
 
         // reset state
         setPublishedCheckIn(null);
@@ -118,8 +101,10 @@ const AvailableCheckIn = () => {
         setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
         // invalidate cache and refetch
         queryCleint.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
-        queryCleint.invalidateQueries({ queryKey: ['publishedCheckinAnalytics'] });
-        queryCleint.refetchQueries({queryKey: ['publishedCheckin']});
+        queryCleint.invalidateQueries({
+          queryKey: ['publishedCheckinAnalytics']
+        });
+        queryCleint.refetchQueries({ queryKey: ['publishedCheckin'] });
       }
 
       toast({
@@ -144,31 +129,8 @@ const AvailableCheckIn = () => {
 
   const { mutate: deleteCheckInMutate } = useMutation({
     mutationFn: deleteCheckIn,
-    onMutate: (payload) => {
-      let contextToReturn = {};
-      const isPublishedCheckIn =
-        LocalStorageService.getItem('publishedCheckIn');
-      if (isPublishedCheckIn) {
-        // check if deleted check in is the published one
-        const publishedCheckInId = isPublishedCheckIn.checkInId;
-        if (payload.checkInToDelete === publishedCheckInId) {
-          // we need to remove the local storage and analytical check
-          // gets sent as context to onSuccess
-          contextToReturn['removeLocalStorage'] = true;
-        }
-      }
-      return contextToReturn;
-    },
-    onSuccess: (response, payload, context) => {
+    onSuccess: (response) => {
       const message = response.message;
-
-      if (context.removeLocalStorage) {
-        LocalStorageService.removeItem('publishedCheckInAnalytics');
-        LocalStorageService.removeItem('publishedCheckIn');
-
-        // reset published check in state
-        setPublishedCheckIn(null);
-      }
 
       // invalidate cache and refetch
       queryCleint.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
@@ -240,7 +202,6 @@ const AvailableCheckIn = () => {
         </Text>
       </Heading>
 
-      {/* {submittedCheckIns?.length === 0 ? ( */}
       {data?.checkins?.length === 0 ? (
         <Box
           textAlign="center"
@@ -264,7 +225,6 @@ const AvailableCheckIn = () => {
           gap={6}
           paddingBottom={6}
         >
-          {/* {submittedCheckIns?.map((available, index) => ( */}
           {data?.checkIns?.map((available, index) => (
             <Box
               key={index}
