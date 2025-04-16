@@ -3,14 +3,38 @@ import { produce } from 'immer';
 
 const useCheckInStore = create((set) => ({
   questions: [],
+  submittedCheckInToEditQuestions: [],
   checkInId: null,
   createdBy: null,
   published: false,
   questionType: '',
   toggleModal: false,
+  toggleEditModal: false,
   questionToEdit: null,
   publishedCheckIn: null,
   checkInResponses: [],
+  submittedCheckInToEdit: null,
+  adminAction: {
+    actionInProgress: false,
+    actionType: null
+  },
+  setAdminAction: (actionType) => 
+    set(
+      produce((state) => {
+        state.adminAction = {
+          actionInProgress: true,
+          actionType: actionType
+        };
+      })
+    ),
+  setSubmittedCheckInToEdit: (checkIn) =>
+    set(
+      produce((state) => {
+        state.submittedCheckInToEdit = checkIn;
+        state.submittedCheckInToEditQuestions = checkIn.questions;
+        state.toggleEditModal = !state.toggleEditModal;
+      })
+    ),
   setCheckInResponses: (checkInResponses) =>
     set(
       produce((state) => {
@@ -32,6 +56,16 @@ const useCheckInStore = create((set) => ({
         state.toggleModal = !state.toggleModal;
       })
     ),
+    setSubmittedCheckInQuestionToEdit: (question) =>
+      set(
+        produce((state) => {
+          state.questionToEdit = state.submittedCheckInToEditQuestions.find(
+            (q) => q.id === question.id
+          );
+          state.questionType = question.componentType;
+          state.toggleModal = !state.toggleModal;
+        })
+      ),
   updateQuestion: (question) =>
     set(
       produce((state) => {
@@ -47,6 +81,26 @@ const useCheckInStore = create((set) => ({
         state.questionToEdit = null;
       })
     ),
+    updateSubmittedQuestion: (question) =>
+      set(
+        produce((state) => {
+          const index = state.submittedCheckInToEditQuestions.findIndex((q) => q.id === question.id);
+          console.log('index of questoin to update ', index);
+  
+          if (index !== -1) {
+            state.submittedCheckInToEditQuestions[index] = {
+              ...state.submittedCheckInToEditQuestions[index],
+              ...question
+            };
+          }
+          // updated the submittedEditCheckIn Store ( so its not stale )
+          state.submittedCheckInToEdit = {
+            ...state.submittedCheckInToEdit,
+            questions: state.submittedCheckInToEditQuestions
+          };
+          state.questionToEdit = null;
+        })
+      ),
   setQuestionType: (questionType) =>
     set(
       produce((state) => {
@@ -54,6 +108,7 @@ const useCheckInStore = create((set) => ({
       })
     ),
   setToggleModal: () => set((state) => ({ toggleModal: !state.toggleModal })),
+  setToggleEditModal: () => set((state) => ({ toggleEditModal: !state.toggleEditModal })),
   addQuestion: (question) =>
     set(
       produce((state) => {
@@ -72,7 +127,14 @@ const useCheckInStore = create((set) => ({
         );
       })
     ),
-
+  removeQuestionFromSubmittedCheckIn: (questionId) =>
+    set(
+      produce((state) => {
+        state.submittedCheckInToEditQuestions = state.submittedCheckInToEditQuestions.filter(
+          (question) => question.id !== questionId
+        );
+      })
+    ),
   resetQuestions: () =>
     set(
       produce((state) => {

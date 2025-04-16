@@ -17,25 +17,25 @@ import {
   MdOutlineQuestionAnswer
 } from 'react-icons/md';
 import { useAdmin } from '../../context/AdminProvider';
-import EditCheckInModal from './EditCheckInModal';
 import { useCheckin } from '../../context/CheckinContext';
+import useCheckInStore from '../../store/checkin-store';
 const CreatedCheckInCard = ({
   availableCheckIn,
   publishCheckIn,
   unPublishCheckIn,
   deleteCheckIn
 }) => {
-  const { performingAdminAction, setPerformingAdminAction, submittedCheckIns } =
-    useAdmin();
+  const { performingAdminAction } = useAdmin();
   const { actions } = useCheckin();
+  const setAdminAction = useCheckInStore((state) => state.setAdminAction);
+  const setSubmittedCheckInToEdit = useCheckInStore(
+    (state) => state.setSubmittedCheckInToEdit
+  );
+
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const handleEditCheckIn = (checkInId) => {
-    const checkInToEdit = submittedCheckIns.find(
-      (checkIn) => checkIn.checkInId === checkInId
-    );
-    actions.startEdittingSubmittedCheckIn(checkInToEdit);
-    onOpen();
+  const handleEditCheckIn = (checkIn) => {
+    setSubmittedCheckInToEdit(checkIn);
   };
 
   const handleEditCheckInModalClose = () => {
@@ -46,11 +46,12 @@ const CreatedCheckInCard = ({
   };
 
   const handleAction = (checkInId, actionType) => {
-    setPerformingAdminAction({
-      actionInProgress: true,
-      actionType: actionType,
-      checkInId: checkInId
-    });
+    setAdminAction(actionType);
+    // setPerformingAdminAction({
+    //   actionInProgress: true,
+    //   actionType: actionType,
+    //   checkInId: checkInId
+    // });
 
     if (actionType === 'publish') {
       const payload = {
@@ -152,7 +153,7 @@ const CreatedCheckInCard = ({
             <IconButton
               icon={<MdEdit />}
               aria-label="Edit"
-              onClick={() => handleEditCheckIn(availableCheckIn.checkInId)}
+              onClick={() => handleEditCheckIn(availableCheckIn)}
               isDisabled={isCurrentlyPublished}
               colorScheme="gray"
               variant="ghost"
@@ -189,15 +190,6 @@ const CreatedCheckInCard = ({
           </Tooltip>
         </ButtonGroup>
       </Flex>
-      <EditCheckInModal
-        isOpen={isOpen}
-        onClose={handleEditCheckInModalClose}
-        checkInId={availableCheckIn.checkInId}
-        onSuccess={() => {
-          // Add any refresh logic if needed
-          console.log('on success from created check in card ');
-        }}
-      />
     </Box>
   );
 };

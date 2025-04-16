@@ -13,6 +13,7 @@ import CaptureUserDetails from './components/shared/CaptureUserDetails';
 import { CheckinProvider } from './context/CheckinContext';
 import AvailableCheckIn from './components/admin/AvailableCheckIn';
 import { QuestionModal } from './components/checkinBuilder/QuestionModal';
+import EditCheckInModal from './components/admin/EditCheckInModal';
 
 function App() {
   const auth0Domain = import.meta.env.VITE_AUTH0_DOMAIN;
@@ -39,7 +40,6 @@ function App() {
                     <Route element={<ProtectedRoute allowedRoles={['user']} />}>
                       <Route path="/home" index element={<Homepage />} />
                       {/* <Route path="/user/availableCheckIn" element={<Homepage />} /> */}
-
                     </Route>
                     <Route
                       element={<ProtectedRoute allowedRoles={['admin']} />}
@@ -60,6 +60,7 @@ function App() {
                     </Route>
                   </Routes>
                   <QuestionModal />
+                  <EditCheckInModal />
                   <CaptureUserDetails />
                 </UserProvider>
               </AdminProvider>

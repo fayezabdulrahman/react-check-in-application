@@ -1,4 +1,3 @@
-// EditCheckInModal.jsx
 import {
   Modal,
   ModalOverlay,
@@ -17,19 +16,22 @@ import {
 } from '@chakra-ui/react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useAdminService from '../../hooks/services/useAdminService';
-import QuestionsSummary from '../shared/QuestionsSummary';
 import { useEffect, useState } from 'react';
-import { useAdmin } from '../../context/AdminProvider';
 import QuestionCard from '../checkinBuilder/QuestionCard';
-import { QuestionModal } from '../checkinBuilder/QuestionModal';
-import { useCheckin } from '../../context/CheckinContext';
+import useCheckInStore from '../../store/checkin-store';
 
-const EditCheckInModal = ({ isOpen, onClose, checkInId, onSuccess }) => {
+const EditCheckInModal = () => {
   const { updateCheckIn } = useAdminService();
   const toast = useToast();
   const queryClient = useQueryClient();
-  const { submittedCheckIns, setSubmittedCheckIns } = useAdmin();
-  const {submittedCheckInToEdit, formQuestions} = useCheckin();
+
+  const submittedCheckInToEdit = useCheckInStore(
+    (state) => state.submittedCheckInToEdit
+  );
+  const toggleEditModal = useCheckInStore((state) => state.toggleEditModal);
+  const setToggleEditModal = useCheckInStore(
+    (state) => state.setToggleEditModal
+  );
 
   console.log('check in to edit ID', submittedCheckInToEdit?.checkInId);
 
@@ -50,9 +52,10 @@ const EditCheckInModal = ({ isOpen, onClose, checkInId, onSuccess }) => {
         duration: 3000,
         isClosable: true
       });
-      queryClient.invalidateQueries(['allAdminCheckIn', 'publishedCheckin']);
-      onSuccess?.();
-      onClose();
+      queryClient.invalidateQueries(['allAdminCheckIn']);
+      queryClient.invalidateQueries(['publishedCheckin']);
+
+      setToggleEditModal();
     },
     onError: (error) => {
       toast({
@@ -67,7 +70,7 @@ const EditCheckInModal = ({ isOpen, onClose, checkInId, onSuccess }) => {
   const handleSave = () => {
     const finalEdittedCheckIn = {
       ...submittedCheckInToEdit,
-      questions: formQuestions
+      questions: submittedCheckInToEdit?.questions
     };
     const payload = {
       originalCheckInId: submittedCheckInToEdit.checkInId,
@@ -81,7 +84,7 @@ const EditCheckInModal = ({ isOpen, onClose, checkInId, onSuccess }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="2xl">
+    <Modal isOpen={toggleEditModal} onClose={setToggleEditModal} size="2xl">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader borderBottom="1px solid" borderColor="gray.100">
@@ -104,23 +107,22 @@ const EditCheckInModal = ({ isOpen, onClose, checkInId, onSuccess }) => {
 
             <Box>
               <FormLabel fontSize="sm" color="gray.600" mb={2}>
-                Questions ({formQuestions?.length})
+                Questions ({submittedCheckInToEdit?.questions?.length})
               </FormLabel>
-              {/* <QuestionsSummary
-                checkIn={checkInToEdit}
-                setCheckIn={setSubmittedCheckIns}
-                isSubmitted={true}
-              /> */}
-              {formQuestions?.map((question) => (
+              {submittedCheckInToEdit?.questions?.map((question) => (
                 <QuestionCard key={question.id} question={question} />
               ))}
-              {/* <QuestionModal /> */}
             </Box>
           </Stack>
         </ModalBody>
 
         <ModalFooter borderTop="1px solid" borderColor="gray.100">
-          <Button variant="ghost" colorScheme="blue" mr={3} onClick={onClose}>
+          <Button
+            variant="ghost"
+            colorScheme="blue"
+            mr={3}
+            onClick={setToggleEditModal}
+          >
             Cancel
           </Button>
           <Button

@@ -21,6 +21,7 @@ import { INITAL_QUESTION_STATE } from '../../constants/application';
 export const QuestionModal = () => {
   const toast = useToast();
   const [formData, setFormData] = useState(INITAL_QUESTION_STATE);
+  const [isSubmittedCheckIn, setIsSubmittedCheckIn] = useState(false);
 
   const questionType = useCheckInStore((state) => state.questionType);
   const toggleModal = useCheckInStore((state) => state.toggleModal);
@@ -28,13 +29,18 @@ export const QuestionModal = () => {
   const addQuestion = useCheckInStore((state) => state.addQuestion);
   const questionToEdit = useCheckInStore((state) => state.questionToEdit);
   const updateQuestion = useCheckInStore((state) => state.updateQuestion);
+  const submittedCheckInToEdit = useCheckInStore((state) => state.submittedCheckInToEdit);
+  const updateSubmittedQuestion = useCheckInStore((state) => state.updateSubmittedQuestion);
 
 
   useEffect(() => {
     if (questionToEdit) {
       setFormData(questionToEdit);
     }
-  }, [questionToEdit, setFormData]);
+    if (submittedCheckInToEdit) {
+      setIsSubmittedCheckIn(true);
+    }
+  }, [questionToEdit,submittedCheckInToEdit, setFormData]);
 
   // useEffect(() => {
   //   if (submittedCheckInToEdit) {
@@ -60,7 +66,16 @@ export const QuestionModal = () => {
         ...question,
         id: questionToEdit.id
       };
-      updateQuestion(updatedEquestion);
+      if (isSubmittedCheckIn) {
+        const updatedSubmittedQuestion = {
+          ...question,
+          id: questionToEdit.id
+        };
+        // call method to update question in a submitted check in
+        updateSubmittedQuestion(updatedSubmittedQuestion);
+      } else {
+        updateQuestion(updatedEquestion);
+      }
     } else {
       addQuestion(question);
     }

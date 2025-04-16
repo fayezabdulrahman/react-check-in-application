@@ -16,21 +16,40 @@ import {
   AlertDialogFooter
 } from '@chakra-ui/react';
 import { MdEdit, MdDelete } from 'react-icons/md';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useCheckInStore from '../../store/checkin-store';
 const QuestionCard = ({ question }) => {
   const [questionToDelete, setQuestionToDelete] = useState(null);
+  const [isCheckInSubmitted, setIsCheckInSubmitted] = useState(false);
   const cancelRef = useRef();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const removeQuestion = useCheckInStore((state) => state.removeQuestion);
   const setQuestionToEdit = useCheckInStore((state) => state.setQuestionToEdit);
+  const submittedCheckInToEdit = useCheckInStore((state) => state.submittedCheckInToEdit);
+  const removeQuestionFromSubmittedCheckIn = useCheckInStore((state) => state.removeQuestionFromSubmittedCheckIn);
+  const setSubmittedCheckInQuestionToEdit = useCheckInStore((state) => state.setSubmittedCheckInQuestionToEdit);
+
+  useEffect(() => {
+    if (submittedCheckInToEdit) {
+      setIsCheckInSubmitted(true);
+    }
+  }, [submittedCheckInToEdit]);
 
   const handleEdit = (question) => {
-    setQuestionToEdit(question);
+    if (submittedCheckInToEdit) {
+      // setSubmittedCheckInQuestionToEdit
+      setSubmittedCheckInQuestionToEdit(question);
+    } else {
+      setQuestionToEdit(question);
+    }
   };
 
   const handleDelete = () => {
-    removeQuestion(questionToDelete);
+    if (isCheckInSubmitted) {
+      removeQuestionFromSubmittedCheckIn(questionToDelete);
+    } else {
+      removeQuestion(questionToDelete);
+    }
     onClose();
   };
   return (
