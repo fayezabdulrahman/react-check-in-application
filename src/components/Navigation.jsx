@@ -33,7 +33,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 const Navigation = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef();
-  const { logout, userDetails } = useLocalAuth();
+  const { handleAppLogout, userDetails } = useLocalAuth();
   const { user } = useAuth0();
   const userRoles = user?.['https://ez-check-in/roles'] || [];
 
@@ -103,17 +103,13 @@ const Navigation = () => {
           <Box onMouseEnter={handleMenuOpen} onMouseLeave={handleMenuClose}>
             <Menu isOpen={isMenuOpen}>
               <MenuButton>
-                <Avatar
-                  name={userName}
-                  size="md"
-                  cursor="pointer"
-                />
+                <Avatar name={userName} size="md" cursor="pointer" />
               </MenuButton>
               <MenuList
                 onMouseEnter={handleMenuOpen}
                 onMouseLeave={handleMenuClose}
               >
-                <MenuItem icon={<CiLogout />} onClick={logout}>
+                <MenuItem icon={<CiLogout />} onClick={handleAppLogout}>
                   Logout
                 </MenuItem>
               </MenuList>
@@ -164,7 +160,7 @@ const Navigation = () => {
                   as={ReactRouterLink}
                   onClick={() => {
                     onClose();
-                    logout();
+                    handleAppLogout();
                   }}
                   fontSize="lg"
                 >

@@ -87,14 +87,13 @@ const LocalAuthProvider = ({ children }) => {
   const handleLogout = () => {
     logout({ returnTo: window.location.origin });
     localStorage.clear();
-    setUserDetails(null);
   };
 
   const ctxValue = {
     user,
     isAuthenticated,
     loading,
-    logout: handleLogout,
+    handleAppLogout: handleLogout,
     userDetails,
     setUserDetails
   };
