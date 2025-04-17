@@ -158,3 +158,5 @@ export const QuestionModal = () => {
     </Modal>
   );
 };
+
+export default QuestionModal;
