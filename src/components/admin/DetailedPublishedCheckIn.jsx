@@ -117,6 +117,8 @@ const DetailedPublishedCheckIn = () => {
       duration: 3000,
       isClosable: true
     });
+    // disabling es lint on purposes because we don't want this to re-render if published checkIn changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gridApi, toast]);
 
   if (checkInResponses.length === 0) {
@@ -141,7 +143,9 @@ const DetailedPublishedCheckIn = () => {
     >
       <HStack justifyContent="space-between" mb={4}>
         <Box>
-          <Heading size="lg">Check-in Results for {publishedCheckIn.checkInId}</Heading>
+          <Heading size="lg">
+            Check-in Results for {publishedCheckIn.checkInId}
+          </Heading>
           <Text color="gray.500" mt={1}>
             {answers.length} responses collected
           </Text>

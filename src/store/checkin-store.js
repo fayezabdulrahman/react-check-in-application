@@ -3,6 +3,7 @@ import { produce } from 'immer';
 
 const useCheckInStore = create((set) => ({
   questions: [],
+  nextQuestionId: 0,
   submittedCheckInToEditQuestions: [],
   checkInId: null,
   createdBy: null,
@@ -114,9 +115,10 @@ const useCheckInStore = create((set) => ({
       produce((state) => {
         const newQuestion = {
           ...question,
-          id: state.questions.length
+          id: state.nextQuestionId
         };
         state.questions.push(newQuestion);
+        state.nextQuestionId += 1;
       })
     ),
   removeQuestion: (questionId) =>

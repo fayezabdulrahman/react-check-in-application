@@ -31,6 +31,7 @@ export const QuestionModal = () => {
   const updateQuestion = useCheckInStore((state) => state.updateQuestion);
   const submittedCheckInToEdit = useCheckInStore((state) => state.submittedCheckInToEdit);
   const updateSubmittedQuestion = useCheckInStore((state) => state.updateSubmittedQuestion);
+  const setQuestionType = useCheckInStore((state) => state.setQuestionType);
 
 
   useEffect(() => {
@@ -84,8 +85,14 @@ export const QuestionModal = () => {
     setFormData(INITAL_QUESTION_STATE);
   };
 
+  const handleCloseModal = () => {
+    setToggleModal();
+    setQuestionType('');
+    setFormData(INITAL_QUESTION_STATE);
+  };
+
   return (
-    <Modal isOpen={toggleModal} onClose={setToggleModal} size="xl">
+    <Modal isOpen={toggleModal} onClose={handleCloseModal} size="xl">
       x
       <ModalOverlay />
       <ModalContent>
