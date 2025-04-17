@@ -4,7 +4,6 @@ import { useEffect, useState, useRef } from 'react';
 import { useUser } from '../../context/UserProvider';
 import Loading from '../shared/Loading';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { INTIAL_CHECKIN_STATE } from '../../constants/application';
 import useUserService from '../../hooks/services/useUserService';
 import LocalStorageService from '../../util/LocalStorageService';
 import usePublishedCheckInQuery from '../../hooks/usePublishedCheckInQuery';

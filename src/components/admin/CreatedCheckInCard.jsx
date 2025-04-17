@@ -6,8 +6,7 @@ import {
   Flex,
   IconButton,
   Text,
-  Badge,
-  useDisclosure
+  Badge
 } from '@chakra-ui/react';
 import {
   MdDeleteOutline,
@@ -17,7 +16,6 @@ import {
   MdOutlineQuestionAnswer
 } from 'react-icons/md';
 import { useAdmin } from '../../context/AdminProvider';
-import { useCheckin } from '../../context/CheckinContext';
 import useCheckInStore from '../../store/checkin-store';
 const CreatedCheckInCard = ({
   availableCheckIn,
@@ -26,32 +24,17 @@ const CreatedCheckInCard = ({
   deleteCheckIn
 }) => {
   const { performingAdminAction } = useAdmin();
-  const { actions } = useCheckin();
   const setAdminAction = useCheckInStore((state) => state.setAdminAction);
   const setSubmittedCheckInToEdit = useCheckInStore(
     (state) => state.setSubmittedCheckInToEdit
   );
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
   const handleEditCheckIn = (checkIn) => {
     setSubmittedCheckInToEdit(checkIn);
   };
 
-  const handleEditCheckInModalClose = () => {
-    console.log('resetting check in to edit ');
-    // setCheckInToEdit(null);
-    actions.resetSubmittedCheckInToEdit();
-    onClose();
-  };
-
   const handleAction = (checkInId, actionType) => {
     setAdminAction(actionType);
-    // setPerformingAdminAction({
-    //   actionInProgress: true,
-    //   actionType: actionType,
-    //   checkInId: checkInId
-    // });
 
     if (actionType === 'publish') {
       const payload = {

@@ -39,6 +39,7 @@ const PublishedAnalytics = () => {
     if (data?.responses.length > 0) {
       setCheckInResponses(data.responses);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, checkInResponses]);
 
   if (isLoading || isPending) {
@@ -93,7 +94,6 @@ const PublishedAnalytics = () => {
                 <Link
                   as={ReactRouterLink}
                   to="/admin/publishedCheckIn"
-                  // state={{ data }}
                   color="blue.500"
                   fontWeight="500"
                   _hover={{ textDecoration: 'underline' }}

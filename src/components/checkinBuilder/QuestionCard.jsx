@@ -37,7 +37,6 @@ const QuestionCard = ({ question }) => {
 
   const handleEdit = (question) => {
     if (submittedCheckInToEdit) {
-      // setSubmittedCheckInQuestionToEdit
       setSubmittedCheckInQuestionToEdit(question);
     } else {
       setQuestionToEdit(question);

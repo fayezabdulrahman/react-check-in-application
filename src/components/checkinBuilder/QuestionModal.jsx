@@ -43,11 +43,6 @@ export const QuestionModal = () => {
     }
   }, [questionToEdit,submittedCheckInToEdit, setFormData]);
 
-  // useEffect(() => {
-  //   if (submittedCheckInToEdit) {
-  //     actions.startEdittingSubmittedCheckIn(submittedCheckInToEdit);
-  //   }
-  // }, [submittedCheckInToEdit]);
 
   const handleSave = () => {
     if (!formData.label.trim()) {
