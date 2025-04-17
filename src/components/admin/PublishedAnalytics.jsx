@@ -36,10 +36,10 @@ const PublishedAnalytics = () => {
   // if we have a check-in analytics from our backend and our store is empty
   // set the store to the check-in analytics from our backend
   useEffect(() => {
-    if (data?.responses.length > 0 && checkInResponses.length === 0) {
+    if (data?.responses.length > 0) {
       setCheckInResponses(data.responses);
     }
-  }, [data, checkInResponses, setCheckInResponses]);
+  }, [data, checkInResponses]);
 
   if (isLoading || isPending) {
     return <Loading />;
@@ -93,7 +93,7 @@ const PublishedAnalytics = () => {
                 <Link
                   as={ReactRouterLink}
                   to="/admin/publishedCheckIn"
-                  state={{ data }}
+                  // state={{ data }}
                   color="blue.500"
                   fontWeight="500"
                   _hover={{ textDecoration: 'underline' }}
