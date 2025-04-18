@@ -12,6 +12,7 @@ import { Auth0Provider } from '@auth0/auth0-react';
 import { CheckinProvider } from './context/CheckinContext';
 import AvailableCheckIn from './components/admin/AvailableCheckIn';
 import ProtectedComponents from './components/shared/ProtectedComponents';
+import SubmittedCheckIn from './components/user/SubmittedCheckIn';
 
 function App() {
   const auth0Domain = import.meta.env.VITE_AUTH0_DOMAIN;
@@ -37,7 +38,7 @@ function App() {
                     <Route path="/" element={<Landing />} />
                     <Route element={<ProtectedRoute allowedRoles={['user']} />}>
                       <Route path="/home" index element={<Homepage />} />
-                      {/* <Route path="/user/availableCheckIn" element={<Homepage />} /> */}
+                      <Route path="/user/submitted" element={<SubmittedCheckIn />} />
                     </Route>
                     <Route
                       element={<ProtectedRoute allowedRoles={['admin']} />}

@@ -92,7 +92,7 @@ const Navigation = () => {
 
           <Link
             as={ReactRouterLink}
-            to={isAdmin ? '/admin/availableCheckIn' : '/home'}
+            to={isAdmin ? '/admin/availableCheckIn' : '/user/submitted'}
             fontSize="lg"
             fontWeight="500"
             _hover={{ textDecoration: 'none', opacity: 0.8 }}

@@ -1,21 +1,19 @@
-import {
-  Flex,
-  Heading,
-  Card,
-  CardBody,
-  Container,
-  Text,
-  useToast
-} from '@chakra-ui/react';
+import { Box, Grid, Heading, Text, useToast } from '@chakra-ui/react';
 import { useEffect } from 'react';
-import { useUser } from '../../context/UserProvider';
 import Loading from '../shared/Loading';
 import { useQuery } from '@tanstack/react-query';
 import useUserService from '../../hooks/services/useUserService';
-import LocalStorageService from '../../util/LocalStorageService';
 import { useLocalAuth } from '../../context/LocalAuthProvider';
+import useCheckInStore from '../../store/checkin-store';
+import UserSubmittedCheckInCard from './UserSubmittedCheckInCard';
 const SubmittedCheckIn = () => {
-  const { submittedCheckIns, setSubmittedCheckIns } = useUser();
+  const setAllUserSubmittedCheckIns = useCheckInStore(
+    (state) => state.setAllUserSubmittedCheckIns
+  );
+  const allUserSubmittedCheckIns = useCheckInStore(
+    (state) => state.allUserSubmittedCheckIns
+  );
+  console.log('all user submitted check ins ', allUserSubmittedCheckIns);
   const { fetchAllUserSubmittedCheckIns } = useUserService();
   const toast = useToast();
   const { userDetails } = useLocalAuth();
@@ -28,23 +26,10 @@ const SubmittedCheckIn = () => {
   });
 
   useEffect(() => {
-    console.log('inside submitted check ins use effect');
-    const submittedCheckInLocalStorage = LocalStorageService.getItem(
-      'submittedCheckInResponse'
-    );
-    console.log('cahced submitted check ins', submittedCheckInLocalStorage);
-    if (submittedCheckInLocalStorage) {
-      setSubmittedCheckIns(submittedCheckInLocalStorage);
-    } else if (data?.submittedCheckIns) {
-      setSubmittedCheckIns(data.submittedCheckIns);
-      LocalStorageService.setItem(
-        'submittedCheckInResponse',
-        data.submittedCheckIns
-      );
-    } else {
-      setSubmittedCheckIns(undefined);
+    if (data?.submittedCheckIns) {
+      setAllUserSubmittedCheckIns(data.submittedCheckIns);
     }
-  }, [setSubmittedCheckIns, data]);
+  }, [setAllUserSubmittedCheckIns, data]);
 
   if (isPending) {
     return <Loading />;
@@ -59,27 +44,54 @@ const SubmittedCheckIn = () => {
       isClosable: true
     });
   }
+
   return (
-    <>
-      <Container>
-        <Heading pb="8">Your submitted Check-ins</Heading>
-        <Flex gap="4" direction="column">
-          {submittedCheckIns?.map((checkin) => (
-            <Card key={checkin?._id}>
-              <CardBody>
-                <Heading as="h4" size="md">
-                  Check-in name: {checkin?.data?.checkInId}
-                </Heading>
-                <Text pt="2" fontSize="sm">
-                  Submitted:{' '}
-                  {new Date(checkin.createdAt).toLocaleString('en-GB')}
-                </Text>
-              </CardBody>
-            </Card>
+    <Box mt={8} px={{ base: 4, md: 8 }}>
+      <Heading size="md" mb={4} fontWeight="500" color="gray.700">
+        My Check-ins
+        <Text fontSize="sm" color="gray.500" mt={1} fontWeight="normal">
+          View your submitted Check-ins
+        </Text>
+      </Heading>
+
+      {data?.submittedCheckIns?.length === 0 ? (
+        <Box
+          textAlign="center"
+          p={8}
+          borderRadius="lg"
+          border="1px dashed"
+          borderColor="gray.100"
+          bg="white"
+        >
+          <Text color="gray.500" mb={2}>
+            No submissions yet. Complete a check-in to see it here!
+          </Text>
+        </Box>
+      ) : (
+        <Grid
+          templateColumns={{
+            base: '1fr',
+            md: 'repeat(2, 1fr)',
+            xl: 'repeat(3, 1fr)'
+          }}
+          gap={6}
+          paddingBottom={6}
+        >
+          {data?.submittedCheckIns?.map((available, index) => (
+            <Box
+              key={index}
+              borderRadius="lg"
+              border="1px solid"
+              borderColor="gray.100"
+              _hover={{ shadow: 'md' }}
+              transition="all 0.2s"
+            >
+              <UserSubmittedCheckInCard allUserSubmittedCheckIns={available} />
+            </Box>
           ))}
-        </Flex>
-      </Container>
-    </>
+        </Grid>
+      )}
+    </Box>
   );
 };
 

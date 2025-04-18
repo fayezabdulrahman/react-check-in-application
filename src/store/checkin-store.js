@@ -24,6 +24,20 @@ const useCheckInStore = create((set) => ({
     submittedBy: null,
     answers: []
   },
+  userAnsweredCheckIn: false,
+  setUserAnsweredCheckIn: (boolean) =>
+    set(
+      produce((state) => {
+        state.userAnsweredCheckIn = boolean;
+      })
+    ),
+  allUserSubmittedCheckIns: [],
+  setAllUserSubmittedCheckIns: (userSubmittedCheckins) =>
+    set(
+      produce((state) => {
+        state.allUserSubmittedCheckIns = userSubmittedCheckins;
+      })
+    ),
   setUserCheckInAnswers: (partial) =>
     set(
       produce((state) => {
