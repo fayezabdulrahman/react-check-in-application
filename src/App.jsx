@@ -7,7 +7,6 @@ import AdminHomepage from './components/admin/AdminHomepage';
 import AdminProvider from './context/AdminProvider';
 import UserProvider from './context/UserProvider';
 import DetailedPublishedCheckIn from './components/admin/DetailedPublishedCheckIn';
-import EditCheckIn from './components/admin/EditCheckIn';
 import { Auth0Provider } from '@auth0/auth0-react';
 import { CheckinProvider } from './context/CheckinContext';
 import AvailableCheckIn from './components/admin/AvailableCheckIn';
@@ -38,7 +37,10 @@ function App() {
                     <Route path="/" element={<Landing />} />
                     <Route element={<ProtectedRoute allowedRoles={['user']} />}>
                       <Route path="/home" index element={<Homepage />} />
-                      <Route path="/user/submitted" element={<SubmittedCheckIn />} />
+                      <Route
+                        path="/user/submitted"
+                        element={<SubmittedCheckIn />}
+                      />
                     </Route>
                     <Route
                       element={<ProtectedRoute allowedRoles={['admin']} />}
@@ -47,10 +49,6 @@ function App() {
                       <Route
                         path="/admin/publishedCheckIn"
                         element={<DetailedPublishedCheckIn />}
-                      />
-                      <Route
-                        path="/admin/editCheckIn"
-                        element={<EditCheckIn />}
                       />
                       <Route
                         path="/admin/availableCheckIn"
