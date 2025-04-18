@@ -64,7 +64,7 @@ const SubmittedCheckIn = () => {
           bg="white"
         >
           <Text color="gray.500" mb={2}>
-            No submissions yet. Complete a check-in to see it here!
+            No submissions Found. Complete a check-in to see it here!
           </Text>
         </Box>
       ) : (

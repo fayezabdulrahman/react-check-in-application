@@ -13,12 +13,8 @@ import {
 } from '@chakra-ui/react';
 import { Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
-import useCheckInStore from '../../store/checkin-store';
 
 const FormFactory = ({ publishedCheckIn, onSubmit }) => {
-  const setUserCheckInAnswers = useCheckInStore(
-    (state) => state.setUserCheckInAnswers
-  );
   const initialValues = publishedCheckIn.questions.reduce(
     (values, question) => {
       values[question.label] = '';
@@ -34,10 +30,8 @@ const FormFactory = ({ publishedCheckIn, onSubmit }) => {
       answer
     }));
     console.log('answers array', answers);
-    // Update the state with the new answers
-    setUserCheckInAnswers({ answers: answers });
 
-    onSubmit();
+    onSubmit(answers);
   };
 
   const generateValidationSchema = (questions) => {

@@ -105,6 +105,13 @@ const CheckInForm = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [publishedCheckinData]);
 
+  useEffect(() => {
+    if (userCheckInAnswers.answers.length > 0 && !userAnsweredCheckIn) {
+      // call mutate api
+      submitUserCheckinMutate(userCheckInAnswers);
+    }
+  }, [userCheckInAnswers, userAnsweredCheckIn, submitUserCheckinMutate]);
+
   if (PublishedCheckinError) {
     toast({
       title: 'An error occured while fetching the active check-in.',
@@ -133,12 +140,10 @@ const CheckInForm = () => {
     return <Loading />;
   }
 
-  const submitDetails = () => {
-    // call mutate api
-    submitUserCheckinMutate(userCheckInAnswers);
+  const submitDetails = (answers) => {
+    // set the userCheckInAnswers and then the useEffect will trigger the api call
+    setUserCheckInAnswers({ answers: answers });
   };
-  console.log('published check in data api call', publishedCheckinData);
-  console.log('answeredCheckIn ', userAnsweredCheckIn);
 
   return (
     <Card variant="outline" boxShadow="md">
@@ -178,7 +183,7 @@ const CheckInForm = () => {
                   </Heading>
                   <FormFactory
                     publishedCheckIn={publishedCheckinData.checkIn}
-                    onSubmit={submitDetails}
+                    onSubmit={(answers) => submitDetails(answers)}
                   />
                 </Flex>
               )}
