@@ -1,27 +1,35 @@
-import { Container, useToast, Heading } from '@chakra-ui/react';
+import {
+  useToast,
+  Heading,
+  Card,
+  CardBody,
+  Flex,
+  Icon,
+  Text,
+  Progress
+} from '@chakra-ui/react';
 import FormFactory from '../shared/FormFactory';
-import { useEffect, useState, useRef } from 'react';
-import { useUser } from '../../context/UserProvider';
+import { useEffect, useState } from 'react';
 import Loading from '../shared/Loading';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import useUserService from '../../hooks/services/useUserService';
-import LocalStorageService from '../../util/LocalStorageService';
 import usePublishedCheckInQuery from '../../hooks/usePublishedCheckInQuery';
+import { CiTimer, CiCircleCheck } from 'react-icons/ci';
 import { useAuth0 } from '@auth0/auth0-react';
+import useCheckInStore from '../../store/checkin-store';
 
 const CheckInForm = () => {
-  const {
-    setPublishedCheckIn,
-    publishedCheckIn,
-    questionResponse,
-    setQuestionResponse
-  } = useUser();
+  const setUserCheckInAnswers = useCheckInStore(
+    (state) => state.setUserCheckInAnswers
+  );
+  const userCheckInAnswers = useCheckInStore(
+    (state) => state.userCheckInAnswers
+  );
 
   const { fetchAnsweredCheckin, submitCheckIn } = useUserService();
   const { user } = useAuth0();
   const [answeredCheckIn, setAnsweredCheckIn] = useState(false);
   const toast = useToast();
-  const hasFetchedPublishedCheckin = useRef(false); // Prevent duplicate calls
   const queryClient = useQueryClient();
 
   const {
@@ -57,7 +65,12 @@ const CheckInForm = () => {
 
       setAnsweredCheckIn(true);
       // TODO Figure out why allUserSubmittedCheckin is not invalidating!!!!
-      queryClient.invalidateQueries({ queryKey: ['answeredCheckin', 'allUserSubmittedCheckin'] });
+      queryClient.invalidateQueries({
+        queryKey: ['answeredCheckin']
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['allUserSubmittedCheckin']
+      });
     },
     onError: (error) => {
       console.error('Error submitting check-in:', error);
@@ -71,31 +84,6 @@ const CheckInForm = () => {
     }
   });
 
-  // Update published check-in state when data is available
-  useEffect(() => {
-    if (hasFetchedPublishedCheckin.current === true) {
-      const publishedCheckInInLocalStorage =
-        LocalStorageService.getItem('publishedCheckIn');
-      if (publishedCheckInInLocalStorage) {
-        setPublishedCheckIn(publishedCheckInInLocalStorage);
-      } else if (publishedCheckinData?.checkIn) {
-        console.log('save published check in to local storage');
-        setPublishedCheckIn(publishedCheckinData.checkIn);
-        LocalStorageService.setItem(
-          'publishedCheckIn',
-          publishedCheckinData.checkIn
-        );
-      } else {
-        console.log('inside else block');
-        setPublishedCheckIn(null);
-      }
-    }
-
-    return () => {
-      hasFetchedPublishedCheckin.current = true; // Mark as fetched
-    };
-  }, [publishedCheckinData, setPublishedCheckIn]);
-
   // Update answered check-in state when data is available
   useEffect(() => {
     if (answeredCheckinData?.existingCheckIn) {
@@ -104,16 +92,16 @@ const CheckInForm = () => {
   }, [answeredCheckinData]);
 
   useEffect(() => {
-    if (questionResponse.submittedBy) {
+    if (userCheckInAnswers.submittedBy) {
       // Call mutate() to trigger API call
-      submitUserCheckinMutate(questionResponse);
+      submitUserCheckinMutate(userCheckInAnswers);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [questionResponse]);
+  }, [userCheckInAnswers]);
 
   if (PublishedCheckinError) {
     toast({
-      title: 'An error occured.',
+      title: 'An error occured while fetching the active check-in.',
       status: 'error',
       duration: 3000,
       isClosable: true
@@ -123,7 +111,7 @@ const CheckInForm = () => {
 
   if (answeredCheckinError) {
     toast({
-      title: 'An error occured.',
+      title: 'An error occured while fetching an answered check-in.',
       status: 'error',
       duration: 3000,
       isClosable: true
@@ -140,42 +128,56 @@ const CheckInForm = () => {
   }
 
   function submitDetails() {
-    setQuestionResponse((prevState) => {
-      const updatedResponse = {
-        ...prevState,
-        checkInId: publishedCheckIn.checkInId,
-        submittedBy: user?.nickname
-      };
-      return updatedResponse;
+    setUserCheckInAnswers({
+      checkInId: publishedCheckinData.checkIn.checkInId,
+      submittedBy: user?.nickname
     });
   }
-
-  console.log('published check in state', publishedCheckIn);
   console.log('published check in data api call', publishedCheckinData);
 
   return (
-    <Container>
-      {publishedCheckIn?.questions?.length > 0 && answeredCheckIn && (
-        <>
-          <Heading>Your response was submitted! Thank you</Heading>
-        </>
-      )}
+    <Card variant="outline" boxShadow="md">
+      <CardBody>
+        {publishedCheckinIsPending ? (
+          <Flex direction="column" align="center" p={8}>
+            <Progress size="xs" isIndeterminate w="100%" />
+            <Text mt={4}>Checking for active check-ins...</Text>
+          </Flex>
+        ) : (
+          <>
+            {answeredCheckIn && (
+              <Flex direction="column" align="center" gap={4} py={8}>
+                <Icon as={CiCircleCheck} boxSize={12} color="green.500" />
+                <Heading size="lg">Response Submitted!</Heading>
+                <Text color="gray.600">
+                  Thank you for completing the latest check-in
+                </Text>
+              </Flex>
+            )}
 
-      {publishedCheckIn?.questions?.length === 0 && !answeredCheckIn && (
-        <>
-          <Heading>No Check-in available</Heading>
-        </>
-      )}
-      {publishedCheckIn?.questions?.length > 0 && !answeredCheckIn && (
-        <>
-          <Heading>Check-in available</Heading>
-          <FormFactory
-            publishedCheckIn={publishedCheckIn}
-            onSubmit={submitDetails}
-          />
-        </>
-      )}
-    </Container>
+            {publishedCheckinData?.checkIn === null && !answeredCheckIn && (
+              <Flex direction="column" align="center" gap={4} py={8}>
+                <Icon as={CiTimer} boxSize={12} color="gray.400" />
+                <Heading size="md">No Active Check-in</Heading>
+                <Text color="gray.500">
+                  Check back later for new check-ins!
+                </Text>
+              </Flex>
+            )}
+
+            {publishedCheckinData?.checkIn?.questions?.length > 0 &&
+              !answeredCheckIn && (
+                <Flex direction="column" gap={6}>
+                  <FormFactory
+                    publishedCheckIn={publishedCheckinData.checkIn}
+                    onSubmit={submitDetails}
+                  />
+                </Flex>
+              )}
+          </>
+        )}
+      </CardBody>
+    </Card>
   );
 };
 

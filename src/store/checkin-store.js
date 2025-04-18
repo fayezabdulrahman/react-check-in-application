@@ -19,7 +19,21 @@ const useCheckInStore = create((set) => ({
     actionInProgress: false,
     actionType: null
   },
-  setAdminAction: (actionType) => 
+  userCheckInAnswers: {
+    checkInId: null,
+    submittedBy: null,
+    answers: []
+  },
+  setUserCheckInAnswers: (partial) =>
+    set(
+      produce((state) => {
+        state.userCheckInAnswers = {
+          ...state.userCheckInAnswers,
+          ...partial
+        };
+      })
+    ),
+  setAdminAction: (actionType) =>
     set(
       produce((state) => {
         state.adminAction = {
@@ -57,16 +71,16 @@ const useCheckInStore = create((set) => ({
         state.toggleModal = !state.toggleModal;
       })
     ),
-    setSubmittedCheckInQuestionToEdit: (question) =>
-      set(
-        produce((state) => {
-          state.questionToEdit = state.submittedCheckInToEditQuestions.find(
-            (q) => q.id === question.id
-          );
-          state.questionType = question.componentType;
-          state.toggleModal = !state.toggleModal;
-        })
-      ),
+  setSubmittedCheckInQuestionToEdit: (question) =>
+    set(
+      produce((state) => {
+        state.questionToEdit = state.submittedCheckInToEditQuestions.find(
+          (q) => q.id === question.id
+        );
+        state.questionType = question.componentType;
+        state.toggleModal = !state.toggleModal;
+      })
+    ),
   updateQuestion: (question) =>
     set(
       produce((state) => {
@@ -82,26 +96,28 @@ const useCheckInStore = create((set) => ({
         state.questionToEdit = null;
       })
     ),
-    updateSubmittedQuestion: (question) =>
-      set(
-        produce((state) => {
-          const index = state.submittedCheckInToEditQuestions.findIndex((q) => q.id === question.id);
-          console.log('index of questoin to update ', index);
-  
-          if (index !== -1) {
-            state.submittedCheckInToEditQuestions[index] = {
-              ...state.submittedCheckInToEditQuestions[index],
-              ...question
-            };
-          }
-          // updated the submittedEditCheckIn Store ( so its not stale )
-          state.submittedCheckInToEdit = {
-            ...state.submittedCheckInToEdit,
-            questions: state.submittedCheckInToEditQuestions
+  updateSubmittedQuestion: (question) =>
+    set(
+      produce((state) => {
+        const index = state.submittedCheckInToEditQuestions.findIndex(
+          (q) => q.id === question.id
+        );
+        console.log('index of questoin to update ', index);
+
+        if (index !== -1) {
+          state.submittedCheckInToEditQuestions[index] = {
+            ...state.submittedCheckInToEditQuestions[index],
+            ...question
           };
-          state.questionToEdit = null;
-        })
-      ),
+        }
+        // updated the submittedEditCheckIn Store ( so its not stale )
+        state.submittedCheckInToEdit = {
+          ...state.submittedCheckInToEdit,
+          questions: state.submittedCheckInToEditQuestions
+        };
+        state.questionToEdit = null;
+      })
+    ),
   setQuestionType: (questionType) =>
     set(
       produce((state) => {
@@ -109,7 +125,8 @@ const useCheckInStore = create((set) => ({
       })
     ),
   setToggleModal: () => set((state) => ({ toggleModal: !state.toggleModal })),
-  setToggleEditModal: () => set((state) => ({ toggleEditModal: !state.toggleEditModal })),
+  setToggleEditModal: () =>
+    set((state) => ({ toggleEditModal: !state.toggleEditModal })),
   addQuestion: (question) =>
     set(
       produce((state) => {
@@ -132,9 +149,10 @@ const useCheckInStore = create((set) => ({
   removeQuestionFromSubmittedCheckIn: (questionId) =>
     set(
       produce((state) => {
-        state.submittedCheckInToEditQuestions = state.submittedCheckInToEditQuestions.filter(
-          (question) => question.id !== questionId
-        );
+        state.submittedCheckInToEditQuestions =
+          state.submittedCheckInToEditQuestions.filter(
+            (question) => question.id !== questionId
+          );
       })
     ),
   resetQuestions: () =>

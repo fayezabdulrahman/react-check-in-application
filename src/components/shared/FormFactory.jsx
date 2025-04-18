@@ -11,12 +11,14 @@ import {
   Textarea,
   FormErrorMessage
 } from '@chakra-ui/react';
-import { useUser } from '../../context/UserProvider';
 import { Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
+import useCheckInStore from '../../store/checkin-store';
 
 const FormFactory = ({ publishedCheckIn, onSubmit }) => {
-  const { setQuestionResponse } = useUser();
+  const setUserCheckInAnswers = useCheckInStore(
+    (state) => state.setUserCheckInAnswers
+  );
   const initialValues = publishedCheckIn.questions.reduce(
     (values, question) => {
       values[question.label] = '';
@@ -33,10 +35,7 @@ const FormFactory = ({ publishedCheckIn, onSubmit }) => {
     }));
     console.log('answers array', answers);
     // Update the state with the new answers
-    setQuestionResponse((prevState) => ({
-      ...prevState,
-      answers: answers
-    }));
+    setUserCheckInAnswers({ answers: answers });
 
     onSubmit();
   };
