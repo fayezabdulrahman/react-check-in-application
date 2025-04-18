@@ -174,7 +174,16 @@ const useCheckInStore = create((set) => ({
       produce((state) => {
         state.questions = [];
       })
-    )
+    ),
+    resetAdminAction: () => 
+      set(
+        produce((state) => {
+          state.adminAction = {
+            actionInProgress: false,
+            actionType: null
+          };
+        })
+      )
 }));
 
 export default useCheckInStore;

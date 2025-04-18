@@ -15,16 +15,18 @@ import {
   MdPublish,
   MdOutlineQuestionAnswer
 } from 'react-icons/md';
-import { useAdmin } from '../../context/AdminProvider';
 import useCheckInStore from '../../store/checkin-store';
+import { useState } from 'react';
 const CreatedCheckInCard = ({
   availableCheckIn,
   publishCheckIn,
   unPublishCheckIn,
   deleteCheckIn
 }) => {
-  const { performingAdminAction } = useAdmin();
+  const [isProcessing, setIsProcessing] = useState(false);
   const setAdminAction = useCheckInStore((state) => state.setAdminAction);
+  const adminAction = useCheckInStore((state) => state.adminAction);
+
   const setSubmittedCheckInToEdit = useCheckInStore(
     (state) => state.setSubmittedCheckInToEdit
   );
@@ -35,6 +37,7 @@ const CreatedCheckInCard = ({
 
   const handleAction = (checkInId, actionType) => {
     setAdminAction(actionType);
+    setIsProcessing(checkInId === availableCheckIn.checkInId);
 
     if (actionType === 'publish') {
       const payload = {
@@ -60,13 +63,14 @@ const CreatedCheckInCard = ({
   };
 
   const isCurrentlyPublished = availableCheckIn.published;
-  const isProcessing =
-    performingAdminAction.actionInProgress &&
-    performingAdminAction.checkInId === availableCheckIn.checkInId;
   const isPublishing =
-    isProcessing && performingAdminAction.actionType === 'publish';
+    isProcessing &&
+    adminAction.actionInProgress &&
+    adminAction.actionType === 'publish';
   const isUnpublishing =
-    isProcessing && performingAdminAction.actionType === 'unpublish';
+    isProcessing &&
+    adminAction.actionInProgress &&
+    adminAction.actionType === 'unpublish';
 
   return (
     <Box

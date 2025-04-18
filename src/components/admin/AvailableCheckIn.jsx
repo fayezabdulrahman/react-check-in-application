@@ -1,15 +1,12 @@
 import { Text, Heading, useToast, Box, Grid } from '@chakra-ui/react';
-import { useAdmin } from '../../context/AdminProvider';
 import { useState } from 'react';
 import Loading from '../shared/Loading';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import CreatedCheckInCard from './CreatedCheckInCard';
-import { INITIAL_PERFORMING_ACTION_STATE } from '../../constants/application';
 import PopUpModal from '../shared/PopUpModal';
 import useAdminService from '../../hooks/services/useAdminService';
 import useCheckInStore from '../../store/checkin-store';
 const AvailableCheckIn = () => {
-  const { setPerformingAdminAction } = useAdmin();
   const {
     fetchAllAdminCheckIn,
     publishNewCheckIn,
@@ -23,6 +20,8 @@ const AvailableCheckIn = () => {
   const setCheckInResponses = useCheckInStore(
     (state) => state.setCheckInResponses
   );
+
+  const resetAdminAction = useCheckInStore((state) => state.resetAdminAction);
 
   const queryCleint = useQueryClient();
 
@@ -56,7 +55,7 @@ const AvailableCheckIn = () => {
         setPublishedCheckIn(serverPublishedCheckIn);
 
         // reset performing action
-        setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
+        resetAdminAction();
 
         // invalidate cache and refetch
         queryCleint.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
@@ -75,7 +74,7 @@ const AvailableCheckIn = () => {
     },
     onError: (error) => {
       // reset performing action
-      setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
+      resetAdminAction();
       toast({
         title: error.response?.data?.message || 'An error occurred',
         status: 'error',
@@ -98,7 +97,7 @@ const AvailableCheckIn = () => {
         setCheckInResponses([]);
 
         // reset performing action
-        setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
+        resetAdminAction();
         // invalidate cache and refetch
         queryCleint.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
         queryCleint.invalidateQueries({
@@ -116,7 +115,7 @@ const AvailableCheckIn = () => {
     },
     onError: (error) => {
       // reset performing action
-      setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
+      resetAdminAction();
       console.error(error);
       toast({
         title: error.response?.data?.message || 'An error occurred',
@@ -141,11 +140,11 @@ const AvailableCheckIn = () => {
         isClosable: true
       });
       // reset performing action
-      setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
+      resetAdminAction();
     },
     onError: (error) => {
       // reset performing action
-      setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
+      resetAdminAction();
       toast({
         title: error.response?.data?.message || 'An error occurred',
         status: 'error',
