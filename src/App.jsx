@@ -5,7 +5,6 @@ import Landing from './Pages/Landing';
 import LocalAuthProvider from './context/LocalAuthProvider';
 import AdminHomepage from './components/admin/AdminHomepage';
 import AdminProvider from './context/AdminProvider';
-import UserProvider from './context/UserProvider';
 import DetailedPublishedCheckIn from './components/admin/DetailedPublishedCheckIn';
 import { Auth0Provider } from '@auth0/auth0-react';
 import { CheckinProvider } from './context/CheckinContext';
@@ -32,7 +31,6 @@ function App() {
           <LocalAuthProvider>
             <CheckinProvider>
               <AdminProvider>
-                <UserProvider>
                   <Routes>
                     <Route path="/" element={<Landing />} />
                     <Route element={<ProtectedRoute allowedRoles={['user']} />}>
@@ -57,7 +55,6 @@ function App() {
                     </Route>
                   </Routes>
                   <ProtectedComponents />
-                </UserProvider>
               </AdminProvider>
             </CheckinProvider>
           </LocalAuthProvider>
