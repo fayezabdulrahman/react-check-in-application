@@ -20,8 +20,6 @@ const Landing = () => {
     if (isAuthenticated && !isLoading) {
       const userRoles = user?.['https://ez-check-in/roles'];
 
-      console.log('user roles in landing ', userRoles);
-      console.log('user in landing ', user);
 
       if (userRoles.includes('admin')) {
         navigate('/admin', { replace: true });

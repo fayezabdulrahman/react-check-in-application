@@ -29,7 +29,6 @@ const FormFactory = ({ publishedCheckIn, onSubmit }) => {
       question,
       answer
     }));
-    console.log('answers array', answers);
 
     onSubmit(answers);
   };

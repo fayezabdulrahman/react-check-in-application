@@ -6,9 +6,6 @@ export const QuestionTypesPanel = () => {
   const setToggleModal = useCheckInStore((state) => state.setToggleModal);
   const setQuestionType = useCheckInStore((state) => state.setQuestionType);
 
-  const store = useCheckInStore();
-  console.log('Store:', store); // check if anything shows up
-
   const questionTypes = [
     { type: 'text', label: 'Short Text', icon: <IoIosText /> },
     { type: 'textarea', label: 'Long Text', icon: <IoMdText /> },

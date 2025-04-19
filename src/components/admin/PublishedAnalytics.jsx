@@ -46,7 +46,6 @@ const PublishedAnalytics = () => {
     return <Loading />;
   }
   if (error) {
-    console.log('error ', error);
     toast({
       title: 'Failed to get published check-in responses.',
       status: 'error',

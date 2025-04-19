@@ -27,12 +27,10 @@ const useAdminService = () => {
   };
 
   const fetchPublishedCheckInAnalytics = async (checkInId) => {
-    console.log('making an api call to fetch check in analytics ');
     try {
       const response = await client.get(
         `${API_URLS.publishedCheckInAnalytic}?checkInId=${checkInId}`
       );
-      console.log('response from published checkIn analytics ', response);
       return response.data;
     } catch (error) {
       console.error('Error fetching published check-in analytics', error);
@@ -45,7 +43,7 @@ const useAdminService = () => {
       const response = await client.post(API_URLS.publishNewCheckIn, payload);
       return response.data;
     } catch (error) {
-      console.error('Error fetching all admin check-in ', error);
+      console.error('Error publishing check-in ', error);
       throw error;
     }
   };
@@ -55,7 +53,7 @@ const useAdminService = () => {
       const response = await client.post(API_URLS.unPublishCheckIn, payload);
       return response.data;
     } catch (error) {
-      console.log('Error unpublishing check-in ', error);
+      console.error('Error unpublishing check-in ', error);
       throw error;
     }
   };

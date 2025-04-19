@@ -49,7 +49,6 @@ const AvailableCheckIn = () => {
       // if we get a successful response, set cache and update state
       if (response.checkIn) {
         const serverPublishedCheckIn = response.checkIn;
-        console.log('response from publishing ', serverPublishedCheckIn);
 
         // set new state
         setPublishedCheckIn(serverPublishedCheckIn);
@@ -90,7 +89,6 @@ const AvailableCheckIn = () => {
       const message = response.message;
       // if we get a successfull response, remove cache and update state
       if (response.checkIn) {
-        console.log('response.checkIn is valid ', response.checkIn);
 
         // reset state
         setPublishedCheckIn(null);
@@ -167,13 +165,11 @@ const AvailableCheckIn = () => {
   const handleDeleteCheckIn = (payload, modalConfirmationStatus) => {
     if (!openConfirmationModal) {
       setDeleteCheckInPayload(payload);
-      console.log('open confirmation modal');
 
       // open confirmation modal first
       setOpenConfirmationModal(true);
     }
     if (modalConfirmationStatus) {
-      console.log('calling delete api with payload', deleteCheckInPayload);
       // Call mutate() to trigger API call
       deleteCheckInMutate(deleteCheckInPayload);
     }

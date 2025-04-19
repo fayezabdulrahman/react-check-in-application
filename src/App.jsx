@@ -4,10 +4,8 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Landing from './Pages/Landing';
 import LocalAuthProvider from './context/LocalAuthProvider';
 import AdminHomepage from './components/admin/AdminHomepage';
-import AdminProvider from './context/AdminProvider';
 import DetailedPublishedCheckIn from './components/admin/DetailedPublishedCheckIn';
 import { Auth0Provider } from '@auth0/auth0-react';
-import { CheckinProvider } from './context/CheckinContext';
 import AvailableCheckIn from './components/admin/AvailableCheckIn';
 import ProtectedComponents from './components/shared/ProtectedComponents';
 import SubmittedCheckIn from './components/user/SubmittedCheckIn';
@@ -29,34 +27,25 @@ function App() {
           }}
         >
           <LocalAuthProvider>
-            <CheckinProvider>
-              <AdminProvider>
-                  <Routes>
-                    <Route path="/" element={<Landing />} />
-                    <Route element={<ProtectedRoute allowedRoles={['user']} />}>
-                      <Route path="/home" index element={<Homepage />} />
-                      <Route
-                        path="/user/submitted"
-                        element={<SubmittedCheckIn />}
-                      />
-                    </Route>
-                    <Route
-                      element={<ProtectedRoute allowedRoles={['admin']} />}
-                    >
-                      <Route path="/admin" element={<AdminHomepage />} />
-                      <Route
-                        path="/admin/publishedCheckIn"
-                        element={<DetailedPublishedCheckIn />}
-                      />
-                      <Route
-                        path="/admin/availableCheckIn"
-                        element={<AvailableCheckIn />}
-                      />
-                    </Route>
-                  </Routes>
-                  <ProtectedComponents />
-              </AdminProvider>
-            </CheckinProvider>
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route element={<ProtectedRoute allowedRoles={['user']} />}>
+                <Route path="/home" index element={<Homepage />} />
+                <Route path="/user/submitted" element={<SubmittedCheckIn />} />
+              </Route>
+              <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+                <Route path="/admin" element={<AdminHomepage />} />
+                <Route
+                  path="/admin/publishedCheckIn"
+                  element={<DetailedPublishedCheckIn />}
+                />
+                <Route
+                  path="/admin/availableCheckIn"
+                  element={<AvailableCheckIn />}
+                />
+              </Route>
+            </Routes>
+            <ProtectedComponents />
           </LocalAuthProvider>
         </Auth0Provider>
       </BrowserRouter>

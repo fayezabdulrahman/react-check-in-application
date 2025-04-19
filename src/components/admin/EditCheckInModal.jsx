@@ -33,7 +33,6 @@ const EditCheckInModal = () => {
     (state) => state.setToggleEditModal
   );
 
-  console.log('check in to edit ID', submittedCheckInToEdit?.checkInId);
 
   const [checkInName, setCheckInName] = useState('');
 
@@ -79,7 +78,6 @@ const EditCheckInModal = () => {
         checkInId: checkInName.trim() || submittedCheckInToEdit.checkInId
       }
     };
-    console.log('payload to send to API ', payload);
     updateCheckInMutate(payload);
   };
 

@@ -42,8 +42,6 @@ const ViewSubmittedCheckInModal = () => {
     }
   );
 
-  console.log('transformed questoins ', transformedQuestionsWithAnswers);
-
   return (
     <Modal
       isOpen={toggleUserViewSubmittedCheckInModal}

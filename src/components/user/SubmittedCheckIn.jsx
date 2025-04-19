@@ -10,10 +10,7 @@ const SubmittedCheckIn = () => {
   const setAllUserSubmittedCheckIns = useCheckInStore(
     (state) => state.setAllUserSubmittedCheckIns
   );
-  const allUserSubmittedCheckIns = useCheckInStore(
-    (state) => state.allUserSubmittedCheckIns
-  );
-  console.log('all user submitted check ins ', allUserSubmittedCheckIns);
+
   const { fetchAllUserSubmittedCheckIns } = useUserService();
   const toast = useToast();
   const { userDetails } = useLocalAuth();

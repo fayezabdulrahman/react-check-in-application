@@ -102,7 +102,6 @@ const useCheckInStore = create((set) => ({
     set(
       produce((state) => {
         const index = state.questions.findIndex((q) => q.id === question.id);
-        console.log('index of questoin to update ', index);
 
         if (index !== -1) {
           state.questions[index] = {
@@ -119,7 +118,6 @@ const useCheckInStore = create((set) => ({
         const index = state.submittedCheckInToEditQuestions.findIndex(
           (q) => q.id === question.id
         );
-        console.log('index of questoin to update ', index);
 
         if (index !== -1) {
           state.submittedCheckInToEditQuestions[index] = {

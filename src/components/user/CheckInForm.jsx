@@ -58,8 +58,7 @@ const CheckInForm = () => {
     isPending: submitUserCheckinIsPending
   } = useMutation({
     mutationFn: submitCheckIn, // Calls API only when triggered
-    onSuccess: (response) => {
-      console.log('Submission successful:', response);
+    onSuccess: () => {
       toast({
         title: 'Check-in submitted successfully!',
         status: 'success',
