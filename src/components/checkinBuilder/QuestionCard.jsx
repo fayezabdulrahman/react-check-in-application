@@ -59,7 +59,6 @@ const QuestionCard = ({ question }) => {
             <Box>
               <Flex align="center" gap={2} mb={2}>
                 <Text fontWeight="medium">{question.label}</Text>
-                <Tag colorScheme="blue">{question.componentType}</Tag>
                 {question.isRequired && <Tag colorScheme="red">Required</Tag>}
               </Flex>
               {question.selectOptions?.length > 0 && (
