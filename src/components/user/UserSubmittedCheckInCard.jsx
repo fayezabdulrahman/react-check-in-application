@@ -8,7 +8,12 @@ import {
   Badge
 } from '@chakra-ui/react';
 import { MdOutlineRemoveRedEye } from 'react-icons/md';
-const UserSubmittedCheckInCard = ({ allUserSubmittedCheckIns }) => {
+import useCheckInStore from '../../store/checkin-store';
+
+const UserSubmittedCheckInCard = ({ userSubmittedCheckIn }) => {
+  const setToggleUserViewSubmittedCheckInModal = useCheckInStore(
+    (state) => state.setToggleUserViewSubmittedCheckInModal
+  );
   return (
     <Box
       p={4}
@@ -33,7 +38,7 @@ const UserSubmittedCheckInCard = ({ allUserSubmittedCheckIns }) => {
             isTruncated
             maxWidth="70%"
           >
-            {allUserSubmittedCheckIns.data.checkInId}
+            {userSubmittedCheckIn.data.checkInId}
           </Text>
           <Badge
             colorScheme={'green'}
@@ -51,7 +56,8 @@ const UserSubmittedCheckInCard = ({ allUserSubmittedCheckIns }) => {
       {/* Metadata */}
       <Box mt={2} mb={4}>
         <Text fontSize="sm" color="gray.500" noOfLines={2}>
-          Submitted at {new Date(allUserSubmittedCheckIns.createdAt).toLocaleDateString('en-GB')}
+          Submitted at{' '}
+          {new Date(userSubmittedCheckIn.createdAt).toLocaleString('en-GB')}
         </Text>
       </Box>
 
@@ -69,7 +75,9 @@ const UserSubmittedCheckInCard = ({ allUserSubmittedCheckIns }) => {
               icon={<MdOutlineRemoveRedEye />}
               aria-label="View"
               colorScheme="orange"
-              onClick={() => console.log('ADD VIEW QUESTION SUBMITTED')}
+              onClick={() =>
+                setToggleUserViewSubmittedCheckInModal(userSubmittedCheckIn)
+              }
             />
           </Tooltip>
         </ButtonGroup>

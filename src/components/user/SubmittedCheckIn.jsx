@@ -86,7 +86,7 @@ const SubmittedCheckIn = () => {
               _hover={{ shadow: 'md' }}
               transition="all 0.2s"
             >
-              <UserSubmittedCheckInCard allUserSubmittedCheckIns={available} />
+              <UserSubmittedCheckInCard userSubmittedCheckIn={available} />
             </Box>
           ))}
         </Grid>

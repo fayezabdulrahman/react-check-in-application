@@ -25,9 +25,15 @@ const QuestionCard = ({ question }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const removeQuestion = useCheckInStore((state) => state.removeQuestion);
   const setQuestionToEdit = useCheckInStore((state) => state.setQuestionToEdit);
-  const submittedCheckInToEdit = useCheckInStore((state) => state.submittedCheckInToEdit);
-  const removeQuestionFromSubmittedCheckIn = useCheckInStore((state) => state.removeQuestionFromSubmittedCheckIn);
-  const setSubmittedCheckInQuestionToEdit = useCheckInStore((state) => state.setSubmittedCheckInQuestionToEdit);
+  const submittedCheckInToEdit = useCheckInStore(
+    (state) => state.submittedCheckInToEdit
+  );
+  const removeQuestionFromSubmittedCheckIn = useCheckInStore(
+    (state) => state.removeQuestionFromSubmittedCheckIn
+  );
+  const setSubmittedCheckInQuestionToEdit = useCheckInStore(
+    (state) => state.setSubmittedCheckInQuestionToEdit
+  );
 
   useEffect(() => {
     if (submittedCheckInToEdit) {
@@ -57,9 +63,10 @@ const QuestionCard = ({ question }) => {
         <CardBody>
           <Flex justify="space-between" align="center">
             <Box>
-              <Flex align="center" gap={2} mb={2}>
+              <Flex as={ question.answer ? 'b' : ''} align="center" gap={2} mb={2}>
                 <Text fontWeight="medium">{question.label}</Text>
                 {question.isRequired && <Tag colorScheme="red">Required</Tag>}
+                {question.answer && <Text>{question.answer}</Text>}
               </Flex>
               {question.selectOptions?.length > 0 && (
                 <Text fontSize="sm" color="gray.500">
@@ -73,24 +80,26 @@ const QuestionCard = ({ question }) => {
               )}
             </Box>
 
-            <Flex gap={2}>
-              <IconButton
-                icon={<MdEdit />}
-                aria-label="Edit question"
-                onClick={() => handleEdit(question)}
-                variant="ghost"
-              />
-              <IconButton
-                icon={<MdDelete />}
-                aria-label="Delete question"
-                onClick={() => {
-                  setQuestionToDelete(question.id);
-                  onOpen();
-                }}
-                variant="ghost"
-                colorScheme="red"
-              />
-            </Flex>
+            {!question.answer && (
+              <Flex gap={2}>
+                <IconButton
+                  icon={<MdEdit />}
+                  aria-label="Edit question"
+                  onClick={() => handleEdit(question)}
+                  variant="ghost"
+                />
+                <IconButton
+                  icon={<MdDelete />}
+                  aria-label="Delete question"
+                  onClick={() => {
+                    setQuestionToDelete(question.id);
+                    onOpen();
+                  }}
+                  variant="ghost"
+                  colorScheme="red"
+                />
+              </Flex>
+            )}
           </Flex>
         </CardBody>
       </Card>

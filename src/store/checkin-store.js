@@ -11,6 +11,8 @@ const useCheckInStore = create((set) => ({
   questionType: '',
   toggleModal: false,
   toggleEditModal: false,
+  toggleUserViewSubmittedCheckInModal: false,
+  userViewSubmittedCheckIn: null,
   questionToEdit: null,
   publishedCheckIn: null,
   checkInResponses: [],
@@ -140,6 +142,14 @@ const useCheckInStore = create((set) => ({
       })
     ),
   setToggleModal: () => set((state) => ({ toggleModal: !state.toggleModal })),
+  setToggleUserViewSubmittedCheckInModal: (checkInIdToView) =>
+    set(
+      produce((state) => {
+        state.userViewSubmittedCheckIn = checkInIdToView;
+        state.toggleUserViewSubmittedCheckInModal =
+          !state.toggleUserViewSubmittedCheckInModal;
+      })
+    ),
   setToggleEditModal: () =>
     set((state) => ({ toggleEditModal: !state.toggleEditModal })),
   addQuestion: (question) =>
@@ -176,15 +186,15 @@ const useCheckInStore = create((set) => ({
         state.questions = [];
       })
     ),
-    resetAdminAction: () => 
-      set(
-        produce((state) => {
-          state.adminAction = {
-            actionInProgress: false,
-            actionType: null
-          };
-        })
-      )
+  resetAdminAction: () =>
+    set(
+      produce((state) => {
+        state.adminAction = {
+          actionInProgress: false,
+          actionType: null
+        };
+      })
+    )
 }));
 
 export default useCheckInStore;
