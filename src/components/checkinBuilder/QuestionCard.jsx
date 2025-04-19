@@ -18,7 +18,7 @@ import {
 import { MdEdit, MdDelete } from 'react-icons/md';
 import { useEffect, useRef, useState } from 'react';
 import useCheckInStore from '../../store/checkin-store';
-const QuestionCard = ({ question }) => {
+const QuestionCard = ({ question, readOnly = false }) => {
   const [questionToDelete, setQuestionToDelete] = useState(null);
   const [isCheckInSubmitted, setIsCheckInSubmitted] = useState(false);
   const cancelRef = useRef();
@@ -80,7 +80,7 @@ const QuestionCard = ({ question }) => {
               )}
             </Box>
 
-            {!question.answer && (
+            {!readOnly && (
               <Flex gap={2}>
                 <IconButton
                   icon={<MdEdit />}
