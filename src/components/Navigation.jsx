@@ -25,7 +25,7 @@ import { Link as ReactRouterLink } from 'react-router-dom';
 import { IconButton } from '@chakra-ui/react';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { CiLogout } from 'react-icons/ci';
-import { IoHomeOutline } from 'react-icons/io5';
+import { IoHomeOutline, IoFolderOpenOutline} from 'react-icons/io5';
 import { useRef, useState } from 'react';
 import { useLocalAuth } from '../context/LocalAuthProvider';
 import logo from '../assets/b2b.png';
@@ -152,6 +152,17 @@ const Navigation = () => {
                   fontSize="lg"
                 >
                   Home
+                </Link>
+              </Box>
+              <Box display="flex" alignItems="center" gap="2">
+              <Icon as={IoFolderOpenOutline} boxSize={6} />
+                <Link
+                  as={ReactRouterLink}
+                  to={isAdmin ? '/admin/availableCheckIn' : '/user/submitted'}
+                  onClick={onClose}
+                  fontSize="lg"
+                >
+                  My Check-ins
                 </Link>
               </Box>
               <Box display="flex" alignItems="center" gap="2">
