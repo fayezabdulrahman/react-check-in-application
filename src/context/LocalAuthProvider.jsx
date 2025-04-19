@@ -30,24 +30,20 @@ const LocalAuthProvider = ({ children }) => {
 
   // Ensure app only renders after Auth0 is initialized
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && (!isAuthenticated || userDetails !== null)) {
       setLoading(false);
     }
-  }, [isLoading]);
+  }, [isLoading, isAuthenticated, userDetails]);
 
   const { mutate: fetchUserMutate } = useMutation({
     mutationFn: fetchUser,
     onSuccess: (response) => {
-      console.log('response from fetch user mutate ', response);
       setUserDetails(response);
     },
     onError: (error) => {
       console.error('Error Finding User', error);
       // If user is not found, register the user
-      console.log('user from auth0', user);
-      console.log('error response status ', error.response.status);
       if (error.response?.status === 404 && user) {
-        console.log('inside error if checking 404');
         const userRoles = user?.['https://ez-check-in/roles'];
         const userToRegister = {
           email: user.email,
@@ -63,7 +59,6 @@ const LocalAuthProvider = ({ children }) => {
   const { mutate: registerUserMutate } = useMutation({
     mutationFn: registerUser, // Calls API only when triggered
     onSuccess: (response) => {
-      console.log('Registration successful:', response);
       // set the userDetails state from the returned MongoDB user
       setUserDetails(response.user);
     },
@@ -93,7 +88,7 @@ const LocalAuthProvider = ({ children }) => {
     user,
     isAuthenticated,
     loading,
-    logout: handleLogout,
+    handleAppLogout: handleLogout,
     userDetails,
     setUserDetails
   };

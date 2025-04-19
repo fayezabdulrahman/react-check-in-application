@@ -1,23 +1,27 @@
-import { Container, Heading, useToast } from '@chakra-ui/react';
-import { useAdmin } from '../../context/AdminProvider';
-import { useEffect, useState } from 'react';
+import { Text, Heading, useToast, Box, Grid } from '@chakra-ui/react';
+import { useState } from 'react';
 import Loading from '../shared/Loading';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import CreatedCheckInCard from './CreatedCheckInCard';
-import { INITIAL_PERFORMING_ACTION_STATE } from '../../constants/application';
-import LocalStorageService from '../../util/LocalStorageService';
 import PopUpModal from '../shared/PopUpModal';
-import { INTIAL_CHECKIN_STATE } from '../../constants/application';
 import useAdminService from '../../hooks/services/useAdminService';
-
+import useCheckInStore from '../../store/checkin-store';
 const AvailableCheckIn = () => {
   const {
-    submittedCheckIns,
-    setSubmittedCheckIns,
-    setPublishedCheckIn,
-    setPerformingAdminAction
-  } = useAdmin();
-  const {fetchAllAdminCheckIn, publishNewCheckIn, unPublishCheckIn, deleteCheckIn} = useAdminService();
+    fetchAllAdminCheckIn,
+    publishNewCheckIn,
+    unPublishCheckIn,
+    deleteCheckIn
+  } = useAdminService();
+
+  const setPublishedCheckIn = useCheckInStore(
+    (state) => state.setPublishedCheckIn
+  );
+  const setCheckInResponses = useCheckInStore(
+    (state) => state.setCheckInResponses
+  );
+
+  const resetAdminAction = useCheckInStore((state) => state.resetAdminAction);
 
   const queryCleint = useQueryClient();
 
@@ -29,49 +33,35 @@ const AvailableCheckIn = () => {
     modalBody: 'Deleting this will delete for all admin users.'
   };
 
-  const {
-    data: allAdminCheckInData,
-    isLoading,
-    error
-  } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['allAdminCheckIn'],
-    queryFn: fetchAllAdminCheckIn
+    queryFn: fetchAllAdminCheckIn,
+    meta: {
+      ErrorMessage: 'failed to fetch all admin checkins'
+    },
+    staleTime: 1000 * 60 * 10 // Cache for 10 minutes
   });
 
   const { mutate: publishCheckInMutate } = useMutation({
     mutationFn: publishNewCheckIn,
-    onMutate: (payload) => {
-      let contextToReturn = {};
-      const isPublishedCheckIn =
-      LocalStorageService.getItem('publishedCheckIn');
-      if (isPublishedCheckIn) {
-        if (isPublishedCheckIn.checkInId !== payload.checkInToPublish) {
-          contextToReturn['removeLocalStorage'] = true;
-        }
-      }
-      return contextToReturn; // Ensure context is never undefined
-    },
-    onSuccess: (response, payload, context) => {
+    onSuccess: (response) => {
       const message = response.message;
-      // remove old cache first
-      if (context?.removeLocalStorage) {
-        LocalStorageService.removeItem('publishedCheckInAnalytics');
-        LocalStorageService.removeItem('publishedCheckIn');
-      }
       // if we get a successful response, set cache and update state
       if (response.checkIn) {
         const serverPublishedCheckIn = response.checkIn;
-        console.log('response from from publishing ', serverPublishedCheckIn);
 
         // set new state
         setPublishedCheckIn(serverPublishedCheckIn);
-        // set new cache for published check-in
-        LocalStorageService.setItem('publishedCheckIn', serverPublishedCheckIn);
+
         // reset performing action
-        setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
+        resetAdminAction();
 
         // invalidate cache and refetch
         queryCleint.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
+        queryCleint.invalidateQueries({ queryKey: ['publishedCheckin'] });
+        queryCleint.invalidateQueries({
+          queryKey: ['publishedCheckinAnalytics']
+        });
       }
 
       toast({
@@ -83,7 +73,7 @@ const AvailableCheckIn = () => {
     },
     onError: (error) => {
       // reset performing action
-      setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
+      resetAdminAction();
       toast({
         title: error.response?.data?.message || 'An error occurred',
         status: 'error',
@@ -99,18 +89,19 @@ const AvailableCheckIn = () => {
       const message = response.message;
       // if we get a successfull response, remove cache and update state
       if (response.checkIn) {
-        LocalStorageService.removeItem('publishedCheckInAnalytics');
-        LocalStorageService.removeItem('publishedCheckIn');
-        const serverPublishedCheckIn = response.checkIn;
-        console.log('server unpublished check in response ', serverPublishedCheckIn);
 
         // reset state
-        setPublishedCheckIn(INTIAL_CHECKIN_STATE);
+        setPublishedCheckIn(null);
+        setCheckInResponses([]);
 
         // reset performing action
-        setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
+        resetAdminAction();
         // invalidate cache and refetch
         queryCleint.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
+        queryCleint.invalidateQueries({
+          queryKey: ['publishedCheckinAnalytics']
+        });
+        queryCleint.refetchQueries({ queryKey: ['publishedCheckin'] });
       }
 
       toast({
@@ -122,7 +113,8 @@ const AvailableCheckIn = () => {
     },
     onError: (error) => {
       // reset performing action
-      setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
+      resetAdminAction();
+      console.error(error);
       toast({
         title: error.response?.data?.message || 'An error occurred',
         status: 'error',
@@ -134,31 +126,8 @@ const AvailableCheckIn = () => {
 
   const { mutate: deleteCheckInMutate } = useMutation({
     mutationFn: deleteCheckIn,
-    onMutate: (payload) => {
-      let contextToReturn = {};
-      const isPublishedCheckIn =
-        LocalStorageService.getItem('publishedCheckIn');
-      if (isPublishedCheckIn) {
-        // check if deleted check in is the published one
-        const publishedCheckInId = isPublishedCheckIn.checkInId;
-        if (payload.checkInToDelete === publishedCheckInId) {
-          // we need to remove the local storage and analytical check
-          // gets sent as context to onSuccess
-          contextToReturn['removeLocalStorage'] = true;
-        }
-      }
-      return contextToReturn;
-    },
-    onSuccess: (response, payload, context) => {
+    onSuccess: (response) => {
       const message = response.message;
-
-      if (context.removeLocalStorage) {
-        LocalStorageService.removeItem('publishedCheckInAnalytics');
-        LocalStorageService.removeItem('publishedCheckIn');
-
-        // reset published check in state
-        setPublishedCheckIn(INTIAL_CHECKIN_STATE);
-      }
 
       // invalidate cache and refetch
       queryCleint.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
@@ -169,11 +138,11 @@ const AvailableCheckIn = () => {
         isClosable: true
       });
       // reset performing action
-      setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
+      resetAdminAction();
     },
     onError: (error) => {
       // reset performing action
-      setPerformingAdminAction(INITIAL_PERFORMING_ACTION_STATE);
+      resetAdminAction();
       toast({
         title: error.response?.data?.message || 'An error occurred',
         status: 'error',
@@ -196,29 +165,20 @@ const AvailableCheckIn = () => {
   const handleDeleteCheckIn = (payload, modalConfirmationStatus) => {
     if (!openConfirmationModal) {
       setDeleteCheckInPayload(payload);
-      console.log('open confirmation modal');
 
       // open confirmation modal first
       setOpenConfirmationModal(true);
     }
     if (modalConfirmationStatus) {
-      console.log('calling delete api with payload', deleteCheckInPayload);
       // Call mutate() to trigger API call
       deleteCheckInMutate(deleteCheckInPayload);
     }
   };
 
-  useEffect(() => {
-    if (allAdminCheckInData?.checkIns) {
-      setSubmittedCheckIns(allAdminCheckInData.checkIns);
-    } else {
-      setSubmittedCheckIns([]);
-    }
-  }, [setSubmittedCheckIns, allAdminCheckInData]);
-
   if (isLoading) {
     return <Loading />;
   }
+
   if (error) {
     toast({
       title: 'Failed to load all created check in',
@@ -229,24 +189,64 @@ const AvailableCheckIn = () => {
   }
 
   return (
-    <Container>
-      <Heading>Created Check-ins</Heading>
-      {submittedCheckIns?.map((available, index) => (
-        <CreatedCheckInCard
-          availableCheckIn={available}
-          publishCheckIn={(payload) => handlePublishCheckIn(payload)}
-          unPublishCheckIn={(payload) => handleUnPublishCheckIn(payload)}
-          deleteCheckIn={(payload) => handleDeleteCheckIn(payload, null)}
-          key={index}
-        />
-      ))}
+    <Box mt={8} px={{ base: 4, md: 8 }}>
+      <Heading size="md" mb={4} fontWeight="500" color="gray.700">
+        My Check-ins
+        <Text fontSize="sm" color="gray.500" mt={1} fontWeight="normal">
+          Manage your check-in forms
+        </Text>
+      </Heading>
+
+      {data?.checkins?.length === 0 ? (
+        <Box
+          textAlign="center"
+          p={8}
+          borderRadius="lg"
+          border="1px dashed"
+          borderColor="gray.100"
+          bg="white"
+        >
+          <Text color="gray.500" mb={2}>
+            No Check-in forms created yet
+          </Text>
+        </Box>
+      ) : (
+        <Grid
+          templateColumns={{
+            base: '1fr',
+            md: 'repeat(2, 1fr)',
+            xl: 'repeat(3, 1fr)'
+          }}
+          gap={6}
+          paddingBottom={6}
+        >
+          {data?.checkIns?.map((available, index) => (
+            <Box
+              key={index}
+              borderRadius="lg"
+              border="1px solid"
+              borderColor="gray.100"
+              _hover={{ shadow: 'md' }}
+              transition="all 0.2s"
+            >
+              <CreatedCheckInCard
+                availableCheckIn={available}
+                publishCheckIn={handlePublishCheckIn}
+                unPublishCheckIn={handleUnPublishCheckIn}
+                deleteCheckIn={handleDeleteCheckIn}
+              />
+            </Box>
+          ))}
+        </Grid>
+      )}
+
       <PopUpModal
         openModal={openConfirmationModal}
         modalConfig={modalConfig}
         onConfirm={(output) => handleDeleteCheckIn(null, output)}
         onClose={() => setOpenConfirmationModal(false)}
       />
-    </Container>
+    </Box>
   );
 };
 

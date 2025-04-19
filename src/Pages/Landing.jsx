@@ -4,14 +4,15 @@ import {
   Text,
   Button,
   VStack,
-  useColorModeValue
+  useColorModeValue,
+  Image
 } from '@chakra-ui/react';
 
 import { useAuth0 } from '@auth0/auth0-react';
-import { FaLock } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import backgroundLogo from '../assets/b2b_second.jpg';
+import appLogo from '../assets/ez_checkin_logo.png';
 const Landing = () => {
   const { loginWithRedirect, isAuthenticated, user, isLoading } = useAuth0();
   const navigate = useNavigate();
@@ -19,9 +20,6 @@ const Landing = () => {
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
       const userRoles = user?.['https://ez-check-in/roles'];
-
-      console.log('user roles in landing ', userRoles);
-      console.log('user in landing ', user);
 
       if (userRoles.includes('admin')) {
         navigate('/admin', { replace: true });
@@ -51,15 +49,14 @@ const Landing = () => {
         shadow="lg"
       >
         <VStack spacing={4} textAlign="center">
-          <FaLock size={50} color={useColorModeValue('#2D3748', '#CBD5E0')} />
-          <Text fontSize="2xl" fontWeight="bold">
-            Welcome to Ez Check-ins
-          </Text>
-          <Text fontSize="md" color={useColorModeValue('gray.600', 'gray.400')}>
+          <Box>
+            <Image src={appLogo} alt="Ez Check-in logo" />
+          </Box>
+          <Text fontSize="lg" color={useColorModeValue('gray.600', 'gray.400')}>
             Log in to access your dashboard
           </Text>
           <Button size="lg" onClick={() => loginWithRedirect()}>
-            Log In
+            Log in
           </Button>
         </VStack>
       </Container>

@@ -1,139 +1,36 @@
 import {
-  Text,
   Container,
-  Button,
   Card,
   CardBody,
-  CardHeader,
   Box,
-  CardFooter,
-  Input,
-  useToast
+  Flex
 } from '@chakra-ui/react';
-import { MdPublish } from 'react-icons/md';
-import NewQuestion from '../NewQuestion';
-import { useAdmin } from '../../context/AdminProvider';
-import QuestionsSummary from '../shared/QuestionsSummary';
-import { useRef } from 'react';
-import { INTIAL_CHECKIN_STATE } from '../../constants/application';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import useAdminService from '../../hooks/services/useAdminService';
-import Loading from '../shared/Loading';
-import { useAuth0 } from '@auth0/auth0-react';
+import { QuestionsList } from '../checkinBuilder/QuestionList';
+import { QuestionTypesPanel } from '../checkinBuilder/QuestionTypesPanel';
+import { CheckInSubmitter } from '../checkinBuilder/CheckInSubmitter';
 
-const CreateCheckIn = () => {
-  const { checkIn, setCheckIn } = useAdmin();
-  const { createAdminCheckIn } = useAdminService();
-  const { user } = useAuth0();
-  const checkInNameRef = useRef();
-  const toast = useToast();
-  const queryClient = useQueryClient();
-
-  const { mutate: createCheckIn, isPending } = useMutation({
-    mutationFn: createAdminCheckIn,
-    onSuccess: (response) => {
-      console.log('response from creating check in ', response);
-      toast({
-        title: 'Successfully Created Check-in',
-        status: 'success',
-        duration: 3000,
-        isClosable: true
-      });
-
-      setCheckIn(INTIAL_CHECKIN_STATE);
-
-      // invalidate cache so we get latest created check ins
-      queryClient.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
-    },
-    onError: (error) => {
-      toast({
-        title: 'Failed to Create Check-in',
-        description: error.response?.data?.message || 'An error occurred',
-        status: 'error',
-        duration: 3000,
-        isClosable: true
-      });
-    }
-  });
-
-  if (isPending) {
-    return <Loading />;
-  }
-
-  function handleCreateCheckIn() {
-    const emptyChecckInName = checkInNameRef.current.value === '';
-    if (emptyChecckInName) {
-      return toast({
-        title: 'Please enter a name for your check-in',
-        status: 'error',
-        duration: 3000,
-        isClosable: true
-      });
-    }
-
-    const checkinToCreate = {
-      ...checkIn,
-      createdBy: user?.nickname,
-      checkInId: checkInNameRef.current.value
-    };
-
-    setCheckIn(checkinToCreate);
-
-    // Call mutate() to trigger API call
-    createCheckIn(checkinToCreate);
-  }
-
+export const CreateCheckIn = () => {
   return (
-    <>
-      <Container>
-        <Card>
-          <CardHeader color="gray.500">
-            There is currently no published Check-in
-          </CardHeader>
+    <Container maxW="container.xl" py={8}>
+      <Flex gap={8} align="start">
+        {/* Left Panel */}
+        <Card w="300px" position="sticky" top="8">
           <CardBody>
-            {checkIn.questions?.length > 0 ? (
-              <>
-                <Text>{checkIn.questions?.length} Question Added</Text>
-                <Box mt="1rem">
-                  <Input
-                    placeholder="Enter a name for your check-in"
-                    ref={checkInNameRef}
-                  />
-                </Box>
-                <CardFooter display="flex" justifyContent="center">
-                  <Button
-                    size="sm"
-                    onClick={handleCreateCheckIn}
-                    rightIcon={<MdPublish />}
-                  >
-                    Create
-                  </Button>
-                </CardFooter>
-              </>
-            ) : (
-              <>
-                <Text>Start creating a check-in by a adding new question.</Text>
-              </>
-            )}
+            <QuestionTypesPanel />
           </CardBody>
         </Card>
 
-        {checkIn.questions?.length > 0 && (
-          <>
-            <Box mt="1rem">
-              <QuestionsSummary
-                checkIn={checkIn}
-                setCheckIn={setCheckIn}
-                isSubmitted={false}
-              />
-            </Box>
-          </>
-        )}
-
-        <NewQuestion />
-      </Container>
-    </>
+        {/* Main Content */}
+        <Box flex={1}>
+          <Card mb={8}>
+            <CardBody>
+              <CheckInSubmitter />
+            </CardBody>
+          </Card>
+          <QuestionsList />
+        </Box>
+      </Flex>
+    </Container>
   );
 };
-
 export default CreateCheckIn;

@@ -75,7 +75,7 @@ const CaptureUserDetails = () => {
 
   if (!showPrompt) return null;
   return (
-    <Modal isOpen={showPrompt} onClose={() => showPrompt(false)} isCentered>
+    <Modal closeOnOverlayClick={false} isOpen={showPrompt} onClose={() => showPrompt(false)} isCentered>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Complete Your Profile</ModalHeader>
