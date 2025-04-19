@@ -82,6 +82,7 @@ const useCheckInStore = create((set) => ({
         state.questionToEdit = state.questions.find(
           (q) => q.id === question.id
         );
+        state.questionType = question.componentType;
         state.toggleModal = !state.toggleModal;
       })
     ),
