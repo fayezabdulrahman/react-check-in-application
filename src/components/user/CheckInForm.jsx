@@ -176,15 +176,24 @@ const CheckInForm = () => {
 
             {publishedCheckinData?.checkIn?.questions?.length > 0 &&
               !userAnsweredCheckIn && (
-                <Flex direction="column" gap={6}>
-                  <Heading size={'md'}>
-                    Check-in available {publishedCheckinData.checkIn.checkInId}
-                  </Heading>
+                <>
+                  <Flex
+                    direction="row"
+                    justifyContent={'space-between'}
+                    gap={6}
+                    mb={'2rem'}
+                  >
+                    <Heading size={'md'}>
+                      Check-in available{' '}
+                      {publishedCheckinData.checkIn.checkInId}
+                    </Heading>
+                    <Text color="red">* Required fields</Text>
+                  </Flex>
                   <FormFactory
                     publishedCheckIn={publishedCheckinData.checkIn}
                     onSubmit={(answers) => submitDetails(answers)}
                   />
-                </Flex>
+                </>
               )}
           </>
         )}
