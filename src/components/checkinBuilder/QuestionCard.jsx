@@ -65,7 +65,7 @@ const QuestionCard = ({ question, readOnly = false }) => {
             <Box>
               <Flex as={ question.answer ? 'b' : ''} align="center" gap={2} mb={2}>
                 <Text fontWeight="medium">{question.label}</Text>
-                {question.isRequired && <Tag colorScheme="red">Required</Tag>}
+                {!readOnly && question.isRequired && <Tag colorScheme="red">Required</Tag>}
                 {question.answer && <Text>{question.answer}</Text>}
               </Flex>
               {question.selectOptions?.length > 0 && (
