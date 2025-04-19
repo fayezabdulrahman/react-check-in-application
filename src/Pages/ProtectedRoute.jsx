@@ -15,10 +15,6 @@ const ProtectedRoute = ({ allowedRoles }) => {
 
   console.log('user roles ', userRoles);
 
-  // if (token === null || userState.role === undefined) {
-  //   return <Navigate to="/" replace />;
-  // }
-
   if (
     !isAuthenticated 
     //|| !userRoles.some((role) => allowedRoles.includes(role))
