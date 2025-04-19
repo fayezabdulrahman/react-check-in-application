@@ -73,7 +73,7 @@ const ViewSubmittedCheckInModal = () => {
               </FormLabel>
               {transformedQuestionsWithAnswers?.map(
                 (question) => (
-                  <QuestionCard key={question.id} question={question} />
+                  <QuestionCard key={question.id} question={question} readOnly={true} />
                 )
               )}
             </Box>
