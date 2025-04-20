@@ -106,7 +106,7 @@ const CreatedCheckInCard = ({
             top="0"
             fontSize="xs"
           >
-            {isCurrentlyPublished ? 'Live' : 'Draft'}
+            {isCurrentlyPublished ? 'Active' : 'Draft'}
           </Badge>
         </Flex>
       </Box>
@@ -135,7 +135,7 @@ const CreatedCheckInCard = ({
 
         <ButtonGroup variant="ghost" size="sm" spacing={1}>
           <Tooltip
-            label={isCurrentlyPublished ? 'Edit disabled (published)' : 'Edit'}
+            label={isCurrentlyPublished ? 'Edit disabled (active)' : 'Edit'}
           >
             <IconButton
               icon={<MdEdit />}
@@ -147,7 +147,7 @@ const CreatedCheckInCard = ({
             />
           </Tooltip>
 
-          <Tooltip label={isCurrentlyPublished ? 'Unpublish' : 'Publish'}>
+          <Tooltip label={isCurrentlyPublished ? 'Deactivate' : 'Activate'}>
             <IconButton
               icon={isCurrentlyPublished ? <MdUnpublished /> : <MdPublish />}
               aria-label={isCurrentlyPublished ? 'Unpublish' : 'Publish'}
@@ -164,7 +164,7 @@ const CreatedCheckInCard = ({
 
           <Tooltip
             label={
-              isCurrentlyPublished ? 'Delete disabled (published)' : 'Delete'
+              isCurrentlyPublished ? 'Delete disabled (active)' : 'Delete'
             }
           >
             <IconButton
