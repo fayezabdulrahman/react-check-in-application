@@ -189,7 +189,7 @@ const AvailableCheckIn = () => {
   }
 
   return (
-    <Box mt={8} px={{ base: 4, md: 8 }}>
+    <Box mt={4} pt={4} px={{ base: 4, md: 8 }}>
       <Heading size="md" mb={4} fontWeight="500" color="gray.700">
         My Check-ins
         <Text fontSize="sm" color="gray.500" mt={1} fontWeight="normal">
