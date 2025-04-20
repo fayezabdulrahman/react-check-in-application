@@ -1,10 +1,10 @@
 import { useDisclosure } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
-import { useLocalAuth } from '../context/LocalAuthProvider';
-import logo from '../assets/b2b.png';
+import { useLocalAuth } from '../../context/LocalAuthProvider';
+import logo from '../../assets/b2b.png';
 import { useAuth0 } from '@auth0/auth0-react';
-import MobileNav from './navigation/MobileNav';
-import DesktopNav from './navigation/DesktopNav';
+import MobileNav from './MobileNav';
+import DesktopNav from './DesktopNav';
 const Navigation = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef();

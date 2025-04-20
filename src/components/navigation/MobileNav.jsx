@@ -92,7 +92,7 @@ const MobileNav = ({
                 onClick={onClose}
                 fontSize="lg"
               >
-                My Check-ins
+                {isAdmin ? 'Check-ins ' : 'My Check-ins'}
               </Link>
             </Box>
             <Box display="flex" alignItems="center" gap="2">
