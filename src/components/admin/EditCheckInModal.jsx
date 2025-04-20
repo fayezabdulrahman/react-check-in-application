@@ -28,6 +28,7 @@ const EditCheckInModal = () => {
   const submittedCheckInToEdit = useCheckInStore(
     (state) => state.submittedCheckInToEdit
   );
+  const submittedCheckInToEditQuestions = useCheckInStore((state) => state.submittedCheckInToEditQuestions);
   const toggleEditModal = useCheckInStore((state) => state.toggleEditModal);
   const setToggleEditModal = useCheckInStore(
     (state) => state.setToggleEditModal
@@ -72,7 +73,7 @@ const EditCheckInModal = () => {
   const handleSave = () => {
     const finalEdittedCheckIn = {
       ...submittedCheckInToEdit,
-      questions: submittedCheckInToEdit?.questions
+      questions: submittedCheckInToEditQuestions
     };
     const payload = {
       originalCheckInId: submittedCheckInToEdit.checkInId,
@@ -113,9 +114,9 @@ const EditCheckInModal = () => {
 
             <Box>
               <FormLabel fontSize="sm" color="gray.600" mb={2}>
-                Questions ({submittedCheckInToEdit?.questions?.length})
+                Questions ({submittedCheckInToEditQuestions?.length})
               </FormLabel>
-              {submittedCheckInToEdit?.questions?.map((question) => (
+              {submittedCheckInToEditQuestions?.map((question) => (
                 <QuestionCard key={question.id} question={question} />
               ))}
             </Box>
