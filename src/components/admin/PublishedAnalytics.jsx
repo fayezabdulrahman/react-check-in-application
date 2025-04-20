@@ -68,6 +68,7 @@ const PublishedAnalytics = () => {
       const result = await refetch();
       if (result.status === 'success') {
         setLastUpdated(new Date());
+        LocalStorageService.setItem('checkInResponses', data?.responses);
       }
     } catch (err) {
       console.error('Refetch failed:', err);
