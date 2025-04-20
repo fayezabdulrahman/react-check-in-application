@@ -1,0 +1,45 @@
+/* Container styling for Chakra Box wrapper */
+.ag-grid-container {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #E2E8F0; /* Chakra gray.200 */
+  }
+  
+  /* Header styling */
+  .ag-theme-quartz .ag-header {
+    background-color: #EDF2F7; /* Chakra gray.100 */
+    color: #2D3748;            /* Chakra gray.800 */
+    font-weight: 600;
+    font-size: 14px;
+    border-bottom: 1px solid #CBD5E0; /* Chakra gray.300 */
+  }
+  
+  /* Header cell */
+  .ag-theme-quartz .ag-header-cell {
+    padding: 8px 12px;
+  }
+  
+  /* Row zebra striping */
+  .ag-theme-quartz .ag-row:nth-child(even) {
+    background-color: #FAFAFA;
+  }
+  
+  /* Row hover */
+  .ag-theme-quartz .ag-row:hover {
+    background-color: #F0F4F8 !important;
+  }
+  
+  /* Cell styling */
+  .ag-theme-quartz .ag-cell {
+    font-size: 13px;
+    padding: 8px 12px;
+    line-height: 1.5;
+    color: #2D3748; /* Chakra gray.800 */
+    border-color: #E2E8F0; /* Chakra gray.200 */
+  }
+  
+  /* Optional: cleaner grid outline */
+  .ag-theme-quartz .ag-root-wrapper {
+    border: none;
+  }
+  
