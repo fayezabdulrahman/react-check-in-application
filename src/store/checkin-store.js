@@ -192,6 +192,19 @@ const useCheckInStore = create((set) => ({
           actionType: null
         };
       })
+    ),
+  resetQuestionToEdit: () =>
+    set(
+      produce((state) => {
+        state.questionToEdit = null;
+      })
+    ),
+  resetSubmittedCheckInToEdit: () =>
+    set(
+      produce((state) => {
+        state.submittedCheckInToEdit = null;
+        state.submittedCheckInToEditQuestions = [];
+      })
     )
 }));
 

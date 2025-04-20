@@ -32,6 +32,10 @@ export const QuestionModal = () => {
   const submittedCheckInToEdit = useCheckInStore((state) => state.submittedCheckInToEdit);
   const updateSubmittedQuestion = useCheckInStore((state) => state.updateSubmittedQuestion);
   const setQuestionType = useCheckInStore((state) => state.setQuestionType);
+  const resetQuestionToEdit = useCheckInStore((state) => state.resetQuestionToEdit);
+
+  const store = useCheckInStore((state) => state);
+  console.log('store ', store);
 
 
   useEffect(() => {
@@ -41,7 +45,8 @@ export const QuestionModal = () => {
     if (submittedCheckInToEdit) {
       setIsSubmittedCheckIn(true);
     }
-  }, [questionToEdit,submittedCheckInToEdit, setFormData]);
+  }, [questionToEdit,submittedCheckInToEdit]);
+
 
 
   const handleSave = () => {
@@ -84,11 +89,13 @@ export const QuestionModal = () => {
     setToggleModal();
     setQuestionType('');
     setFormData(INITAL_QUESTION_STATE);
+    if(questionToEdit) {
+      resetQuestionToEdit();
+    }
   };
 
   return (
     <Modal isOpen={toggleModal} onClose={handleCloseModal} size="xl">
-      x
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>

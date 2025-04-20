@@ -32,6 +32,9 @@ const EditCheckInModal = () => {
   const setToggleEditModal = useCheckInStore(
     (state) => state.setToggleEditModal
   );
+  const resetSubmittedCheckInToEdit = useCheckInStore(
+    (state) => state.resetSubmittedCheckInToEdit
+  );
 
 
   const [checkInName, setCheckInName] = useState('');
@@ -81,8 +84,13 @@ const EditCheckInModal = () => {
     updateCheckInMutate(payload);
   };
 
+  const handleCloseEditCheckInModal = () => {
+    setToggleEditModal();
+    resetSubmittedCheckInToEdit();
+  };
+
   return (
-    <Modal isOpen={toggleEditModal} onClose={setToggleEditModal} size="2xl">
+    <Modal isOpen={toggleEditModal} onClose={handleCloseEditCheckInModal} size="2xl">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader borderBottom="1px solid" borderColor="gray.100">
