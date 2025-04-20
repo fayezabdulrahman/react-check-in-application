@@ -20,11 +20,12 @@ import {
 } from '@chakra-ui/react';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import { MdRefresh, MdAssignmentTurnedIn } from 'react-icons/md';
-import Loading from '../shared/Loading';
+import LocalStorageService from '../../util/LocalStorageService';
 
 import usePublishedCheckInAnalytics from '../../hooks/usePublishedCheckInAnalytics';
 import { useEffect, useState } from 'react';
 import useCheckInStore from '../../store/checkin-store';
+import SkeletonLoader from '../shared/SkeletonLoader';
 
 const PublishedAnalytics = () => {
   const [lastUpdated, setLastUpdated] = useState(new Date());
@@ -45,12 +46,13 @@ const PublishedAnalytics = () => {
   useEffect(() => {
     if (data?.responses.length > 0) {
       setCheckInResponses(data.responses);
+      LocalStorageService.setItem('checkInResponses', data.responses);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   if (isLoading || isPending) {
-    return <Loading />;
+    return <SkeletonLoader width="100%" height="20px" count={3} spacing={4} />;
   }
   if (error) {
     toast({

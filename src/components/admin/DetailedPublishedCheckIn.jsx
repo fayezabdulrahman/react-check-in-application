@@ -1,5 +1,5 @@
 import { AgGridReact } from 'ag-grid-react';
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 import {
@@ -14,18 +14,20 @@ import {
 } from '@chakra-ui/react';
 import { FaDownload } from 'react-icons/fa';
 import useCheckInStore from '../../store/checkin-store';
+import '../../styles/AgGridCustomStyles.css';
+import LocalStorageService from '../../util/LocalStorageService';
 
 const TruncatedTextRenderer = (params) => {
-  const header = params.colDef.headerName;
   const text = params.value || '';
 
   return (
-    <Tooltip label={header} hasArrow>
+    <Tooltip label={text} hasArrow>
       <Box
         whiteSpace="nowrap"
         overflow="hidden"
         textOverflow="ellipsis"
         cursor="default"
+        maxW="100%"
       >
         {text}
       </Box>
@@ -36,8 +38,16 @@ const TruncatedTextRenderer = (params) => {
 const DetailedPublishedCheckIn = () => {
   const toast = useToast();
   const checkInResponses = useCheckInStore((state) => state.checkInResponses);
+  const setCheckInResponses = useCheckInStore((state) => state.setCheckInResponses);
   const publishedCheckIn = useCheckInStore((state) => state.publishedCheckIn);
   const [gridApi, setGridApi] = useState(null);
+
+  useEffect(() => {
+    const cachedCheckInRespones = LocalStorageService.getItem('checkInResponses');
+    if (cachedCheckInRespones) {
+      setCheckInResponses(cachedCheckInRespones);
+    }
+  }, [setCheckInResponses]);
 
   const transformData = (data) => {
     if (!data || data.length === 0) return { questions: [], answers: [] };
@@ -71,7 +81,8 @@ const DetailedPublishedCheckIn = () => {
         headerName: question,
         field: question,
         cellRenderer: TruncatedTextRenderer,
-        filter: 'agTextColumnFilter'
+        filter: 'agTextColumnFilter',
+        headerTooltip: question
       })) || [])
     ];
   }, [questions]);
@@ -85,7 +96,6 @@ const DetailedPublishedCheckIn = () => {
       filter: true,
       wrapText: true,
       autoHeight: true,
-      menuTabs: ['filterMenuTab'],
       filterParams: {
         buttons: ['apply', 'reset']
       }
@@ -102,7 +112,7 @@ const DetailedPublishedCheckIn = () => {
     if (!gridApi) return;
 
     gridApi.exportDataAsCsv({
-      fileName: `Checkin-responses-${publishedCheckIn.checkInId}-${new Date()
+      fileName: `Checkin-responses-${publishedCheckIn?.checkInId}-${new Date()
         .toISOString()
         .slice(0, 10)}.csv`,
       processCellCallback: (params) => {
@@ -144,7 +154,7 @@ const DetailedPublishedCheckIn = () => {
       <HStack justifyContent="space-between" mb={4}>
         <Box>
           <Heading size="lg">
-            Check-in Results for {publishedCheckIn.checkInId}
+            Check-in Results for {publishedCheckIn?.checkInId}
           </Heading>
           <Text color="gray.500" mt={1}>
             {answers.length} responses collected
@@ -162,7 +172,7 @@ const DetailedPublishedCheckIn = () => {
       <Divider mb={4} />
 
       <Box
-        className="ag-theme-quartz"
+        className="ag-grid-container ag-theme-quartz" height="500px" width="100%"
         flex={1}
         borderRadius="lg"
         overflow="hidden"
@@ -175,10 +185,10 @@ const DetailedPublishedCheckIn = () => {
           onGridReady={onGridReady}
           pagination={true}
           paginationPageSize={20}
-          domLayout="autoHeight"
           suppressRowClickSelection={true}
           enableCellTextSelection={true}
           ensureDomOrder={true}
+          tooltipShowDelay={0}
         />
       </Box>
     </Box>
