@@ -9,6 +9,7 @@ import { Auth0Provider } from '@auth0/auth0-react';
 import AvailableCheckIn from './components/admin/AvailableCheckIn';
 import ProtectedComponents from './components/shared/ProtectedComponents';
 import SubmittedCheckIn from './components/user/SubmittedCheckIn';
+import Layout from './Pages/Layout';
 
 function App() {
   const auth0Domain = import.meta.env.VITE_AUTH0_DOMAIN;
@@ -30,19 +31,26 @@ function App() {
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route element={<ProtectedRoute allowedRoles={['user']} />}>
-                <Route path="/home" index element={<Homepage />} />
-                <Route path="/user/submitted" element={<SubmittedCheckIn />} />
+                <Route element={<Layout />}>
+                  <Route path="/home" index element={<Homepage />} />
+                  <Route
+                    path="/user/submitted"
+                    element={<SubmittedCheckIn />}
+                  />
+                </Route>
               </Route>
               <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-                <Route path="/admin" element={<AdminHomepage />} />
-                <Route
-                  path="/admin/publishedCheckIn"
-                  element={<DetailedPublishedCheckIn />}
-                />
-                <Route
-                  path="/admin/availableCheckIn"
-                  element={<AvailableCheckIn />}
-                />
+                <Route element={<Layout />}>
+                  <Route path="/admin" element={<AdminHomepage />} />
+                  <Route
+                    path="/admin/publishedCheckIn"
+                    element={<DetailedPublishedCheckIn />}
+                  />
+                  <Route
+                    path="/admin/availableCheckIn"
+                    element={<AvailableCheckIn />}
+                  />
+                </Route>
               </Route>
             </Routes>
             <ProtectedComponents />

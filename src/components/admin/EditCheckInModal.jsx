@@ -28,9 +28,13 @@ const EditCheckInModal = () => {
   const submittedCheckInToEdit = useCheckInStore(
     (state) => state.submittedCheckInToEdit
   );
+  const submittedCheckInToEditQuestions = useCheckInStore((state) => state.submittedCheckInToEditQuestions);
   const toggleEditModal = useCheckInStore((state) => state.toggleEditModal);
   const setToggleEditModal = useCheckInStore(
     (state) => state.setToggleEditModal
+  );
+  const resetSubmittedCheckInToEdit = useCheckInStore(
+    (state) => state.resetSubmittedCheckInToEdit
   );
 
 
@@ -69,7 +73,7 @@ const EditCheckInModal = () => {
   const handleSave = () => {
     const finalEdittedCheckIn = {
       ...submittedCheckInToEdit,
-      questions: submittedCheckInToEdit?.questions
+      questions: submittedCheckInToEditQuestions
     };
     const payload = {
       originalCheckInId: submittedCheckInToEdit.checkInId,
@@ -81,8 +85,13 @@ const EditCheckInModal = () => {
     updateCheckInMutate(payload);
   };
 
+  const handleCloseEditCheckInModal = () => {
+    setToggleEditModal();
+    resetSubmittedCheckInToEdit();
+  };
+
   return (
-    <Modal isOpen={toggleEditModal} onClose={setToggleEditModal} size="2xl">
+    <Modal isOpen={toggleEditModal} onClose={handleCloseEditCheckInModal} size="2xl">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader borderBottom="1px solid" borderColor="gray.100">
@@ -105,9 +114,9 @@ const EditCheckInModal = () => {
 
             <Box>
               <FormLabel fontSize="sm" color="gray.600" mb={2}>
-                Questions ({submittedCheckInToEdit?.questions?.length})
+                Questions ({submittedCheckInToEditQuestions?.length})
               </FormLabel>
-              {submittedCheckInToEdit?.questions?.map((question) => (
+              {submittedCheckInToEditQuestions?.map((question) => (
                 <QuestionCard key={question.id} question={question} />
               ))}
             </Box>
