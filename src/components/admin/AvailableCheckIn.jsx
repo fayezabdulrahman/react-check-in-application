@@ -6,6 +6,8 @@ import CreatedCheckInCard from './CreatedCheckInCard';
 import PopUpModal from '../shared/PopUpModal';
 import useAdminService from '../../hooks/services/useAdminService';
 import useCheckInStore from '../../store/checkin-store';
+import LocalStorageService from '../../util/LocalStorageService';
+
 const AvailableCheckIn = () => {
   const {
     fetchAllAdminCheckIn,
@@ -53,6 +55,9 @@ const AvailableCheckIn = () => {
         // set new state
         setPublishedCheckIn(serverPublishedCheckIn);
 
+        // reset cache
+        LocalStorageService.removeItem('checkInResponses');
+
         // reset performing action
         resetAdminAction();
 
@@ -93,6 +98,9 @@ const AvailableCheckIn = () => {
         // reset state
         setPublishedCheckIn(null);
         setCheckInResponses([]);
+
+        // reset cache
+        LocalStorageService.removeItem('checkInResponses');
 
         // reset performing action
         resetAdminAction();
