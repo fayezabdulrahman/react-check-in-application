@@ -26,6 +26,7 @@ import usePublishedCheckInAnalytics from '../../hooks/usePublishedCheckInAnalyti
 import { useEffect, useState } from 'react';
 import useCheckInStore from '../../store/checkin-store';
 import SkeletonLoader from '../shared/SkeletonLoader';
+import ErrorMessage from '../shared/ErrorMesssage';
 
 const PublishedAnalytics = () => {
   const [lastUpdated, setLastUpdated] = useState(new Date());
@@ -54,15 +55,6 @@ const PublishedAnalytics = () => {
   if (isLoading || isPending) {
     return <SkeletonLoader width="100%" height="20px" count={3} spacing={4} />;
   }
-  if (error) {
-    toast({
-      title: 'Failed to get published check-in responses.',
-      status: 'error',
-      duration: 3000,
-      isClosable: true
-    });
-  }
-
   const handleRefetch = async () => {
     try {
       const result = await refetch();
@@ -80,6 +72,15 @@ const PublishedAnalytics = () => {
       });
     }
   };
+  if (error) {
+    toast({
+      title: 'Failed to get published check-in responses.',
+      status: 'error',
+      duration: 3000,
+      isClosable: true
+    });
+    return <ErrorMessage onRetry={handleRefetch}/>;
+  }
 
   return (
     <Card
