@@ -1,9 +1,9 @@
 import { Box, Text, useToast } from '@chakra-ui/react';
-import Loading from '../shared/Loading';
 import usePublishedCheckInQuery from '../../hooks/usePublishedCheckInQuery';
 import PublishedAnalytics from './PublishedAnalytics';
 import useCheckInStore from '../../store/checkin-store';
 import { useEffect } from 'react';
+import SkeletonLoader from '../shared/SkeletonLoader';
 
 const PublishedCheckIn = () => {
   // calls to check if we have a published check-in from the api
@@ -25,7 +25,7 @@ const PublishedCheckIn = () => {
   }, [data, publishedCheckIn, setPublishedCheckIn]);
 
   if (isLoading) {
-    return <Loading />;
+    return <SkeletonLoader />;
   }
 
   if (error) {
