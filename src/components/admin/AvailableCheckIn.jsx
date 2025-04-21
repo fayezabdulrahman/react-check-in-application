@@ -7,6 +7,7 @@ import PopUpModal from '../shared/PopUpModal';
 import useAdminService from '../../hooks/services/useAdminService';
 import useCheckInStore from '../../store/checkin-store';
 import LocalStorageService from '../../util/LocalStorageService';
+import ErrorMessage from '../shared/ErrorMesssage';
 
 const AvailableCheckIn = () => {
   const {
@@ -35,7 +36,7 @@ const AvailableCheckIn = () => {
     modalBody: 'Deleting this will delete for all admin users.'
   };
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['allAdminCheckIn'],
     queryFn: fetchAllAdminCheckIn,
     meta: {
@@ -94,7 +95,6 @@ const AvailableCheckIn = () => {
       const message = response.message;
       // if we get a successfull response, remove cache and update state
       if (response.checkIn) {
-
         // reset state
         setPublishedCheckIn(null);
         setCheckInResponses([]);
@@ -194,6 +194,14 @@ const AvailableCheckIn = () => {
       duration: 3000,
       isClosable: true
     });
+
+    return (
+      <>
+        <Box mt={8}>
+          <ErrorMessage onRetry={refetch} />
+        </Box>
+      </>
+    );
   }
 
   return (
