@@ -6,6 +6,7 @@ import useUserService from '../../hooks/services/useUserService';
 import { useLocalAuth } from '../../context/LocalAuthProvider';
 import useCheckInStore from '../../store/checkin-store';
 import UserSubmittedCheckInCard from './UserSubmittedCheckInCard';
+import ErrorMessage from '../shared/ErrorMesssage';
 const SubmittedCheckIn = () => {
   const setAllUserSubmittedCheckIns = useCheckInStore(
     (state) => state.setAllUserSubmittedCheckIns
@@ -15,7 +16,7 @@ const SubmittedCheckIn = () => {
   const toast = useToast();
   const { userDetails } = useLocalAuth();
 
-  const { data, isPending, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['allUserSubmittedCheckin'],
     queryFn: fetchAllUserSubmittedCheckIns,
     enabled: !!userDetails,
@@ -28,18 +29,26 @@ const SubmittedCheckIn = () => {
     }
   }, [setAllUserSubmittedCheckIns, data]);
 
-  if (isPending) {
+  if (isLoading) {
     return <Loading />;
   }
 
   if (error) {
     toast({
-      title: 'Failed to get Submitted Check-ins',
+      title: 'Failed to fetch Submitted Check-ins',
       description: error.response?.data?.message || 'An error occurred',
       status: 'error',
       duration: 3000,
       isClosable: true
     });
+
+    return (
+      <>
+        <Box mt={8}>
+          <ErrorMessage onRetry={refetch} />
+        </Box>
+      </>
+    );
   }
 
   return (
