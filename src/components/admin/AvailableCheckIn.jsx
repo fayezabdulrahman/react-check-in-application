@@ -167,8 +167,8 @@ const AvailableCheckIn = () => {
   const handleDeleteCheckIn = (checkInId) => {
     openDeleteModal({
       id: checkInId,
-      header: 'Delete Question',
-      body: 'Are you sure you want to Delete this question ?',
+      header: `Delete ${checkInId.checkInToDelete} Check-in`,
+      body: 'Are you sure you want to Delete this Check-in ? This will remove for all admin users.',
       onConfirm: (payload) => deleteCheckInMutate(payload)
     });
   };
