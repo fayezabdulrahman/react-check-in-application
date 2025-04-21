@@ -11,54 +11,61 @@ import ProtectedComponents from './components/shared/ProtectedComponents';
 import SubmittedCheckIn from './components/user/SubmittedCheckIn';
 import Layout from './Pages/Layout';
 import CheckInForm from './components/user/CheckInForm';
+import { useAuth0 } from '@auth0/auth0-react';
+import Loading from './components/shared/Loading';
 
 function App() {
   const auth0Domain = import.meta.env.VITE_AUTH0_DOMAIN;
   const auth0ClientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
   const auth0Audience = import.meta.env.VITE_AUTH0_AUDIENCE;
+  const { isLoading } = useAuth0();
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <>
       <BrowserRouter>
-        <Auth0Provider
+        {/* <Auth0Provider
           domain={auth0Domain}
           clientId={auth0ClientId}
           authorizationParams={{
             redirect_uri: window.location.origin,
             audience: auth0Audience
           }}
-        >
-          <LocalAuthProvider>
-            <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route element={<ProtectedRoute allowedRoles={['user']} />}>
-                <Route element={<Layout />}>
-                  <Route path="/home" index element={<Homepage />} />
-                  <Route path="/home/availableCheckIn" element={<CheckInForm />} />
+        > */}
+        <LocalAuthProvider>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route element={<ProtectedRoute allowedRoles={['user']} />}>
+              <Route element={<Layout />}>
+                <Route path="/home" index element={<Homepage />} />
+                <Route
+                  path="/home/availableCheckIn"
+                  element={<CheckInForm />}
+                />
 
-                  <Route
-                    path="/user/submitted"
-                    element={<SubmittedCheckIn />}
-                  />
-                </Route>
+                <Route path="/user/submitted" element={<SubmittedCheckIn />} />
               </Route>
-              <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-                <Route element={<Layout />}>
-                  <Route path="/admin" element={<AdminHomepage />} />
-                  <Route
-                    path="/admin/publishedCheckIn"
-                    element={<DetailedPublishedCheckIn />}
-                  />
-                  <Route
-                    path="/admin/availableCheckIn"
-                    element={<AvailableCheckIn />}
-                  />
-                </Route>
+            </Route>
+            <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+              <Route element={<Layout />}>
+                <Route path="/admin" element={<AdminHomepage />} />
+                <Route
+                  path="/admin/publishedCheckIn"
+                  element={<DetailedPublishedCheckIn />}
+                />
+                <Route
+                  path="/admin/availableCheckIn"
+                  element={<AvailableCheckIn />}
+                />
               </Route>
-            </Routes>
-            <ProtectedComponents />
-          </LocalAuthProvider>
-        </Auth0Provider>
+            </Route>
+          </Routes>
+          <ProtectedComponents />
+        </LocalAuthProvider>
+        {/* </Auth0Provider> */}
       </BrowserRouter>
     </>
   );
