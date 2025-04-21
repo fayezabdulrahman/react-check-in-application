@@ -58,7 +58,7 @@ const EditCheckInModal = () => {
       queryClient.invalidateQueries(['allAdminCheckIn']);
       queryClient.invalidateQueries(['publishedCheckin']);
 
-      setToggleEditModal();
+      handleCloseEditCheckInModal();
     },
     onError: (error) => {
       toast({
@@ -128,7 +128,7 @@ const EditCheckInModal = () => {
             variant="ghost"
             colorScheme="blue"
             mr={3}
-            onClick={setToggleEditModal}
+            onClick={handleCloseEditCheckInModal}
           >
             Cancel
           </Button>
