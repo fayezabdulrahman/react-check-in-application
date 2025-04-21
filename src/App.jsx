@@ -10,6 +10,7 @@ import AvailableCheckIn from './components/admin/AvailableCheckIn';
 import ProtectedComponents from './components/shared/ProtectedComponents';
 import SubmittedCheckIn from './components/user/SubmittedCheckIn';
 import Layout from './Pages/Layout';
+import CheckInForm from './components/user/CheckInForm';
 
 function App() {
   const auth0Domain = import.meta.env.VITE_AUTH0_DOMAIN;
@@ -33,6 +34,8 @@ function App() {
               <Route element={<ProtectedRoute allowedRoles={['user']} />}>
                 <Route element={<Layout />}>
                   <Route path="/home" index element={<Homepage />} />
+                  <Route path="/home/availableCheckIn" element={<CheckInForm />} />
+
                   <Route
                     path="/user/submitted"
                     element={<SubmittedCheckIn />}

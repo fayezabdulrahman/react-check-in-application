@@ -1,12 +1,11 @@
 import { Text, Heading, useToast, Box, Grid } from '@chakra-ui/react';
-import { useState } from 'react';
 import Loading from '../shared/Loading';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import CreatedCheckInCard from './CreatedCheckInCard';
-import PopUpModal from '../shared/PopUpModal';
 import useAdminService from '../../hooks/services/useAdminService';
 import useCheckInStore from '../../store/checkin-store';
 import LocalStorageService from '../../util/LocalStorageService';
+import ErrorMessage from '../shared/ErrorMesssage';
 
 const AvailableCheckIn = () => {
   const {
@@ -23,19 +22,15 @@ const AvailableCheckIn = () => {
     (state) => state.setCheckInResponses
   );
 
+  const openDeleteModal = useCheckInStore((state) => state.openDeleteModal);
+
   const resetAdminAction = useCheckInStore((state) => state.resetAdminAction);
 
   const queryCleint = useQueryClient();
 
   const toast = useToast();
-  const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
-  const [deleteCheckInPayload, setDeleteCheckInPayload] = useState(null);
-  const modalConfig = {
-    modalHeader: 'Deleting Checkin',
-    modalBody: 'Deleting this will delete for all admin users.'
-  };
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['allAdminCheckIn'],
     queryFn: fetchAllAdminCheckIn,
     meta: {
@@ -94,7 +89,6 @@ const AvailableCheckIn = () => {
       const message = response.message;
       // if we get a successfull response, remove cache and update state
       if (response.checkIn) {
-
         // reset state
         setPublishedCheckIn(null);
         setCheckInResponses([]);
@@ -170,17 +164,13 @@ const AvailableCheckIn = () => {
     unPublishCheckInMutate(payload);
   };
 
-  const handleDeleteCheckIn = (payload, modalConfirmationStatus) => {
-    if (!openConfirmationModal) {
-      setDeleteCheckInPayload(payload);
-
-      // open confirmation modal first
-      setOpenConfirmationModal(true);
-    }
-    if (modalConfirmationStatus) {
-      // Call mutate() to trigger API call
-      deleteCheckInMutate(deleteCheckInPayload);
-    }
+  const handleDeleteCheckIn = (checkInId) => {
+    openDeleteModal({
+      id: checkInId,
+      header: `Delete ${checkInId.checkInToDelete} Check-in`,
+      body: 'Are you sure you want to Delete this Check-in ? This will remove for all admin users.',
+      onConfirm: (payload) => deleteCheckInMutate(payload)
+    });
   };
 
   if (isLoading) {
@@ -194,6 +184,14 @@ const AvailableCheckIn = () => {
       duration: 3000,
       isClosable: true
     });
+
+    return (
+      <>
+        <Box mt={8}>
+          <ErrorMessage onRetry={refetch} />
+        </Box>
+      </>
+    );
   }
 
   return (
@@ -247,13 +245,6 @@ const AvailableCheckIn = () => {
           ))}
         </Grid>
       )}
-
-      <PopUpModal
-        openModal={openConfirmationModal}
-        modalConfig={modalConfig}
-        onConfirm={(output) => handleDeleteCheckIn(null, output)}
-        onClose={() => setOpenConfirmationModal(false)}
-      />
     </Box>
   );
 };

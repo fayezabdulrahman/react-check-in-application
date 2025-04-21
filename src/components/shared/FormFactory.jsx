@@ -9,13 +9,20 @@ import {
   Box,
   Button,
   Textarea,
+  Flex,
+  Text,
   FormErrorMessage
 } from '@chakra-ui/react';
 import { Field, Form, Formik } from 'formik';
-import * as Yup from 'yup';
+import { useLocation } from 'react-router-dom';
 
-const FormFactory = ({ publishedCheckIn, onSubmit }) => {
-  const initialValues = publishedCheckIn.questions.reduce(
+import * as Yup from 'yup';
+import ErrorMessage from './ErrorMesssage';
+
+const FormFactory = ({ onSubmit }) => {
+  const location = useLocation();
+  const { publishedCheckIn } = location.state || {}; // Safely destructure state
+  const initialValues = publishedCheckIn?.questions?.reduce(
     (values, question) => {
       values[question.label] = '';
       return values;
@@ -36,7 +43,7 @@ const FormFactory = ({ publishedCheckIn, onSubmit }) => {
   const generateValidationSchema = (questions) => {
     let schemaShape = {};
 
-    questions.forEach((question) => {
+    questions?.forEach((question) => {
       if (question.isRequired) {
         schemaShape[question.label] = Yup.string().required(
           'This field is required'
@@ -48,10 +55,33 @@ const FormFactory = ({ publishedCheckIn, onSubmit }) => {
     return Yup.object().shape(schemaShape);
   };
 
-  const validationSchema = generateValidationSchema(publishedCheckIn.questions);
+  const validationSchema = generateValidationSchema(
+    publishedCheckIn?.questions
+  );
+
+  if (!publishedCheckIn) {
+    return (
+      <ErrorMessage message="No Questions found! Please return to home screen" />
+    );
+  }
 
   return (
     <>
+      <Flex
+        direction={{ base: 'column', md: 'row' }}
+        alignItems={{ base: 'flex-end', md: 'center' }}
+        justifyContent={{ base: 'flex-end', md: 'flex-end' }}
+        mb={6}
+      >
+        <Text
+          color="red.500"
+          fontWeight="medium"
+          fontSize="sm"
+          alignSelf={{ base: 'flex-end', md: 'auto' }}
+        >
+          * Required fields
+        </Text>
+      </Flex>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -60,7 +90,7 @@ const FormFactory = ({ publishedCheckIn, onSubmit }) => {
       >
         {({ values, setFieldValue, isValid }) => (
           <Form>
-            {publishedCheckIn.questions?.map((question, index) => (
+            {publishedCheckIn?.questions?.map((question, index) => (
               <Field key={index} name={question.label}>
                 {({ field, form }) => (
                   <FormControl

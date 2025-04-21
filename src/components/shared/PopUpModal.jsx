@@ -1,49 +1,53 @@
 import {
   Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter
 } from '@chakra-ui/react';
-import { useEffect } from 'react';
-const PopUpModal = ({ openModal, modalConfig, onConfirm, onClose }) => {
-  const { isOpen, onOpen, onClose: chakraClose } = useDisclosure();
+import { useRef } from 'react';
+import useCheckInStore from '../../store/checkin-store';
+const PopUpModal = () => {
+  const toggleDeleteModal = useCheckInStore((state) => state.toggleDeleteModal);
+  const deleteModalConfig = useCheckInStore((state) => state.deleteModalConfig);
+  const closeDeleteModal = useCheckInStore((state) => state.closeDeleteModal);
 
-  useEffect(() => {
-    if (openModal) {
-      onOpen();
-    } else {
-      chakraClose();
-    }
-  }, [openModal, onOpen, chakraClose]);
   const handleConfirm = () => {
-    onConfirm(true);
-    onClose();
+    if (deleteModalConfig?.onConfirm) {
+      deleteModalConfig.onConfirm(deleteModalConfig.id);
+    }
+    closeDeleteModal();
   };
+  const cancelRef = useRef();
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>{modalConfig?.modalHeader}</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>{modalConfig?.modalBody}</ModalBody>
+      <AlertDialog
+        isOpen={toggleDeleteModal}
+        leastDestructiveRef={cancelRef}
+        onClose={closeDeleteModal}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              {deleteModalConfig?.header}
+            </AlertDialogHeader>
 
-          <ModalFooter>
-            <Button mr={3} onClick={handleConfirm}>
-              Confirm
-            </Button>
-            <Button variant="ghost" onClick={onClose}>
-              Close
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+            <AlertDialogBody>{deleteModalConfig?.body}</AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={closeDeleteModal}>
+                Cancel
+              </Button>
+              <Button colorScheme="red" onClick={handleConfirm} ml={3}>
+                Delete
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </>
   );
 };

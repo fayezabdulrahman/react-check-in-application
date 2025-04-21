@@ -1,5 +1,5 @@
 import { Box } from '@chakra-ui/react';
-import Navigation from '../components/Navigation';
+import Navigation from '../components/navigation/Navigation';
 import Footer from './Footer';
 import { Outlet } from 'react-router-dom';
 

@@ -1,9 +1,9 @@
 import { Box, Text, useToast } from '@chakra-ui/react';
-import Loading from '../shared/Loading';
 import usePublishedCheckInQuery from '../../hooks/usePublishedCheckInQuery';
 import PublishedAnalytics from './PublishedAnalytics';
 import useCheckInStore from '../../store/checkin-store';
 import { useEffect } from 'react';
+import SkeletonLoader from '../shared/SkeletonLoader';
 
 const PublishedCheckIn = () => {
   // calls to check if we have a published check-in from the api
@@ -17,14 +17,15 @@ const PublishedCheckIn = () => {
 
   // if we have a check-in from our backend and our store is empty
   // set the store to the published check-in from our backend
+  // TODO: REVIEW THIS CODE WHEN WE MOVE TO MULTI PUBLISHED CHECK INS
   useEffect(() => {
-    if (data?.checkIn && !publishedCheckIn) {
-      setPublishedCheckIn(data.checkIn);
+    if (data?.checkIn?.length > 0 && !publishedCheckIn) {
+      setPublishedCheckIn(data.checkIn[0]);
     }
   }, [data, publishedCheckIn, setPublishedCheckIn]);
 
   if (isLoading) {
-    return <Loading />;
+    return <SkeletonLoader />;
   }
 
   if (error) {
@@ -40,7 +41,8 @@ const PublishedCheckIn = () => {
   }
   return (
     <>
-      {!data?.checkIn && (
+      {/* TODO: REIVEW LINE BELOW WHEN WE MOVE TO MULTI PUBLISH CHECK INS */}
+      {!data?.checkIn?.length > 0 && (
         <Box
           width="100%"
           borderWidth="1px"
@@ -57,7 +59,8 @@ const PublishedCheckIn = () => {
           </Text>
         </Box>
       )}
-      {data?.checkIn && <PublishedAnalytics />}
+      {/* TODO: REIVEW LINE BELOW WHEN WE MOVE TO MULTI PUBLISH CHECK INS */}
+      {data?.checkIn?.length > 0 && <PublishedAnalytics />}
     </>
   );
 };

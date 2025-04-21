@@ -49,7 +49,7 @@ const DesktopNav = ({
         fontWeight="500"
         _hover={{ textDecoration: 'none', opacity: 0.8 }}
       >
-        My Check-ins
+        {isAdmin ? 'Check-ins ' : 'My Check-ins'}
       </Link>
 
       <Box onMouseEnter={handleMenuOpen} onMouseLeave={handleMenuClose}>

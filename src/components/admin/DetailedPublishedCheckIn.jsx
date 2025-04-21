@@ -154,15 +154,14 @@ const DetailedPublishedCheckIn = () => {
       <HStack justifyContent="space-between" mb={4}>
         <Box>
           <Heading size="lg">
-            Check-in Results for {publishedCheckIn?.checkInId}
+            Results for {publishedCheckIn?.checkInId}
           </Heading>
           <Text color="gray.500" mt={1}>
-            {answers.length} responses collected
+            {answers.length} Responses Collected
           </Text>
         </Box>
         <Button
           leftIcon={<FaDownload />}
-          colorScheme="blue"
           onClick={handleExport}
           variant="solid"
         >

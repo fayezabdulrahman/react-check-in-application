@@ -1,10 +1,10 @@
 import { Container } from '@chakra-ui/react';
-import CheckInForm from './CheckInForm';
+import AvailableUserCheckIn from './AvailableUserCheckIn';
 
 const Homepage = () => {
   return (
     <Container maxW="container.lg" py={8}>
-      <CheckInForm />
+      <AvailableUserCheckIn />
     </Container>
   );
 };

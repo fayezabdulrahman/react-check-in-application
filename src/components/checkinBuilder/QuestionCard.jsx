@@ -1,28 +1,17 @@
 import {
-  Button,
   Box,
   Card,
   CardBody,
   Flex,
   Text,
   Tag,
-  IconButton,
-  useDisclosure,
-  AlertDialog,
-  AlertDialogOverlay,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogBody,
-  AlertDialogFooter
+  IconButton
 } from '@chakra-ui/react';
 import { MdEdit, MdDelete } from 'react-icons/md';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import useCheckInStore from '../../store/checkin-store';
 const QuestionCard = ({ question, readOnly = false }) => {
-  const [questionToDelete, setQuestionToDelete] = useState(null);
   const [isCheckInSubmitted, setIsCheckInSubmitted] = useState(false);
-  const cancelRef = useRef();
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const removeQuestion = useCheckInStore((state) => state.removeQuestion);
   const setQuestionToEdit = useCheckInStore((state) => state.setQuestionToEdit);
   const submittedCheckInToEdit = useCheckInStore(
@@ -34,6 +23,8 @@ const QuestionCard = ({ question, readOnly = false }) => {
   const setSubmittedCheckInQuestionToEdit = useCheckInStore(
     (state) => state.setSubmittedCheckInQuestionToEdit
   );
+
+  const openDeleteModal = useCheckInStore((state) => state.openDeleteModal);
 
   useEffect(() => {
     if (submittedCheckInToEdit) {
@@ -49,13 +40,21 @@ const QuestionCard = ({ question, readOnly = false }) => {
     }
   };
 
-  const handleDelete = () => {
+  const handleDeleteQuestion = (questionId) => {
+    openDeleteModal({
+      id: questionId,
+      header: 'Delete Question',
+      body: 'Are you sure you want to Delete this question ?',
+      onConfirm: (payload) => handleDelete(payload)
+    });
+  };
+
+  const handleDelete = (questionId) => {
     if (isCheckInSubmitted) {
-      removeQuestionFromSubmittedCheckIn(questionToDelete);
+      removeQuestionFromSubmittedCheckIn(questionId);
     } else {
-      removeQuestion(questionToDelete);
+      removeQuestion(questionId);
     }
-    onClose();
   };
   return (
     <>
@@ -63,9 +62,16 @@ const QuestionCard = ({ question, readOnly = false }) => {
         <CardBody>
           <Flex justify="space-between" align="center">
             <Box>
-              <Flex as={ question.answer ? 'b' : ''} align="center" gap={2} mb={2}>
+              <Flex
+                as={question.answer ? 'b' : ''}
+                align="center"
+                gap={2}
+                mb={2}
+              >
                 <Text fontWeight="medium">{question.label}</Text>
-                {!readOnly && question.isRequired && <Tag colorScheme="red">Required</Tag>}
+                {!readOnly && question.isRequired && (
+                  <Tag colorScheme="red">Required</Tag>
+                )}
                 {question.answer && <Text>{question.answer}</Text>}
               </Flex>
               {question.selectOptions?.length > 0 && (
@@ -91,10 +97,7 @@ const QuestionCard = ({ question, readOnly = false }) => {
                 <IconButton
                   icon={<MdDelete />}
                   aria-label="Delete question"
-                  onClick={() => {
-                    setQuestionToDelete(question.id);
-                    onOpen();
-                  }}
+                  onClick={() => handleDeleteQuestion(question.id)}
                   variant="ghost"
                   colorScheme="red"
                 />
@@ -103,34 +106,6 @@ const QuestionCard = ({ question, readOnly = false }) => {
           </Flex>
         </CardBody>
       </Card>
-
-      <AlertDialog
-        isOpen={isOpen}
-        leastDestructiveRef={cancelRef}
-        onClose={onClose}
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete Question
-            </AlertDialogHeader>
-
-            <AlertDialogBody>
-              Are you sure you want to delete this question? This action cannot
-              be undone.
-            </AlertDialogBody>
-
-            <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={onClose}>
-                Cancel
-              </Button>
-              <Button colorScheme="red" onClick={handleDelete} ml={3}>
-                Delete
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
     </>
   );
 };
