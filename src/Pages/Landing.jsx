@@ -18,6 +18,7 @@ const Landing = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log('isAuthenticated:', isAuthenticated, 'isLoading:', isLoading, 'user:', user);
     if (isAuthenticated && !isLoading) {
       const userRoles = user?.['https://ez-check-in/roles'];
 
