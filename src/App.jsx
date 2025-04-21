@@ -11,11 +11,27 @@ import ProtectedComponents from './components/shared/ProtectedComponents';
 import SubmittedCheckIn from './components/user/SubmittedCheckIn';
 import Layout from './Pages/Layout';
 import CheckInForm from './components/user/CheckInForm';
+import { useAuth0 } from '@auth0/auth0-react';
+import { useState, useEffect } from 'react';
+import Loading from './components/shared/Loading';
 
 function App() {
   const auth0Domain = import.meta.env.VITE_AUTH0_DOMAIN;
   const auth0ClientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
   const auth0Audience = import.meta.env.VITE_AUTH0_AUDIENCE;
+
+  const { isLoading: auth0Loading } = useAuth0(); // Add this
+  const [appLoading, setAppLoading] = useState(true);
+
+  useEffect(() => {
+    if (!auth0Loading) {
+      setAppLoading(false);
+    }
+  }, [auth0Loading]);
+
+  if (appLoading) {
+    return <Loading />;
+  }
 
   return (
     <>
@@ -27,10 +43,8 @@ function App() {
             redirect_uri: window.location.origin,
             audience: auth0Audience
           }}
-          onRedirectCallback={(appState) => {
-          // Preserve the route after login
-          window.location.href = appState?.returnTo || window.location.pathname;
-          }}
+          cacheLocation="localstorage"
+          useRefreshTokens={true}
         >
           <LocalAuthProvider>
             <Routes>
@@ -38,7 +52,10 @@ function App() {
               <Route element={<ProtectedRoute allowedRoles={['user']} />}>
                 <Route element={<Layout />}>
                   <Route path="/home" index element={<Homepage />} />
-                  <Route path="/home/availableCheckIn" element={<CheckInForm />} />
+                  <Route
+                    path="/home/availableCheckIn"
+                    element={<CheckInForm />}
+                  />
 
                   <Route
                     path="/user/submitted"
