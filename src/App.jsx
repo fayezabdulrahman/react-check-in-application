@@ -27,6 +27,10 @@ function App() {
             redirect_uri: window.location.origin,
             audience: auth0Audience
           }}
+          onRedirectCallback={(appState) => {
+          // Preserve the route after login
+          window.location.href = appState?.returnTo || window.location.pathname;
+          }}
         >
           <LocalAuthProvider>
             <Routes>
