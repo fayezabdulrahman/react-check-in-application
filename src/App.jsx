@@ -20,23 +20,28 @@ function App() {
   const auth0ClientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
   const auth0Audience = import.meta.env.VITE_AUTH0_AUDIENCE;
 
-  const { isLoading: auth0Loading } = useAuth0(); // Add this
+  const { isLoading, error} = useAuth0(); // Add this
   const [appLoading, setAppLoading] = useState(true);
 
   useEffect(() => {
-    if (!auth0Loading) {
+    console.log('is loading auth 0 ', isLoading);
+    console.log('is loading auth 0 ', error);
+    if (!isLoading || error) {
       setAppLoading(false);
     }
-  }, [auth0Loading]);
+  }, [isLoading, error]);
 
   if (appLoading) {
     return <Loading />;
+  }
+  if (error) {
+    return <>Error {error.message}</>;
   }
 
   return (
     <>
       <BrowserRouter>
-        <Auth0Provider
+        {/* <Auth0Provider
           domain={auth0Domain}
           clientId={auth0ClientId}
           authorizationParams={{
@@ -45,7 +50,8 @@ function App() {
           }}
           cacheLocation="localstorage"
           useRefreshTokens={true}
-        >
+          onError={(error) => console.error('Auth0 Error:', error)}
+        > */}
           <LocalAuthProvider>
             <Routes>
               <Route path="/" element={<Landing />} />
@@ -79,7 +85,7 @@ function App() {
             </Routes>
             <ProtectedComponents />
           </LocalAuthProvider>
-        </Auth0Provider>
+        {/* </Auth0Provider> */}
       </BrowserRouter>
     </>
   );
