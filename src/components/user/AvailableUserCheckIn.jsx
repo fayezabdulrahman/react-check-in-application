@@ -17,6 +17,7 @@ import usePublishedCheckInQuery from '../../hooks/usePublishedCheckInQuery';
 import { CiTimer, CiCircleCheck } from 'react-icons/ci';
 import useCheckInStore from '../../store/checkin-store';
 import UserCheckInCard from './UserCheckInCard';
+import ErrorMessage from '../shared/ErrorMesssage';
 const AvailableUserCheckIn = () => {
   const setUserCheckInAnswers = useCheckInStore(
     (state) => state.setUserCheckInAnswers
@@ -33,14 +34,15 @@ const AvailableUserCheckIn = () => {
 
   const {
     data: publishedCheckinData,
-    isPending: publishedCheckinIsPending
-    // error: PublishedCheckinError
+    isPending: publishedCheckinIsPending,
+    error: PublishedCheckinError,
+    refetch
   } = usePublishedCheckInQuery();
 
   const {
     data: answeredCheckinData,
-    isFetching: answeredCheckinIsFetching
-    // error: answeredCheckinError
+    isFetching: answeredCheckinIsFetching,
+    error: answeredCheckinError
   } = useQuery({
     queryKey: ['answeredCheckin'],
     queryFn: fetchAnsweredCheckin,
@@ -65,6 +67,9 @@ const AvailableUserCheckIn = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [publishedCheckinData]);
 
+  if (PublishedCheckinError || answeredCheckinError) {
+    return <ErrorMessage onRetry={refetch}/>;
+  }
   if (publishedCheckinIsPending || answeredCheckinIsFetching) {
     return <Loading />;
   }
