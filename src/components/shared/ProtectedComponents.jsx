@@ -3,6 +3,7 @@ import QuestionModal from '../checkinBuilder/QuestionModal';
 import EditCheckInModal from '../admin/EditCheckInModal';
 import CaptureUserDetails from '../shared/CaptureUserDetails';
 import ViewSubmittedCheckInModal from '../user/ViewSubmittedCheckInModal';
+import PopUpModal from './PopUpModal';
 
 const ProtectedComponents = () => {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -14,6 +15,7 @@ const ProtectedComponents = () => {
       <QuestionModal />
       <EditCheckInModal />
       <CaptureUserDetails />
+      <PopUpModal />
       <ViewSubmittedCheckInModal />
     </>
   );

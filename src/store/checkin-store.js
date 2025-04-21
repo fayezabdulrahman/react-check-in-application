@@ -11,6 +11,13 @@ const useCheckInStore = create((set) => ({
   questionType: '',
   toggleModal: false,
   toggleEditModal: false,
+  toggleDeleteModal: false,
+  deleteModalConfig: {
+    id: null,
+    header: '',
+    body: '',
+    onConfirm: null
+  },
   toggleUserViewSubmittedCheckInModal: false,
   userViewSubmittedCheckIn: null,
   questionToEdit: null,
@@ -150,6 +157,30 @@ const useCheckInStore = create((set) => ({
     ),
   setToggleEditModal: () =>
     set((state) => ({ toggleEditModal: !state.toggleEditModal })),
+  openDeleteModal: (config) =>
+    set(
+      produce((state) => {
+        state.toggleDeleteModal = !state.toggleDeleteModal;
+        state.deleteModalConfig = {
+          id: config.id,
+          header: config.header,
+          body: config.body,
+          onConfirm: config.onConfirm
+        };
+      })
+    ),
+  closeDeleteModal: () =>
+    set(
+      produce((state) => {
+        state.toggleDeleteModal = !state.toggleDeleteModal;
+        state.deleteModalConfig = {
+          id: null,
+          header: '',
+          body: '',
+          onConfirm: null
+        };
+      })
+    ),
   addQuestion: (question) =>
     set(
       produce((state) => {

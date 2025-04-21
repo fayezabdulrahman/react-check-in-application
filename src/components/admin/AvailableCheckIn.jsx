@@ -1,9 +1,7 @@
 import { Text, Heading, useToast, Box, Grid } from '@chakra-ui/react';
-import { useState } from 'react';
 import Loading from '../shared/Loading';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import CreatedCheckInCard from './CreatedCheckInCard';
-import PopUpModal from '../shared/PopUpModal';
 import useAdminService from '../../hooks/services/useAdminService';
 import useCheckInStore from '../../store/checkin-store';
 import LocalStorageService from '../../util/LocalStorageService';
@@ -24,17 +22,13 @@ const AvailableCheckIn = () => {
     (state) => state.setCheckInResponses
   );
 
+  const openDeleteModal = useCheckInStore((state) => state.openDeleteModal);
+
   const resetAdminAction = useCheckInStore((state) => state.resetAdminAction);
 
   const queryCleint = useQueryClient();
 
   const toast = useToast();
-  const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
-  const [deleteCheckInPayload, setDeleteCheckInPayload] = useState(null);
-  const modalConfig = {
-    modalHeader: 'Deleting Checkin',
-    modalBody: 'Deleting this will delete for all admin users.'
-  };
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['allAdminCheckIn'],
@@ -170,17 +164,13 @@ const AvailableCheckIn = () => {
     unPublishCheckInMutate(payload);
   };
 
-  const handleDeleteCheckIn = (payload, modalConfirmationStatus) => {
-    if (!openConfirmationModal) {
-      setDeleteCheckInPayload(payload);
-
-      // open confirmation modal first
-      setOpenConfirmationModal(true);
-    }
-    if (modalConfirmationStatus) {
-      // Call mutate() to trigger API call
-      deleteCheckInMutate(deleteCheckInPayload);
-    }
+  const handleDeleteCheckIn = (checkInId) => {
+    openDeleteModal({
+      id: checkInId,
+      header: 'Delete Question',
+      body: 'Are you sure you want to Delete this question ?',
+      onConfirm: (payload) => deleteCheckInMutate(payload)
+    });
   };
 
   if (isLoading) {
@@ -255,13 +245,6 @@ const AvailableCheckIn = () => {
           ))}
         </Grid>
       )}
-
-      <PopUpModal
-        openModal={openConfirmationModal}
-        modalConfig={modalConfig}
-        onConfirm={(output) => handleDeleteCheckIn(null, output)}
-        onClose={() => setOpenConfirmationModal(false)}
-      />
     </Box>
   );
 };
