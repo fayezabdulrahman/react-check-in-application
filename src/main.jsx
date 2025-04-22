@@ -37,9 +37,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           redirect_uri: window.location.origin,
           audience: auth0Audience
         }}
-        cacheLocation="localstorage"
-        useRefreshTokens={true}
-        onError={(error) => console.error('Auth0 Error:', error)}
+        // cacheLocation="localstorage"
+        // useRefreshTokens={true}
+        // onError={(error) => console.error('Auth0 Error:', error)}
       >
         <App />
       </Auth0Provider>
