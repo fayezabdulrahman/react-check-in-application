@@ -9,12 +9,12 @@ import {
   Tooltip
 } from '@chakra-ui/react';
 import { IoMdRefresh } from 'react-icons/io';
-import Loading from '../shared/Loading';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import CreatedCheckInCard from './CreatedCheckInCard';
 import useAdminService from '../../hooks/services/useAdminService';
 import useCheckInStore from '../../store/checkin-store';
 import ErrorMessage from '../shared/ErrorMesssage';
+import SkeletonLoader from '../shared/SkeletonLoader';
 
 const AvailableCheckIn = () => {
   const {
@@ -32,12 +32,9 @@ const AvailableCheckIn = () => {
 
   const toast = useToast();
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isFetching, isLoading, error, refetch } = useQuery({
     queryKey: ['allAdminCheckIn'],
     queryFn: fetchAllAdminCheckIn,
-    meta: {
-      ErrorMessage: 'failed to fetch all admin checkins'
-    },
     staleTime: 1000 * 60 * 10 // Cache for 10 minutes
   });
 
@@ -151,10 +148,9 @@ const AvailableCheckIn = () => {
     });
   };
 
-  if (isLoading) {
-    return <Loading />;
+  if (isLoading || isFetching) {
+    return <SkeletonLoader />;
   }
-
   if (error) {
     toast({
       title: 'Failed to load all created check in',
