@@ -182,7 +182,7 @@ const AvailableCheckIn = () => {
           </Text>
         </Heading>
 
-        {data?.checkins?.length !== 0 && (
+        {data?.checkIns?.length > 0 && (
           <Tooltip label='Refresh'>
             <IconButton
               aria-label="Refresh check-ins"
@@ -195,7 +195,7 @@ const AvailableCheckIn = () => {
         )}
       </Flex>
 
-      {data?.checkins?.length === 0 ? (
+      {data?.checkIns?.length === 0 ? (
         <Box
           textAlign="center"
           p={8}
@@ -205,7 +205,7 @@ const AvailableCheckIn = () => {
           bg="white"
         >
           <Text color="gray.500" mb={2}>
-            No Check-in forms created yet
+            No Check-in forms created !
           </Text>
         </Box>
       ) : (
