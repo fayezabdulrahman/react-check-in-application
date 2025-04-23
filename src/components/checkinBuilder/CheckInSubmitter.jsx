@@ -24,7 +24,7 @@ export const CheckInSubmitter = () => {
         status: 'success',
         duration: 3000
       });
-      queryClient.invalidateQueries(['allAdminCheckIn']);
+      queryClient.refetchQueries(['allAdminCheckIn']);
       resetQuestions();
     },
     onError: (error) => {

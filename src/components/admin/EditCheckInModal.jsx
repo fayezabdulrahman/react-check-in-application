@@ -55,7 +55,7 @@ const EditCheckInModal = () => {
         duration: 3000,
         isClosable: true
       });
-      queryClient.invalidateQueries(['allAdminCheckIn']);
+      queryClient.refetchQueries(['allAdminCheckIn']);
       queryClient.invalidateQueries(['publishedCheckin']);
 
       handleCloseEditCheckInModal();
