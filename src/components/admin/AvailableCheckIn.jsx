@@ -9,6 +9,7 @@ import {
   Tooltip
 } from '@chakra-ui/react';
 import { IoMdRefresh } from 'react-icons/io';
+import { FaClipboardList } from 'react-icons/fa';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import CreatedCheckInCard from './CreatedCheckInCard';
 import useAdminService from '../../hooks/services/useAdminService';
@@ -171,13 +172,18 @@ const AvailableCheckIn = () => {
   return (
     <Box mt={4} pt={4} px={{ base: 4, md: 8 }}>
       <Flex justify="space-between" align="center" mb={4}>
-        <Heading size="md" mb={4} fontWeight="500" color="gray.700">
-          My Check-ins
+        <Flex direction="column">
+          <Flex align="center" gap={2}>
+            <FaClipboardList size={18} color="#4A5568" />
+            <Heading size="md" fontWeight="600" color="gray.700">
+              My Check-ins
+            </Heading>
+          </Flex>
           <Text fontSize="sm" color="gray.500" mt={1} fontWeight="normal">
             Manage your check-in forms
           </Text>
-        </Heading>
-
+        </Flex>
+  
         {data?.checkIns?.length > 0 && (
           <Tooltip label='Refresh'>
             <IconButton
@@ -190,18 +196,18 @@ const AvailableCheckIn = () => {
           </Tooltip>
         )}
       </Flex>
-
+  
       {data?.checkIns?.length === 0 ? (
         <Box
           textAlign="center"
           p={8}
           borderRadius="lg"
           border="1px dashed"
-          borderColor="gray.100"
-          bg="white"
+          borderColor="gray.200"
+          bgGradient="linear(to-b, gray.50, white)"
         >
           <Text color="gray.500" mb={2}>
-            No Check-in forms created !
+            No Check-in forms created!
           </Text>
         </Box>
       ) : (
@@ -212,25 +218,44 @@ const AvailableCheckIn = () => {
             xl: 'repeat(3, 1fr)'
           }}
           gap={6}
-          paddingBottom={6}
+          pb={6}
         >
-          {data?.checkIns?.map((available, index) => (
-            <Box
-              key={index}
-              borderRadius="lg"
-              border="1px solid"
-              borderColor="gray.100"
-              _hover={{ shadow: 'md' }}
-              transition="all 0.2s"
-            >
-              <CreatedCheckInCard
-                availableCheckIn={available}
-                publishCheckIn={handlePublishCheckIn}
-                unPublishCheckIn={handleUnPublishCheckIn}
-                deleteCheckIn={handleDeleteCheckIn}
-              />
-            </Box>
-          ))}
+          {data?.checkIns?.map((available, index) => {
+            const isPublished = available.published; // Adjust this line as needed
+  
+            return (
+              <Box
+                key={index}
+                borderRadius="lg"
+                border="1px solid"
+                borderColor="gray.100"
+                bg="white"
+                position="relative"
+                overflow="hidden"
+                _hover={{ shadow: 'md', transform: 'translateY(-2px)' }}
+                transition="all 0.2s ease"
+              >
+                {/* Accent bar */}
+                <Box
+                  position="absolute"
+                  top={0}
+                  left={0}
+                  width="100%"
+                  height="4px"
+                  bg={isPublished ? 'green.400' : 'orange.300'}
+                />
+    
+                <Box px={4} pb={4} mt={2}>
+                  <CreatedCheckInCard
+                    availableCheckIn={available}
+                    publishCheckIn={handlePublishCheckIn}
+                    unPublishCheckIn={handleUnPublishCheckIn}
+                    deleteCheckIn={handleDeleteCheckIn}
+                  />
+                </Box>
+              </Box>
+            );
+          })}
         </Grid>
       )}
     </Box>

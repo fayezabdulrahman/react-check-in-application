@@ -6,10 +6,7 @@ import {
   Flex,
   IconButton,
   Text,
-  Badge,
-  Stat,
-  StatLabel,
-  StatNumber
+  Badge
 } from '@chakra-ui/react';
 import {
   MdDeleteOutline,
@@ -91,10 +88,6 @@ const CreatedCheckInCard = ({
       p={4}
       bg="white"
       borderRadius="lg"
-      border="1px solid"
-      borderColor="gray.100"
-      transition="all 0.2s"
-      _hover={{ shadow: 'md' }}
       minHeight="140px" // Fixed minimum height
       display="flex"
       flexDirection="column"
@@ -130,10 +123,27 @@ const CreatedCheckInCard = ({
         <Text fontSize="sm" color="gray.500" noOfLines={2}>
           Created by {availableCheckIn.createdBy}
         </Text>
-        <Stat>
-          <StatLabel>Collected Responses</StatLabel>
-          <StatNumber>{availableCheckIn.responseCount}</StatNumber>
-        </Stat>
+        <Flex
+          align="center"
+          justify="space-between"
+          bg="gray.50"
+          p={3}
+          borderRadius="md"
+          border="1px solid"
+          borderColor="gray.100"
+          mt={2}
+        >
+          <Flex align="center" gap={2}>
+            <Icon as={MdOutlineQuestionAnswer} color="blue.500" boxSize={5} />
+            <Text fontSize="sm" color="gray.600" fontWeight="medium">
+              Collected Responses
+            </Text>
+          </Flex>
+
+          <Text fontSize="lg" fontWeight="bold" color="gray.800">
+            {availableCheckIn.responseCount}
+          </Text>
+        </Flex>
       </Box>
 
       {/* Footer with Actions */}
@@ -157,7 +167,7 @@ const CreatedCheckInCard = ({
               icon={<MdOutlineRemoveRedEye />}
               aria-label="Edit"
               onClick={() => handleViewCheckInResponses(availableCheckIn)}
-              colorScheme="gray"
+              colorScheme="orange"
               variant="ghost"
             />
           </Tooltip>
