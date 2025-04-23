@@ -8,9 +8,20 @@ export const QuestionsList = () => {
   return (
     <>
       {questions.length > 0 && (
-        <Card flex={1} mt="1rem" overflowY="auto" maxH="500px">
+        <Card
+          flex={1}
+          mt="1rem"
+          overflowY="auto"
+          maxH="500px"
+          position="relative"
+          borderLeft="4px solid"
+          borderColor="green.400"
+          boxShadow="md"
+          transition="all 0.2s"
+          _hover={{ boxShadow: 'lg' }}
+        >
           <CardBody>
-            <Text fontWeight="bold" mb={4}>
+            <Text fontWeight="bold" fontSize={{ base: 'lg', md: 'xl' }} mb={4}>
               Form Questions
             </Text>
             {questions.map((question) => (

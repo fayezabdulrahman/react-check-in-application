@@ -17,7 +17,6 @@ const SubmittedCheckIn = () => {
     staleTime: 1000 * 60 * 10 // Cache for 10 minutes
   });
 
-
   if (isLoading) {
     return <Loading />;
   }
@@ -75,11 +74,12 @@ const SubmittedCheckIn = () => {
           {data?.submittedCheckIns?.map((available, index) => (
             <Box
               key={index}
-              borderRadius="lg"
+              borderRadius="2xl"
               border="1px solid"
               borderColor="gray.100"
-              _hover={{ shadow: 'md' }}
-              transition="all 0.2s"
+              _hover={{ shadow: 'lg', transform: 'translateY(-4px)' }}
+              transition="all 0.25s ease"
+              bg="white"
             >
               <UserSubmittedCheckInCard userSubmittedCheckIn={available} />
             </Box>

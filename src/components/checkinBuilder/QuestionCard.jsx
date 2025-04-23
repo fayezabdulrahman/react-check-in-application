@@ -4,7 +4,7 @@ import {
   CardBody,
   Flex,
   Text,
-  Tag,
+  Tooltip,
   IconButton
 } from '@chakra-ui/react';
 import { MdEdit, MdDelete } from 'react-icons/md';
@@ -56,44 +56,59 @@ const QuestionCard = ({ question, readOnly = false }) => {
       removeQuestion(questionId);
     }
   };
-  return (
-    <>
-      <Card mb={4} variant="outline">
-        <CardBody>
-          <Flex justify="space-between" align="center">
-            <Box>
-              <Flex
-                as={question.answer ? 'b' : ''}
-                align="center"
-                gap={2}
-                mb={2}
-              >
-                <Text fontWeight="medium">{question.label}</Text>
-                {!readOnly && question.isRequired && (
-                  <Tag colorScheme="red">Required</Tag>
-                )}
-                {question.answer && <Text>{question.answer}</Text>}
-              </Flex>
-              {question.selectOptions?.length > 0 && (
-                <Text fontSize="sm" color="gray.500">
-                  Choice Options: {question.selectOptions.join(', ')}
-                </Text>
-              )}
-              {question.radioOptions?.length > 0 && (
-                <Text fontSize="sm" color="gray.500">
-                  Checkbox Options: {question.radioOptions.join(', ')}
-                </Text>
-              )}
-            </Box>
 
-            {!readOnly && (
-              <Flex gap={2}>
+  return (
+    <Card mb={4} variant="outline">
+      <CardBody>
+        <Flex
+          direction={{ base: 'column', sm: 'row' }}
+          justify="space-between"
+          align={{ base: 'start', sm: 'center' }}
+          gap={2}
+        >
+          <Box flex="1">
+            <Flex align="center" wrap="wrap" gap={1} mb={2}>
+              <Text fontWeight="medium" display="inline">
+                {question.label}
+                {!readOnly && question.isRequired && (
+                  <Tooltip label="Required" aria-label="Required field">
+                    <Text as="span" color="red.500" ml={1}>
+                      *
+                    </Text>
+                  </Tooltip>
+                )}
+              </Text>
+
+              {question.answer && (
+                <Text display="inline" color="gray.700" ml={2}>
+                  {question.answer}
+                </Text>
+              )}
+            </Flex>
+
+            {question.selectOptions?.length > 0 && (
+              <Text fontSize="sm" color="gray.500">
+                Choice Options: {question.selectOptions.join(', ')}
+              </Text>
+            )}
+            {question.radioOptions?.length > 0 && (
+              <Text fontSize="sm" color="gray.500">
+                Checkbox Options: {question.radioOptions.join(', ')}
+              </Text>
+            )}
+          </Box>
+
+          {!readOnly && (
+            <Flex gap={2}>
+              <Tooltip label={'Edit'}>
                 <IconButton
                   icon={<MdEdit />}
                   aria-label="Edit question"
                   onClick={() => handleEdit(question)}
                   variant="ghost"
                 />
+              </Tooltip>
+              <Tooltip label={'Delete'}>
                 <IconButton
                   icon={<MdDelete />}
                   aria-label="Delete question"
@@ -101,12 +116,12 @@ const QuestionCard = ({ question, readOnly = false }) => {
                   variant="ghost"
                   colorScheme="red"
                 />
-              </Flex>
-            )}
-          </Flex>
-        </CardBody>
-      </Card>
-    </>
+              </Tooltip>
+            </Flex>
+          )}
+        </Flex>
+      </CardBody>
+    </Card>
   );
 };
 

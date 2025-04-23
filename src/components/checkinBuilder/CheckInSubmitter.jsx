@@ -65,20 +65,22 @@ export const CheckInSubmitter = () => {
             placeholder="Enter Check-in name"
             ref={checkInNameRef}
             mb={4}
+            size="lg"
           />
-          <CardFooter justifyContent="center">
+          <CardFooter justifyContent="center" pt={0}>
             <Button
               colorScheme="green"
               rightIcon={<MdPublish />}
               onClick={handleSaveCheckIn}
               isLoading={isPending}
+              size="md"
             >
-              Create Check-in
+              Create
             </Button>
           </CardFooter>
         </>
       ) : (
-        <Text textAlign="center" color="gray.500">
+        <Text textAlign="center" color="gray.500" fontSize="lg">
           Add your first question to begin
         </Text>
       )}
