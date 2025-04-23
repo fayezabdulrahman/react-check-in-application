@@ -6,17 +6,22 @@ import {
   Flex,
   IconButton,
   Text,
-  Badge
+  Badge,
+  Stat,
+  StatLabel,
+  StatNumber
 } from '@chakra-ui/react';
 import {
   MdDeleteOutline,
   MdEdit,
   MdUnpublished,
   MdPublish,
-  MdOutlineQuestionAnswer
+  MdOutlineQuestionAnswer,
+  MdOutlineRemoveRedEye
 } from 'react-icons/md';
 import useCheckInStore from '../../store/checkin-store';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 const CreatedCheckInCard = ({
   availableCheckIn,
   publishCheckIn,
@@ -26,6 +31,7 @@ const CreatedCheckInCard = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const setAdminAction = useCheckInStore((state) => state.setAdminAction);
   const adminAction = useCheckInStore((state) => state.adminAction);
+  const navigate = useNavigate();
 
   const setSubmittedCheckInToEdit = useCheckInStore(
     (state) => state.setSubmittedCheckInToEdit
@@ -35,7 +41,16 @@ const CreatedCheckInCard = ({
     setSubmittedCheckInToEdit(checkIn);
   };
 
+  const handleViewCheckInResponses = (checkIn) => {
+    navigate('/admin/checkInResults', {
+      state: {
+        checkIn
+      }
+    });
+  };
+
   const handleAction = (checkInId, actionType) => {
+    console.log('check in id', checkInId);
     setAdminAction(actionType);
     setIsProcessing(checkInId === availableCheckIn.checkInId);
 
@@ -116,6 +131,10 @@ const CreatedCheckInCard = ({
         <Text fontSize="sm" color="gray.500" noOfLines={2}>
           Created by {availableCheckIn.createdBy}
         </Text>
+        <Stat>
+          <StatLabel>Collected Responses</StatLabel>
+          <StatNumber>{availableCheckIn.responseCount}</StatNumber>
+        </Stat>
       </Box>
 
       {/* Footer with Actions */}
@@ -134,6 +153,15 @@ const CreatedCheckInCard = ({
         </Flex>
 
         <ButtonGroup variant="ghost" size="sm" spacing={1}>
+          <Tooltip label={'View'}>
+            <IconButton
+              icon={<MdOutlineRemoveRedEye />}
+              aria-label="Edit"
+              onClick={() => handleViewCheckInResponses(availableCheckIn)}
+              colorScheme="gray"
+              variant="ghost"
+            />
+          </Tooltip>
           <Tooltip
             label={isCurrentlyPublished ? 'Edit disabled (active)' : 'Edit'}
           >
@@ -163,9 +191,7 @@ const CreatedCheckInCard = ({
           </Tooltip>
 
           <Tooltip
-            label={
-              isCurrentlyPublished ? 'Delete disabled (active)' : 'Delete'
-            }
+            label={isCurrentlyPublished ? 'Delete disabled (active)' : 'Delete'}
           >
             <IconButton
               icon={<MdDeleteOutline />}

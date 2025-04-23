@@ -1,4 +1,3 @@
-// import { client } from '../util/axios-util';
 import { API_URLS } from '../../constants/application';
 import useAxiosClient from '../../hooks/useAxiosClient';
 
@@ -18,7 +17,7 @@ const useAdminService = () => {
 
   const fetchAllAdminCheckIn = async () => {
     try {
-      const response = await client.get(API_URLS.allAdminCheckIn);
+      const response = await client.get(API_URLS.allAdminCheckInWithResponses);
       return response.data;
     } catch (error) {
       console.error('Error fetching all admin check-in ', error);

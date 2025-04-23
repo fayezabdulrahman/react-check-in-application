@@ -4,7 +4,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import CreatedCheckInCard from './CreatedCheckInCard';
 import useAdminService from '../../hooks/services/useAdminService';
 import useCheckInStore from '../../store/checkin-store';
-import LocalStorageService from '../../util/LocalStorageService';
 import ErrorMessage from '../shared/ErrorMesssage';
 
 const AvailableCheckIn = () => {
@@ -15,12 +14,6 @@ const AvailableCheckIn = () => {
     deleteCheckIn
   } = useAdminService();
 
-  const setPublishedCheckIn = useCheckInStore(
-    (state) => state.setPublishedCheckIn
-  );
-  const setCheckInResponses = useCheckInStore(
-    (state) => state.setCheckInResponses
-  );
 
   const openDeleteModal = useCheckInStore((state) => state.openDeleteModal);
 
@@ -43,25 +36,13 @@ const AvailableCheckIn = () => {
     mutationFn: publishNewCheckIn,
     onSuccess: (response) => {
       const message = response.message;
-      // if we get a successful response, set cache and update state
+
       if (response.checkIn) {
-        const serverPublishedCheckIn = response.checkIn;
-
-        // set new state
-        setPublishedCheckIn(serverPublishedCheckIn);
-
-        // reset cache
-        LocalStorageService.removeItem('checkInResponses');
-
         // reset performing action
         resetAdminAction();
 
-        // invalidate cache and refetch
-        queryCleint.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
-        queryCleint.invalidateQueries({ queryKey: ['publishedCheckin'] });
-        queryCleint.invalidateQueries({
-          queryKey: ['publishedCheckinAnalytics']
-        });
+        // refetch data
+        queryCleint.refetchQueries({ queryKey: ['allAdminCheckIn'] });
       }
 
       toast({
@@ -87,23 +68,11 @@ const AvailableCheckIn = () => {
     mutationFn: unPublishCheckIn,
     onSuccess: (response) => {
       const message = response.message;
-      // if we get a successfull response, remove cache and update state
       if (response.checkIn) {
-        // reset state
-        setPublishedCheckIn(null);
-        setCheckInResponses([]);
-
-        // reset cache
-        LocalStorageService.removeItem('checkInResponses');
-
         // reset performing action
         resetAdminAction();
-        // invalidate cache and refetch
-        queryCleint.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
-        queryCleint.invalidateQueries({
-          queryKey: ['publishedCheckinAnalytics']
-        });
-        queryCleint.refetchQueries({ queryKey: ['publishedCheckin'] });
+        // refetch data
+        queryCleint.refetchQueries({ queryKey: ['allAdminCheckIn'] });
       }
 
       toast({
@@ -131,8 +100,8 @@ const AvailableCheckIn = () => {
     onSuccess: (response) => {
       const message = response.message;
 
-      // invalidate cache and refetch
-      queryCleint.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
+      // refetch data
+      queryCleint.refetchQueries({ queryKey: ['allAdminCheckIn'] });
       toast({
         title: message,
         status: 'success',
@@ -167,8 +136,8 @@ const AvailableCheckIn = () => {
   const handleDeleteCheckIn = (checkInId) => {
     openDeleteModal({
       id: checkInId,
-      header: `Delete ${checkInId.checkInToDelete} Check-in`,
-      body: 'Are you sure you want to Delete this Check-in ? This will remove for all admin users.',
+      header: `Delete ${checkInId.checkInToDelete}`,
+      body: 'Are you sure you want to Delete this Check-in ? This removes it for all admin users.',
       onConfirm: (payload) => deleteCheckInMutate(payload)
     });
   };

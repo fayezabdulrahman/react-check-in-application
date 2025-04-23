@@ -44,12 +44,12 @@ const DesktopNav = ({
       </Link>
       <Link
         as={ReactRouterLink}
-        to={isAdmin ? '/admin/availableCheckIn' : '/user/submitted'}
+        to={isAdmin ? '/admin/create' : '/user/submitted'}
         fontSize="lg"
         fontWeight="500"
         _hover={{ textDecoration: 'none', opacity: 0.8 }}
       >
-        {isAdmin ? 'Check-ins ' : 'My Check-ins'}
+        {isAdmin ? 'Create Check-in ' : 'My Check-ins'}
       </Link>
 
       <Box onMouseEnter={handleMenuOpen} onMouseLeave={handleMenuClose}>

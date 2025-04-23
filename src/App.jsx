@@ -48,14 +48,12 @@ function App() {
             </Route>
             <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
               <Route element={<Layout />}>
-                <Route path="/admin" element={<AdminHomepage />} />
+                <Route path="/admin" element={<AvailableCheckIn />} />
+                <Route path="/admin/create" element={<AdminHomepage />} />
+
                 <Route
-                  path="/admin/publishedCheckIn"
+                  path="/admin/checkInResults"
                   element={<DetailedPublishedCheckIn />}
-                />
-                <Route
-                  path="/admin/availableCheckIn"
-                  element={<AvailableCheckIn />}
                 />
               </Route>
             </Route>
