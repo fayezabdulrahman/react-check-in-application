@@ -28,7 +28,9 @@ const EditCheckInModal = () => {
   const submittedCheckInToEdit = useCheckInStore(
     (state) => state.submittedCheckInToEdit
   );
-  const submittedCheckInToEditQuestions = useCheckInStore((state) => state.submittedCheckInToEditQuestions);
+  const submittedCheckInToEditQuestions = useCheckInStore(
+    (state) => state.submittedCheckInToEditQuestions
+  );
   const toggleEditModal = useCheckInStore((state) => state.toggleEditModal);
   const setToggleEditModal = useCheckInStore(
     (state) => state.setToggleEditModal
@@ -37,14 +39,13 @@ const EditCheckInModal = () => {
     (state) => state.resetSubmittedCheckInToEdit
   );
 
-
   const [checkInName, setCheckInName] = useState('');
 
   useEffect(() => {
     if (submittedCheckInToEdit?.checkInId) {
       setCheckInName(submittedCheckInToEdit.checkInId);
     }
-  }, [submittedCheckInToEdit]);
+  }, [submittedCheckInToEdit?.checkInId]);
 
   const { mutate: updateCheckInMutate, isPending } = useMutation({
     mutationFn: updateCheckIn,
@@ -74,6 +75,7 @@ const EditCheckInModal = () => {
       ...submittedCheckInToEdit,
       questions: submittedCheckInToEditQuestions
     };
+
     const payload = {
       originalCheckInId: submittedCheckInToEdit.checkInId,
       checkInToEdit: {
@@ -81,6 +83,7 @@ const EditCheckInModal = () => {
         checkInId: checkInName.trim() || submittedCheckInToEdit.checkInId
       }
     };
+    console.log('payload to edit check in ', payload);
     updateCheckInMutate(payload);
   };
 
@@ -90,7 +93,11 @@ const EditCheckInModal = () => {
   };
 
   return (
-    <Modal isOpen={toggleEditModal} onClose={handleCloseEditCheckInModal} size="2xl">
+    <Modal
+      isOpen={toggleEditModal}
+      onClose={handleCloseEditCheckInModal}
+      size="2xl"
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader borderBottom="1px solid" borderColor="gray.100">
