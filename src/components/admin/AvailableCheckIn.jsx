@@ -1,4 +1,14 @@
-import { Text, Heading, useToast, Box, Grid } from '@chakra-ui/react';
+import {
+  Text,
+  Heading,
+  useToast,
+  Box,
+  Grid,
+  Flex,
+  IconButton,
+  Tooltip
+} from '@chakra-ui/react';
+import { IoMdRefresh } from 'react-icons/io';
 import Loading from '../shared/Loading';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import CreatedCheckInCard from './CreatedCheckInCard';
@@ -13,7 +23,6 @@ const AvailableCheckIn = () => {
     unPublishCheckIn,
     deleteCheckIn
   } = useAdminService();
-
 
   const openDeleteModal = useCheckInStore((state) => state.openDeleteModal);
 
@@ -165,12 +174,26 @@ const AvailableCheckIn = () => {
 
   return (
     <Box mt={4} pt={4} px={{ base: 4, md: 8 }}>
-      <Heading size="md" mb={4} fontWeight="500" color="gray.700">
-        My Check-ins
-        <Text fontSize="sm" color="gray.500" mt={1} fontWeight="normal">
-          Manage your check-in forms
-        </Text>
-      </Heading>
+      <Flex justify="space-between" align="center" mb={4}>
+        <Heading size="md" mb={4} fontWeight="500" color="gray.700">
+          My Check-ins
+          <Text fontSize="sm" color="gray.500" mt={1} fontWeight="normal">
+            Manage your check-in forms
+          </Text>
+        </Heading>
+
+        {data?.checkins?.length !== 0 && (
+          <Tooltip label='Refresh'>
+            <IconButton
+              aria-label="Refresh check-ins"
+              icon={<IoMdRefresh />}
+              onClick={refetch}
+              variant="ghost"
+              colorScheme="gray"
+            />
+          </Tooltip>
+        )}
+      </Flex>
 
       {data?.checkins?.length === 0 ? (
         <Box
