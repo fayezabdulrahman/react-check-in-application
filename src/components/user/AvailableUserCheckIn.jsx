@@ -29,13 +29,6 @@ const AvailableUserCheckIn = () => {
     staleTime: 1000 * 60 * 10 // Cache for 10 minutes
   });
 
-  if (allUserCheckIns) {
-    console.log(
-      'new api response for all published check ins',
-      allUserCheckIns
-    );
-  }
-
   if (allUserCheckInsError) {
     return <ErrorMessage onRetry={refetch} />;
   }

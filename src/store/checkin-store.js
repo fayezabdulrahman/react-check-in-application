@@ -5,9 +5,6 @@ const useCheckInStore = create((set) => ({
   questions: [],
   nextQuestionId: 0,
   submittedCheckInToEditQuestions: [],
-  checkInId: null,
-  createdBy: null,
-  published: false,
   questionType: '',
   toggleModal: false,
   toggleEditModal: false,
@@ -21,41 +18,11 @@ const useCheckInStore = create((set) => ({
   toggleUserViewSubmittedCheckInModal: false,
   userViewSubmittedCheckIn: null,
   questionToEdit: null,
-  publishedCheckIn: null,
-  checkInResponses: [],
   submittedCheckInToEdit: null,
   adminAction: {
     actionInProgress: false,
     actionType: null
   },
-  userCheckInAnswers: {
-    checkInId: null,
-    submittedBy: null,
-    answers: []
-  },
-  userAnsweredCheckIn: false,
-  setUserAnsweredCheckIn: (boolean) =>
-    set(
-      produce((state) => {
-        state.userAnsweredCheckIn = boolean;
-      })
-    ),
-  allUserSubmittedCheckIns: [],
-  setAllUserSubmittedCheckIns: (userSubmittedCheckins) =>
-    set(
-      produce((state) => {
-        state.allUserSubmittedCheckIns = userSubmittedCheckins;
-      })
-    ),
-  setUserCheckInAnswers: (partial) =>
-    set(
-      produce((state) => {
-        state.userCheckInAnswers = {
-          ...state.userCheckInAnswers,
-          ...partial
-        };
-      })
-    ),
   setAdminAction: (actionType) =>
     set(
       produce((state) => {
@@ -71,18 +38,6 @@ const useCheckInStore = create((set) => ({
         state.submittedCheckInToEdit = checkIn;
         state.submittedCheckInToEditQuestions = checkIn.questions;
         state.toggleEditModal = !state.toggleEditModal;
-      })
-    ),
-  setCheckInResponses: (checkInResponses) =>
-    set(
-      produce((state) => {
-        state.checkInResponses = checkInResponses;
-      })
-    ),
-  setPublishedCheckIn: (checkIn) =>
-    set(
-      produce((state) => {
-        state.publishedCheckIn = checkIn;
       })
     ),
   setQuestionToEdit: (question) =>

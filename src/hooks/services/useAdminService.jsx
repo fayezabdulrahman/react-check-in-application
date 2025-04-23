@@ -7,7 +7,7 @@ const useAdminService = () => {
 
   const createAdminCheckIn = async (payload) => {
     try {
-      const response = await client.post(API_URLS.createCheckIn, payload);
+      const response = await client.post(API_URLS.admin.createCheckIn, payload);
       return response.data; // React Query needs the data returned
     } catch (error) {
       console.error('Error creating admin check-in', error);
@@ -17,7 +17,7 @@ const useAdminService = () => {
 
   const fetchAllAdminCheckIn = async () => {
     try {
-      const response = await client.get(API_URLS.allAdminCheckInWithResponses);
+      const response = await client.get(API_URLS.admin.allAdminCheckInWithResponses);
       return response.data;
     } catch (error) {
       console.error('Error fetching all admin check-in ', error);
@@ -25,21 +25,9 @@ const useAdminService = () => {
     }
   };
 
-  const fetchPublishedCheckInAnalytics = async (checkInId) => {
-    try {
-      const response = await client.get(
-        `${API_URLS.publishedCheckInAnalytic}?checkInId=${checkInId}`
-      );
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching published check-in analytics', error);
-      throw error;
-    }
-  };
-
   const publishNewCheckIn = async (payload) => {
     try {
-      const response = await client.post(API_URLS.publishNewCheckIn, payload);
+      const response = await client.post(API_URLS.admin.publishNewCheckIn, payload);
       return response.data;
     } catch (error) {
       console.error('Error publishing check-in ', error);
@@ -49,7 +37,7 @@ const useAdminService = () => {
 
   const unPublishCheckIn = async (payload) => {
     try {
-      const response = await client.post(API_URLS.unPublishCheckIn, payload);
+      const response = await client.post(API_URLS.admin.unPublishCheckIn, payload);
       return response.data;
     } catch (error) {
       console.error('Error unpublishing check-in ', error);
@@ -59,7 +47,7 @@ const useAdminService = () => {
 
   const deleteCheckIn = async (payload) => {
     try {
-      const response = await client.post(API_URLS.deleteCheckIn, payload);
+      const response = await client.post(API_URLS.admin.deleteCheckIn, payload);
       return response.data;
     } catch (error) {
       console.error('Error deleting check in ', error);
@@ -69,7 +57,7 @@ const useAdminService = () => {
 
   const updateCheckIn = async (payload) => {
     try {
-      const response = await client.post(API_URLS.updateCheckIn, payload);
+      const response = await client.post(API_URLS.admin.updateCheckIn, payload);
       return response.data;
     } catch (error) {
       console.error('Error updating check in ', error);
@@ -80,7 +68,6 @@ const useAdminService = () => {
   return {
     createAdminCheckIn,
     fetchAllAdminCheckIn,
-    fetchPublishedCheckInAnalytics,
     publishNewCheckIn,
     unPublishCheckIn,
     deleteCheckIn,

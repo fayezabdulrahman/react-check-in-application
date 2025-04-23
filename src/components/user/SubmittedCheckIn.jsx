@@ -1,17 +1,11 @@
 import { Box, Grid, Heading, Text, useToast } from '@chakra-ui/react';
-import { useEffect } from 'react';
 import Loading from '../shared/Loading';
 import { useQuery } from '@tanstack/react-query';
 import useUserService from '../../hooks/services/useUserService';
 import { useLocalAuth } from '../../context/LocalAuthProvider';
-import useCheckInStore from '../../store/checkin-store';
 import UserSubmittedCheckInCard from './UserSubmittedCheckInCard';
 import ErrorMessage from '../shared/ErrorMesssage';
 const SubmittedCheckIn = () => {
-  const setAllUserSubmittedCheckIns = useCheckInStore(
-    (state) => state.setAllUserSubmittedCheckIns
-  );
-
   const { fetchAllUserSubmittedCheckIns } = useUserService();
   const toast = useToast();
   const { userDetails } = useLocalAuth();
@@ -23,11 +17,6 @@ const SubmittedCheckIn = () => {
     staleTime: 1000 * 60 * 10 // Cache for 10 minutes
   });
 
-  useEffect(() => {
-    if (data?.submittedCheckIns) {
-      setAllUserSubmittedCheckIns(data.submittedCheckIns);
-    }
-  }, [setAllUserSubmittedCheckIns, data]);
 
   if (isLoading) {
     return <Loading />;
@@ -56,7 +45,7 @@ const SubmittedCheckIn = () => {
       <Heading size="md" mb={4} fontWeight="500" color="gray.700">
         My Check-ins
         <Text fontSize="sm" color="gray.500" mt={1} fontWeight="normal">
-          View your submitted Check-ins
+          View your Submitted Check-ins
         </Text>
       </Heading>
 
@@ -70,7 +59,7 @@ const SubmittedCheckIn = () => {
           bg="white"
         >
           <Text color="gray.500" mb={2}>
-            No submissions Found. Complete a check-in to see it here!
+            No submissions Found. Complete a Check-in to see it here!
           </Text>
         </Box>
       ) : (

@@ -50,7 +50,6 @@ const CreatedCheckInCard = ({
   };
 
   const handleAction = (checkInId, actionType) => {
-    console.log('check in id', checkInId);
     setAdminAction(actionType);
     setIsProcessing(checkInId === availableCheckIn.checkInId);
 
