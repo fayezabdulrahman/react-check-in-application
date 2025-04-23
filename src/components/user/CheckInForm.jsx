@@ -1,20 +1,11 @@
 import { Card, CardBody, Box, useToast } from '@chakra-ui/react';
 import FormFactory from '../shared/FormFactory';
-import useCheckInStore from '../../store/checkin-store';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useUserService from '../../hooks/services/useUserService';
 import Loading from '../shared/Loading';
 import { useNavigate } from 'react-router-dom';
 
 const CheckInForm = () => {
-  const userCheckInAnswers = useCheckInStore(
-    (state) => state.userCheckInAnswers
-  );
-
-  const setUserAnsweredCheckIn = useCheckInStore(
-    (state) => state.setUserAnsweredCheckIn
-  );
-
   const { submitCheckIn } = useUserService();
   const toast = useToast();
   const queryClient = useQueryClient();
@@ -27,16 +18,15 @@ const CheckInForm = () => {
     mutationFn: submitCheckIn,
     onSuccess: () => {
       toast({
-        title: 'Check-in submitted successfully!',
+        title: 'Check-in Submitted!',
         status: 'success',
         duration: 3000,
         isClosable: true
       });
 
-      setUserAnsweredCheckIn(true);
       // refresh queries
-      queryClient.invalidateQueries({
-        queryKey: ['answeredCheckin']
+      queryClient.refetchQueries({
+        queryKey: ['allUserCheckIns']
       });
       queryClient.invalidateQueries({
         queryKey: ['allUserSubmittedCheckin']
@@ -46,7 +36,7 @@ const CheckInForm = () => {
       navigate('/home', { replace: true });
     },
     onError: (error) => {
-      console.error('Error submitting check-in:', error);
+      console.error('Error Submitting Check-in:', error);
       toast({
         title: 'Submission failed!',
         description: error.message,
@@ -60,10 +50,11 @@ const CheckInForm = () => {
   if (submitUserCheckinIsPending) {
     return <Loading />;
   }
-  const submitDetails = (answers) => {
+  const submitDetails = (userSubmissionDetails) => {
+    const { checkInId, answers } = userSubmissionDetails;
     const payload = {
-      ...userCheckInAnswers,
-      answers: answers
+      checkInId,
+      answers
     };
     submitUserCheckinMutate(payload);
   };

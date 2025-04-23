@@ -4,9 +4,19 @@ import useAxiosClient from '../../hooks/useAxiosClient';
 const useUserService = () => {
   const client = useAxiosClient(); // Get the Axios client with interceptors
 
-  const fetchPublishedCheckin = async () => {
+  const fetchAllPublishedCheckins = async () => {
     try {
-      const response = await client.get(API_URLS.publishedCheckIn);
+      const response = await client.get(API_URLS.publishedCheckIns);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching published check-in', error);
+      throw error;
+    }
+  };
+
+  const fetchAllUserCheckIns = async () => {
+    try {
+      const response = await client.get(API_URLS.allUserCheckIns);
       return response.data;
     } catch (error) {
       console.error('Error fetching published check-in', error);
@@ -45,7 +55,8 @@ const useUserService = () => {
   };
 
   return {
-    fetchPublishedCheckin,
+    fetchAllUserCheckIns,
+    fetchAllPublishedCheckins,
     fetchAnsweredCheckin,
     fetchAllUserSubmittedCheckIns,
     submitCheckIn

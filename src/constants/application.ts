@@ -28,14 +28,17 @@ export const INITIAL_PERFORMING_ACTION_STATE = {
 }
 
 export const API_URLS = {
-    publishedCheckIn: '/admin/publishedCheckin',
+    // publishedCheckIn: '/admin/publishedCheckin',
+    publishedCheckIns: '/admin/allPublishedCheckIns',
+    allUserCheckIns: '/user/answeredCheckIn',
+
     publishNewCheckIn: '/admin/publishCheckIn',
     unPublishCheckIn: '/admin/unPublishCheckIn',
     publishedCheckInAnalytic: '/admin/checkInAnayltics',
     deleteCheckIn: '/admin/deleteCheckIn',
     createCheckIn: '/admin/createCheckin',
     updateCheckIn: '/admin/updateCheckIn',
-    allAdminCheckIn: '/admin/allCheckins',
+    allAdminCheckInWithResponses: '/admin/allCheckinsWithResponses',
     answeredCheckIn: '/user/answeredCheckIn',
     submtitCheckIn: '/user/submitCheckIn',
     allUserSubmittedCheckIn: '/user/getAllSubmittedCheckIn'

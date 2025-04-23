@@ -22,6 +22,7 @@ import ErrorMessage from './ErrorMesssage';
 const FormFactory = ({ onSubmit }) => {
   const location = useLocation();
   const { publishedCheckIn } = location.state || {}; // Safely destructure state
+  const checkInId = publishedCheckIn?.checkInId;
   const initialValues = publishedCheckIn?.questions?.reduce(
     (values, question) => {
       values[question.label] = '';
@@ -37,7 +38,12 @@ const FormFactory = ({ onSubmit }) => {
       answer
     }));
 
-    onSubmit(answers);
+    const userSubmission = {
+      checkInId,
+      answers
+    };
+
+    onSubmit(userSubmission);
   };
 
   const generateValidationSchema = (questions) => {
