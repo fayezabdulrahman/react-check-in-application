@@ -1,5 +1,5 @@
 import { AgGridReact } from 'ag-grid-react';
-import { useMemo, useState, useCallback, useEffect } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 import {
@@ -13,9 +13,8 @@ import {
   useToast
 } from '@chakra-ui/react';
 import { FaDownload } from 'react-icons/fa';
-import useCheckInStore from '../../store/checkin-store';
+import { useLocation } from 'react-router-dom';
 import '../../styles/AgGridCustomStyles.css';
-import LocalStorageService from '../../util/LocalStorageService';
 
 const TruncatedTextRenderer = (params) => {
   const text = params.value || '';
@@ -36,18 +35,12 @@ const TruncatedTextRenderer = (params) => {
 };
 
 const DetailedPublishedCheckIn = () => {
+  const location = useLocation();
+  const { state } = location;
+  const checkInName = state?.checkIn?.checkInId || '';
+  const responses = state?.checkIn?.responses || [];
   const toast = useToast();
-  const checkInResponses = useCheckInStore((state) => state.checkInResponses);
-  const setCheckInResponses = useCheckInStore((state) => state.setCheckInResponses);
-  const publishedCheckIn = useCheckInStore((state) => state.publishedCheckIn);
   const [gridApi, setGridApi] = useState(null);
-
-  useEffect(() => {
-    const cachedCheckInRespones = LocalStorageService.getItem('checkInResponses');
-    if (cachedCheckInRespones) {
-      setCheckInResponses(cachedCheckInRespones);
-    }
-  }, [setCheckInResponses]);
 
   const transformData = (data) => {
     if (!data || data.length === 0) return { questions: [], answers: [] };
@@ -61,7 +54,7 @@ const DetailedPublishedCheckIn = () => {
     return { questions, answers };
   };
 
-  const { questions, answers } = transformData(checkInResponses);
+  const { questions, answers } = transformData(responses);
 
   const columnDefs = useMemo(() => {
     const userColumn = {
@@ -112,7 +105,7 @@ const DetailedPublishedCheckIn = () => {
     if (!gridApi) return;
 
     gridApi.exportDataAsCsv({
-      fileName: `Checkin-responses-${publishedCheckIn?.checkInId}-${new Date()
+      fileName: `Checkin-responses-${checkInName}-${new Date()
         .toISOString()
         .slice(0, 10)}.csv`,
       processCellCallback: (params) => {
@@ -131,7 +124,7 @@ const DetailedPublishedCheckIn = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gridApi, toast]);
 
-  if (checkInResponses.length === 0) {
+  if (responses.length === 0) {
     return (
       <Box textAlign="center" p={10}>
         <Heading size="md" mb={4}>
@@ -153,9 +146,7 @@ const DetailedPublishedCheckIn = () => {
     >
       <HStack justifyContent="space-between" mb={4}>
         <Box>
-          <Heading size="lg">
-            Results for {publishedCheckIn?.checkInId}
-          </Heading>
+          <Heading size="lg">Results for {checkInName}</Heading>
           <Text color="gray.500" mt={1}>
             {answers.length} Responses Collected
           </Text>
@@ -171,7 +162,9 @@ const DetailedPublishedCheckIn = () => {
       <Divider mb={4} />
 
       <Box
-        className="ag-grid-container ag-theme-quartz" height="500px" width="100%"
+        className="ag-grid-container ag-theme-quartz"
+        height="500px"
+        width="100%"
         flex={1}
         borderRadius="lg"
         overflow="hidden"
