@@ -1,10 +1,3 @@
-export const INTIAL_CHECKIN_STATE = {
-    checkInId: undefined,
-    createdBy: '',
-    published: false,
-    questions: []
-};
-
 export const INITAL_QUESTION_STATE = {
     id: undefined,
     label: '',
@@ -14,31 +7,23 @@ export const INITAL_QUESTION_STATE = {
     isRequired: false
 };
 
-export const INITIAL_QUESTION_RESPONSE = {
-    checkInId: undefined,
-    submittedBy: undefined,
-    answered: false,
-    answers: []
-}
-
-export const INITIAL_PERFORMING_ACTION_STATE = {
-    actionInProgress: false,
-    actionType: '',
-    checkInId: ''
-}
 
 export const API_URLS = {
-    publishedCheckIn: '/admin/publishedCheckin',
-    publishNewCheckIn: '/admin/publishCheckIn',
-    unPublishCheckIn: '/admin/unPublishCheckIn',
-    publishedCheckInAnalytic: '/admin/checkInAnayltics',
-    deleteCheckIn: '/admin/deleteCheckIn',
-    createCheckIn: '/admin/createCheckin',
-    updateCheckIn: '/admin/updateCheckIn',
-    allAdminCheckIn: '/admin/allCheckins',
-    answeredCheckIn: '/user/answeredCheckIn',
-    submtitCheckIn: '/user/submitCheckIn',
-    allUserSubmittedCheckIn: '/user/getAllSubmittedCheckIn'
+    admin: {
+        publishNewCheckIn: '/admin/publishCheckIn',
+        unPublishCheckIn: '/admin/unPublishCheckIn',
+        deleteCheckIn: '/admin/deleteCheckIn',
+        createCheckIn: '/admin/createCheckin',
+        updateCheckIn: '/admin/updateCheckIn',
+        allAdminCheckInWithResponses: '/admin/allCheckinsWithResponses',
+
+    },
+    user: {
+        allUserCheckIns: '/user/answeredCheckIn',
+        answeredCheckIn: '/user/answeredCheckIn',
+        submitCheckIn: '/user/submitCheckIn',
+        allUserSubmittedCheckIn: '/user/getAllSubmittedCheckIn'
+    }
 }
 
 export const API_AUTH_URLS = {

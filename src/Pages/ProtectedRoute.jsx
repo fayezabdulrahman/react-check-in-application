@@ -8,9 +8,8 @@ const ProtectedRoute = ({ allowedRoles }) => {
     return <Loading />;
   }
 
-  const userRoles = user?.['https://ez-check-in/roles'];
+  // const userRoles = user?.['https://ez-check-in/roles'];
 
-  console.log('user roles ', userRoles);
 
   if (
     !isAuthenticated

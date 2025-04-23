@@ -1,11 +1,21 @@
-import { Text, Heading, useToast, Box, Grid } from '@chakra-ui/react';
-import Loading from '../shared/Loading';
+import {
+  Text,
+  Heading,
+  useToast,
+  Box,
+  Grid,
+  Flex,
+  IconButton,
+  Tooltip
+} from '@chakra-ui/react';
+import { IoMdRefresh } from 'react-icons/io';
+import { FaClipboardList } from 'react-icons/fa';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import CreatedCheckInCard from './CreatedCheckInCard';
 import useAdminService from '../../hooks/services/useAdminService';
 import useCheckInStore from '../../store/checkin-store';
-import LocalStorageService from '../../util/LocalStorageService';
 import ErrorMessage from '../shared/ErrorMesssage';
+import SkeletonLoader from '../shared/SkeletonLoader';
 
 const AvailableCheckIn = () => {
   const {
@@ -15,13 +25,6 @@ const AvailableCheckIn = () => {
     deleteCheckIn
   } = useAdminService();
 
-  const setPublishedCheckIn = useCheckInStore(
-    (state) => state.setPublishedCheckIn
-  );
-  const setCheckInResponses = useCheckInStore(
-    (state) => state.setCheckInResponses
-  );
-
   const openDeleteModal = useCheckInStore((state) => state.openDeleteModal);
 
   const resetAdminAction = useCheckInStore((state) => state.resetAdminAction);
@@ -30,12 +33,9 @@ const AvailableCheckIn = () => {
 
   const toast = useToast();
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isFetching, isLoading, error, refetch } = useQuery({
     queryKey: ['allAdminCheckIn'],
     queryFn: fetchAllAdminCheckIn,
-    meta: {
-      ErrorMessage: 'failed to fetch all admin checkins'
-    },
     staleTime: 1000 * 60 * 10 // Cache for 10 minutes
   });
 
@@ -43,25 +43,13 @@ const AvailableCheckIn = () => {
     mutationFn: publishNewCheckIn,
     onSuccess: (response) => {
       const message = response.message;
-      // if we get a successful response, set cache and update state
+
       if (response.checkIn) {
-        const serverPublishedCheckIn = response.checkIn;
-
-        // set new state
-        setPublishedCheckIn(serverPublishedCheckIn);
-
-        // reset cache
-        LocalStorageService.removeItem('checkInResponses');
-
         // reset performing action
         resetAdminAction();
 
-        // invalidate cache and refetch
-        queryCleint.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
-        queryCleint.invalidateQueries({ queryKey: ['publishedCheckin'] });
-        queryCleint.invalidateQueries({
-          queryKey: ['publishedCheckinAnalytics']
-        });
+        // refetch data
+        queryCleint.refetchQueries({ queryKey: ['allAdminCheckIn'] });
       }
 
       toast({
@@ -87,23 +75,11 @@ const AvailableCheckIn = () => {
     mutationFn: unPublishCheckIn,
     onSuccess: (response) => {
       const message = response.message;
-      // if we get a successfull response, remove cache and update state
       if (response.checkIn) {
-        // reset state
-        setPublishedCheckIn(null);
-        setCheckInResponses([]);
-
-        // reset cache
-        LocalStorageService.removeItem('checkInResponses');
-
         // reset performing action
         resetAdminAction();
-        // invalidate cache and refetch
-        queryCleint.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
-        queryCleint.invalidateQueries({
-          queryKey: ['publishedCheckinAnalytics']
-        });
-        queryCleint.refetchQueries({ queryKey: ['publishedCheckin'] });
+        // refetch data
+        queryCleint.refetchQueries({ queryKey: ['allAdminCheckIn'] });
       }
 
       toast({
@@ -131,8 +107,8 @@ const AvailableCheckIn = () => {
     onSuccess: (response) => {
       const message = response.message;
 
-      // invalidate cache and refetch
-      queryCleint.invalidateQueries({ queryKey: ['allAdminCheckIn'] });
+      // refetch data
+      queryCleint.refetchQueries({ queryKey: ['allAdminCheckIn'] });
       toast({
         title: message,
         status: 'success',
@@ -167,16 +143,15 @@ const AvailableCheckIn = () => {
   const handleDeleteCheckIn = (checkInId) => {
     openDeleteModal({
       id: checkInId,
-      header: `Delete ${checkInId.checkInToDelete} Check-in`,
-      body: 'Are you sure you want to Delete this Check-in ? This will remove for all admin users.',
+      header: `Delete ${checkInId.checkInToDelete}`,
+      body: 'Are you sure you want to Delete this Check-in ? This removes it for all admin users.',
       onConfirm: (payload) => deleteCheckInMutate(payload)
     });
   };
 
-  if (isLoading) {
-    return <Loading />;
+  if (isLoading || isFetching) {
+    return <SkeletonLoader />;
   }
-
   if (error) {
     toast({
       title: 'Failed to load all created check in',
@@ -196,24 +171,43 @@ const AvailableCheckIn = () => {
 
   return (
     <Box mt={4} pt={4} px={{ base: 4, md: 8 }}>
-      <Heading size="md" mb={4} fontWeight="500" color="gray.700">
-        My Check-ins
-        <Text fontSize="sm" color="gray.500" mt={1} fontWeight="normal">
-          Manage your check-in forms
-        </Text>
-      </Heading>
-
-      {data?.checkins?.length === 0 ? (
+      <Flex justify="space-between" align="center" mb={4}>
+        <Flex direction="column">
+          <Flex align="center" gap={2}>
+            <FaClipboardList size={18} color="#4A5568" />
+            <Heading size="md" fontWeight="600" color="gray.700">
+              My Check-ins
+            </Heading>
+          </Flex>
+          <Text fontSize="sm" color="gray.500" mt={1} fontWeight="normal">
+            Manage your check-in forms
+          </Text>
+        </Flex>
+  
+        {data?.checkIns?.length > 0 && (
+          <Tooltip label='Refresh'>
+            <IconButton
+              aria-label="Refresh check-ins"
+              icon={<IoMdRefresh />}
+              onClick={refetch}
+              variant="ghost"
+              colorScheme="gray"
+            />
+          </Tooltip>
+        )}
+      </Flex>
+  
+      {data?.checkIns?.length === 0 ? (
         <Box
           textAlign="center"
           p={8}
           borderRadius="lg"
           border="1px dashed"
-          borderColor="gray.100"
-          bg="white"
+          borderColor="gray.200"
+          bgGradient="linear(to-b, gray.50, white)"
         >
           <Text color="gray.500" mb={2}>
-            No Check-in forms created yet
+            No Check-in forms created!
           </Text>
         </Box>
       ) : (
@@ -224,25 +218,44 @@ const AvailableCheckIn = () => {
             xl: 'repeat(3, 1fr)'
           }}
           gap={6}
-          paddingBottom={6}
+          pb={6}
         >
-          {data?.checkIns?.map((available, index) => (
-            <Box
-              key={index}
-              borderRadius="lg"
-              border="1px solid"
-              borderColor="gray.100"
-              _hover={{ shadow: 'md' }}
-              transition="all 0.2s"
-            >
-              <CreatedCheckInCard
-                availableCheckIn={available}
-                publishCheckIn={handlePublishCheckIn}
-                unPublishCheckIn={handleUnPublishCheckIn}
-                deleteCheckIn={handleDeleteCheckIn}
-              />
-            </Box>
-          ))}
+          {data?.checkIns?.map((available, index) => {
+            const isPublished = available.published; // Adjust this line as needed
+  
+            return (
+              <Box
+                key={index}
+                borderRadius="lg"
+                border="1px solid"
+                borderColor="gray.100"
+                bg="white"
+                position="relative"
+                overflow="hidden"
+                _hover={{ shadow: 'md', transform: 'translateY(-2px)' }}
+                transition="all 0.2s ease"
+              >
+                {/* Accent bar */}
+                <Box
+                  position="absolute"
+                  top={0}
+                  left={0}
+                  width="100%"
+                  height="4px"
+                  bg={isPublished ? 'green.400' : 'orange.300'}
+                />
+    
+                <Box px={4} pb={4} mt={2}>
+                  <CreatedCheckInCard
+                    availableCheckIn={available}
+                    publishCheckIn={handlePublishCheckIn}
+                    unPublishCheckIn={handleUnPublishCheckIn}
+                    deleteCheckIn={handleDeleteCheckIn}
+                  />
+                </Box>
+              </Box>
+            );
+          })}
         </Grid>
       )}
     </Box>

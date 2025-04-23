@@ -34,10 +34,6 @@ export const QuestionModal = () => {
   const setQuestionType = useCheckInStore((state) => state.setQuestionType);
   const resetQuestionToEdit = useCheckInStore((state) => state.resetQuestionToEdit);
 
-  const store = useCheckInStore((state) => state);
-  console.log('store ', store);
-
-
   useEffect(() => {
     if (questionToEdit) {
       setFormData(questionToEdit);

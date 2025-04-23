@@ -14,8 +14,14 @@ export const QuestionTypesPanel = () => {
   ];
 
   return (
-    <Flex direction="column" gap={2}>
-      <Text fontWeight="bold" mb={4}>
+    <Flex direction="column" gap={4}>
+      <Text
+        fontWeight="bold"
+        fontSize="md"
+        borderBottom="2px solid"
+        borderColor="orange.300"
+        pb={2}
+      >
         Question Type
       </Text>
       {questionTypes.map((question) => (

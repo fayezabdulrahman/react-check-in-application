@@ -14,20 +14,37 @@ const UserSubmittedCheckInCard = ({ userSubmittedCheckIn }) => {
   const setToggleUserViewSubmittedCheckInModal = useCheckInStore(
     (state) => state.setToggleUserViewSubmittedCheckInModal
   );
+
   return (
     <Box
       p={4}
+      pl={3}
+      pr={4}
       bg="white"
-      borderRadius="lg"
+      borderRadius="2xl"
       border="1px solid"
       borderColor="gray.100"
       transition="all 0.2s"
       _hover={{ shadow: 'md' }}
-      minHeight="140px" // Fixed minimum height
+      minHeight="160px"
       display="flex"
       flexDirection="column"
       justifyContent="space-between"
+      position="relative"
+      overflow="hidden"
     >
+      {/* Accent Bar */}
+      <Box
+        position="absolute"
+        top={0}
+        bottom={0}
+        left={0}
+        width="6px"
+        bgGradient="linear(to-b, orange.400, orange.300)"
+        borderTopLeftRadius="2xl"
+        borderBottomLeftRadius="2xl"
+      />
+
       {/* Header Section */}
       <Box position="relative">
         <Flex align="center" gap={2} mb={2}>
@@ -41,7 +58,7 @@ const UserSubmittedCheckInCard = ({ userSubmittedCheckIn }) => {
             {userSubmittedCheckIn.data.checkInId}
           </Text>
           <Badge
-            colorScheme={'green'}
+            colorScheme="green"
             variant="subtle"
             position="absolute"
             right="0"
@@ -63,7 +80,7 @@ const UserSubmittedCheckInCard = ({ userSubmittedCheckIn }) => {
 
       {/* Footer with Actions */}
       <Flex
-        justify="space-between"
+        justify="flex-end"
         align="center"
         borderTop="1px solid"
         borderColor="gray.100"

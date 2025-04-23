@@ -20,16 +20,16 @@ export const CheckInSubmitter = () => {
     mutationFn: createAdminCheckIn,
     onSuccess: () => {
       toast({
-        title: 'Check-in saved successfully',
+        title: 'Check-in Created!',
         status: 'success',
         duration: 3000
       });
-      queryClient.invalidateQueries(['allAdminCheckIn']);
+      queryClient.refetchQueries(['allAdminCheckIn']);
       resetQuestions();
     },
     onError: (error) => {
       toast({
-        title: 'Error saving check-in',
+        title: 'Error Creating Check-in',
         description: error.response?.data?.message,
         status: 'error',
         duration: 3000
@@ -40,7 +40,7 @@ export const CheckInSubmitter = () => {
   const handleSaveCheckIn = () => {
     if (!checkInNameRef.current.value.trim()) {
       toast({
-        title: 'Check-in name is required',
+        title: 'Check-in name is Required',
         status: 'error',
         duration: 2000
       });
@@ -62,23 +62,25 @@ export const CheckInSubmitter = () => {
       {questions.length > 0 ? (
         <>
           <Input
-            placeholder="Enter check-in name"
+            placeholder="Enter Check-in name"
             ref={checkInNameRef}
             mb={4}
+            size="lg"
           />
-          <CardFooter justifyContent="center">
+          <CardFooter justifyContent="center" pt={0}>
             <Button
               colorScheme="green"
               rightIcon={<MdPublish />}
               onClick={handleSaveCheckIn}
               isLoading={isPending}
+              size="md"
             >
-              Create Check-in
+              Create
             </Button>
           </CardFooter>
         </>
       ) : (
-        <Text textAlign="center" color="gray.500">
+        <Text textAlign="center" color="gray.500" fontSize="lg">
           Add your first question to begin
         </Text>
       )}

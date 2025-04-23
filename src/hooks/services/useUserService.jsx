@@ -4,9 +4,9 @@ import useAxiosClient from '../../hooks/useAxiosClient';
 const useUserService = () => {
   const client = useAxiosClient(); // Get the Axios client with interceptors
 
-  const fetchPublishedCheckin = async () => {
+  const fetchAllUserCheckIns = async () => {
     try {
-      const response = await client.get(API_URLS.publishedCheckIn);
+      const response = await client.get(API_URLS.user.allUserCheckIns);
       return response.data;
     } catch (error) {
       console.error('Error fetching published check-in', error);
@@ -14,19 +14,9 @@ const useUserService = () => {
     }
   };
 
-  const fetchAnsweredCheckin = async () => {
-    try {
-      const response = await client.get(API_URLS.answeredCheckIn);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching answered check-in', error);
-      throw error;
-    }
-  };
-
   const fetchAllUserSubmittedCheckIns = async () => {
     try {
-      const response = await client.get(API_URLS.allUserSubmittedCheckIn);
+      const response = await client.get(API_URLS.user.allUserSubmittedCheckIn);
       return response.data;
     } catch (error) {
       console.error('Error fetching All User Submitted check-in', error);
@@ -36,7 +26,7 @@ const useUserService = () => {
 
   const submitCheckIn = async (payload) => {
     try {
-      const response = await client.post(API_URLS.submtitCheckIn, payload);
+      const response = await client.post(API_URLS.user.submitCheckIn, payload);
       return response.data;
     } catch (error) {
       console.error('Error submitting check-in', error);
@@ -45,8 +35,7 @@ const useUserService = () => {
   };
 
   return {
-    fetchPublishedCheckin,
-    fetchAnsweredCheckin,
+    fetchAllUserCheckIns,
     fetchAllUserSubmittedCheckIns,
     submitCheckIn
   };

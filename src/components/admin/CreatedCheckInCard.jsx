@@ -13,10 +13,12 @@ import {
   MdEdit,
   MdUnpublished,
   MdPublish,
-  MdOutlineQuestionAnswer
+  MdOutlineQuestionAnswer,
+  MdOutlineRemoveRedEye
 } from 'react-icons/md';
 import useCheckInStore from '../../store/checkin-store';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 const CreatedCheckInCard = ({
   availableCheckIn,
   publishCheckIn,
@@ -26,6 +28,7 @@ const CreatedCheckInCard = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const setAdminAction = useCheckInStore((state) => state.setAdminAction);
   const adminAction = useCheckInStore((state) => state.adminAction);
+  const navigate = useNavigate();
 
   const setSubmittedCheckInToEdit = useCheckInStore(
     (state) => state.setSubmittedCheckInToEdit
@@ -33,6 +36,14 @@ const CreatedCheckInCard = ({
 
   const handleEditCheckIn = (checkIn) => {
     setSubmittedCheckInToEdit(checkIn);
+  };
+
+  const handleViewCheckInResponses = (checkIn) => {
+    navigate('/admin/checkInResults', {
+      state: {
+        checkIn
+      }
+    });
   };
 
   const handleAction = (checkInId, actionType) => {
@@ -77,10 +88,6 @@ const CreatedCheckInCard = ({
       p={4}
       bg="white"
       borderRadius="lg"
-      border="1px solid"
-      borderColor="gray.100"
-      transition="all 0.2s"
-      _hover={{ shadow: 'md' }}
       minHeight="140px" // Fixed minimum height
       display="flex"
       flexDirection="column"
@@ -116,6 +123,27 @@ const CreatedCheckInCard = ({
         <Text fontSize="sm" color="gray.500" noOfLines={2}>
           Created by {availableCheckIn.createdBy}
         </Text>
+        <Flex
+          align="center"
+          justify="space-between"
+          bg="gray.50"
+          p={3}
+          borderRadius="md"
+          border="1px solid"
+          borderColor="gray.100"
+          mt={2}
+        >
+          <Flex align="center" gap={2}>
+            <Icon as={MdOutlineQuestionAnswer} color="blue.500" boxSize={5} />
+            <Text fontSize="sm" color="gray.600" fontWeight="medium">
+              Collected Responses
+            </Text>
+          </Flex>
+
+          <Text fontSize="lg" fontWeight="bold" color="gray.800">
+            {availableCheckIn.responseCount}
+          </Text>
+        </Flex>
       </Box>
 
       {/* Footer with Actions */}
@@ -134,6 +162,15 @@ const CreatedCheckInCard = ({
         </Flex>
 
         <ButtonGroup variant="ghost" size="sm" spacing={1}>
+          <Tooltip label={'View'}>
+            <IconButton
+              icon={<MdOutlineRemoveRedEye />}
+              aria-label="Edit"
+              onClick={() => handleViewCheckInResponses(availableCheckIn)}
+              colorScheme="orange"
+              variant="ghost"
+            />
+          </Tooltip>
           <Tooltip
             label={isCurrentlyPublished ? 'Edit disabled (active)' : 'Edit'}
           >
@@ -163,9 +200,7 @@ const CreatedCheckInCard = ({
           </Tooltip>
 
           <Tooltip
-            label={
-              isCurrentlyPublished ? 'Delete disabled (active)' : 'Delete'
-            }
+            label={isCurrentlyPublished ? 'Delete disabled (active)' : 'Delete'}
           >
             <IconButton
               icon={<MdDeleteOutline />}

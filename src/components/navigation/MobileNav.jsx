@@ -88,11 +88,11 @@ const MobileNav = ({
               <Icon as={IoFolderOpenOutline} boxSize={6} />
               <Link
                 as={ReactRouterLink}
-                to={isAdmin ? '/admin/availableCheckIn' : '/user/submitted'}
+                to={isAdmin ? '/admin/create' : '/user/submitted'}
                 onClick={onClose}
                 fontSize="lg"
               >
-                {isAdmin ? 'Check-ins ' : 'My Check-ins'}
+                {isAdmin ? 'Create Check-in' : 'My Check-ins'}
               </Link>
             </Box>
             <Box display="flex" alignItems="center" gap="2">
