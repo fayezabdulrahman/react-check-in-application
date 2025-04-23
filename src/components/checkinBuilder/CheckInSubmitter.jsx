@@ -20,7 +20,7 @@ export const CheckInSubmitter = () => {
     mutationFn: createAdminCheckIn,
     onSuccess: () => {
       toast({
-        title: 'Check-in saved successfully',
+        title: 'Check-in Created!',
         status: 'success',
         duration: 3000
       });
@@ -29,7 +29,7 @@ export const CheckInSubmitter = () => {
     },
     onError: (error) => {
       toast({
-        title: 'Error saving check-in',
+        title: 'Error Creating Check-in',
         description: error.response?.data?.message,
         status: 'error',
         duration: 3000
@@ -40,7 +40,7 @@ export const CheckInSubmitter = () => {
   const handleSaveCheckIn = () => {
     if (!checkInNameRef.current.value.trim()) {
       toast({
-        title: 'Check-in name is required',
+        title: 'Check-in name is Required',
         status: 'error',
         duration: 2000
       });
@@ -62,7 +62,7 @@ export const CheckInSubmitter = () => {
       {questions.length > 0 ? (
         <>
           <Input
-            placeholder="Enter check-in name"
+            placeholder="Enter Check-in name"
             ref={checkInNameRef}
             mb={4}
           />
