@@ -83,7 +83,6 @@ const EditCheckInModal = () => {
         checkInId: checkInName.trim() || submittedCheckInToEdit.checkInId
       }
     };
-    console.log('payload to edit check in ', payload);
     updateCheckInMutate(payload);
   };
 
