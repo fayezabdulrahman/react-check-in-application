@@ -21,7 +21,6 @@ import { INITAL_QUESTION_STATE } from '../../constants/application';
 export const QuestionModal = () => {
   const toast = useToast();
   const [formData, setFormData] = useState(INITAL_QUESTION_STATE);
-  const [isSubmittedCheckIn, setIsSubmittedCheckIn] = useState(false);
 
   const questionType = useCheckInStore((state) => state.questionType);
   const toggleModal = useCheckInStore((state) => state.toggleModal);
@@ -29,33 +28,42 @@ export const QuestionModal = () => {
   const addQuestion = useCheckInStore((state) => state.addQuestion);
   const questionToEdit = useCheckInStore((state) => state.questionToEdit);
   const updateQuestion = useCheckInStore((state) => state.updateQuestion);
-  const submittedCheckInToEdit = useCheckInStore((state) => state.submittedCheckInToEdit);
-  const updateSubmittedQuestion = useCheckInStore((state) => state.updateSubmittedQuestion);
+  const submittedCheckInToEdit = useCheckInStore(
+    (state) => state.submittedCheckInToEdit
+  );
+  const updateSubmittedQuestion = useCheckInStore(
+    (state) => state.updateSubmittedQuestion
+  );
   const setQuestionType = useCheckInStore((state) => state.setQuestionType);
-  const resetQuestionToEdit = useCheckInStore((state) => state.resetQuestionToEdit);
+  const resetQuestionToEdit = useCheckInStore(
+    (state) => state.resetQuestionToEdit
+  );
 
   useEffect(() => {
     if (questionToEdit) {
       setFormData(questionToEdit);
     }
-    if (submittedCheckInToEdit) {
-      setIsSubmittedCheckIn(true);
-    }
-  }, [questionToEdit,submittedCheckInToEdit]);
-
-
+  }, [questionToEdit]);
 
   const handleSave = () => {
     if (!formData.label.trim()) {
       return toast({ title: 'Question text required', status: 'error' });
     }
 
+    const cleanSelectOptions = formData.selectOptions
+      .map((option) => option.trim())
+      .filter((item) => item !== '');
+
+    const cleanRadioOptions = formData.radioOptions
+      .map((option) => option.trim())
+      .filter((item) => item !== '');
+
     const question = {
       label: formData.label,
       componentType: questionType,
       isRequired: formData.isRequired,
-      radioOptions: formData.radioOptions,
-      selectOptions: formData.selectOptions
+      radioOptions: cleanRadioOptions,
+      selectOptions: cleanSelectOptions
     };
 
     if (questionToEdit) {
@@ -63,7 +71,7 @@ export const QuestionModal = () => {
         ...question,
         id: questionToEdit.id
       };
-      if (isSubmittedCheckIn) {
+      if (submittedCheckInToEdit) {
         const updatedSubmittedQuestion = {
           ...question,
           id: questionToEdit.id
@@ -85,7 +93,7 @@ export const QuestionModal = () => {
     setToggleModal();
     setQuestionType('');
     setFormData(INITAL_QUESTION_STATE);
-    if(questionToEdit) {
+    if (questionToEdit) {
       resetQuestionToEdit();
     }
   };
@@ -118,7 +126,7 @@ export const QuestionModal = () => {
                 onChange={(e) =>
                   setFormData((prev) => ({
                     ...prev,
-                    selectOptions: e.target.value.trim().split(',')
+                    selectOptions: e.target.value.split(',')
                   }))
                 }
               />
@@ -134,7 +142,7 @@ export const QuestionModal = () => {
                 onChange={(e) =>
                   setFormData((prev) => ({
                     ...prev,
-                    radioOptions: e.target.value.trim().split(',')
+                    radioOptions: e.target.value.split(',')
                   }))
                 }
               />

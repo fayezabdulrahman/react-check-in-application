@@ -5,14 +5,15 @@ import 'ag-grid-community/styles/ag-theme-quartz.css';
 import {
   Box,
   Heading,
-  HStack,
-  Button,
+  IconButton,
   Tooltip,
   Text,
   Divider,
-  useToast
+  useToast,
+  Stack
 } from '@chakra-ui/react';
 import { FaDownload } from 'react-icons/fa';
+import { MdFilterAltOff } from 'react-icons/md';
 import { useLocation } from 'react-router-dom';
 import '../../styles/AgGridCustomStyles.css';
 
@@ -41,6 +42,7 @@ const DetailedPublishedCheckIn = () => {
   const responses = state?.checkIn?.responses || [];
   const toast = useToast();
   const [gridApi, setGridApi] = useState(null);
+  const [filtersActive, setFiltersActive] = useState(false);
 
   const transformData = (data) => {
     if (!data || data.length === 0) return { questions: [], answers: [] };
@@ -99,6 +101,10 @@ const DetailedPublishedCheckIn = () => {
   const onGridReady = useCallback((params) => {
     setGridApi(params.api);
     params.api.sizeColumnsToFit();
+
+    params.api.addEventListener('filterChanged', () => {
+      setFiltersActive(params.api.isAnyFilterPresent());
+    });
   }, []);
 
   const handleExport = useCallback(() => {
@@ -124,6 +130,13 @@ const DetailedPublishedCheckIn = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gridApi, toast]);
 
+  const clearFilters = useCallback(() => {
+    if (!gridApi) return;
+
+    gridApi.setFilterModel(null); // Clears all filters
+    setFiltersActive(false); // Reset state
+  }, [gridApi]);
+
   if (responses.length === 0) {
     return (
       <Box textAlign="center" p={10}>
@@ -144,21 +157,41 @@ const DetailedPublishedCheckIn = () => {
       height="calc(100vh - 100px)"
       p={4}
     >
-      <HStack justifyContent="space-between" mb={4}>
+      <Stack
+        justifyContent="space-between"
+        mb={4}
+        direction={{ base: 'column', sm: 'row' }}
+        spacing={4}
+        align={{ base: 'flex-start', sm: 'center' }}
+      >
         <Box>
           <Heading size="lg">Results for {checkInName}</Heading>
           <Text color="gray.500" mt={1}>
             {answers.length} Responses Collected
           </Text>
         </Box>
-        <Button
-          leftIcon={<FaDownload />}
-          onClick={handleExport}
-          variant="solid"
-        >
-          Export CSV
-        </Button>
-      </HStack>
+
+        <Stack direction="row" spacing={2}>
+          <Tooltip label="Clear Filters" hasArrow>
+            <IconButton
+              icon={<MdFilterAltOff />}
+              onClick={clearFilters}
+              isDisabled={!filtersActive}
+              aria-label="Clear Filters"
+              variant="outline"
+            />
+          </Tooltip>
+
+          <Tooltip label="Export CSV" hasArrow>
+            <IconButton
+              icon={<FaDownload />}
+              onClick={handleExport}
+              aria-label="Export CSV"
+              colorScheme="blue"
+            />
+          </Tooltip>
+        </Stack>
+      </Stack>
       <Divider mb={4} />
 
       <Box
@@ -181,6 +214,7 @@ const DetailedPublishedCheckIn = () => {
           enableCellTextSelection={true}
           ensureDomOrder={true}
           tooltipShowDelay={0}
+          paginationAutoPageSize={true}
         />
       </Box>
     </Box>
