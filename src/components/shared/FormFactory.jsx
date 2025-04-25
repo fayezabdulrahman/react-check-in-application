@@ -11,6 +11,7 @@ import {
   Textarea,
   Flex,
   Text,
+  Badge,
   FormErrorMessage
 } from '@chakra-ui/react';
 import { Field, Form, Formik } from 'formik';
@@ -75,15 +76,30 @@ const FormFactory = ({ onSubmit }) => {
     <>
       <Flex
         direction={{ base: 'column', md: 'row' }}
-        alignItems={{ base: 'flex-end', md: 'center' }}
-        justifyContent={{ base: 'flex-end', md: 'flex-end' }}
+        justify="space-between"
+        align={{ base: 'flex-start', md: 'center' }}
+        wrap="wrap"
         mb={6}
+        gap={2}
       >
+        <Box>
+          <Badge
+            colorScheme="orange"
+            fontSize="md"
+            px={3}
+            py={1}
+            borderRadius="md"
+            textTransform="none"
+          >
+            Check-in name: {checkInId}
+          </Badge>
+        </Box>
+
         <Text
           color="red.500"
           fontWeight="medium"
           fontSize="sm"
-          alignSelf={{ base: 'flex-end', md: 'auto' }}
+          mt={{ base: 2, md: 0 }}
         >
           * Required fields
         </Text>
