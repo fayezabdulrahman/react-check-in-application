@@ -209,12 +209,11 @@ const DetailedPublishedCheckIn = () => {
           defaultColDef={defaultColDef}
           onGridReady={onGridReady}
           pagination={true}
-          paginationPageSize={20}
+          paginationPageSize={50}
           suppressRowClickSelection={true}
           enableCellTextSelection={true}
           ensureDomOrder={true}
           tooltipShowDelay={0}
-          paginationAutoPageSize={true}
         />
       </Box>
     </Box>
