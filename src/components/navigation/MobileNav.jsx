@@ -45,7 +45,7 @@ const MobileNav = ({
     <Image
       src={logo}
       height="50px"
-      rounded="sm"
+      rounded="lg"
       display={{ base: 'block', md: 'none' }}
     />
 
