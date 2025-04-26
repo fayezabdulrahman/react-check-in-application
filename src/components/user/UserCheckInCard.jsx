@@ -87,7 +87,7 @@ const UserCheckInCard = ({ checkIn }) => {
         borderTop="1px solid"
         borderColor="gray.200"
         pt={3}
-        direction={{ base: 'column', sm: 'row' }}
+        flexDirection={'row'}
         gap={{ base: 3, sm: 0 }}
       >
         <Flex align="center" gap={2}>
