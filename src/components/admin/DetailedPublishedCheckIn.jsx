@@ -70,17 +70,19 @@ const DetailedPublishedCheckIn = () => {
       }
     };
 
-    return [
-      userColumn,
-      ...(questions?.map((question) => ({
+    const questionColumns =
+      questions?.map((question) => ({
         headerName: question,
         field: question,
         cellRenderer: TruncatedTextRenderer,
         filter: 'agTextColumnFilter',
         headerTooltip: question
-      })) || [])
-    ];
-  }, [questions]);
+      })) || [];
+
+    return state.checkIn.anonymous
+      ? questionColumns
+      : [userColumn, ...questionColumns];
+  }, [questions, state?.checkIn?.anonymous]);
 
   const defaultColDef = useMemo(
     () => ({

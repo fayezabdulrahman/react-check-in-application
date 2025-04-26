@@ -56,17 +56,25 @@ const UserCheckInCard = ({ checkIn }) => {
           gap={2}
           mb={2}
         >
-          <Text
-            fontSize={{ base: 'md', sm: 'lg' }}
-            fontWeight="bold"
-            color="gray.700"
-            maxWidth={{ base: '100%', sm: '100%' }}
-            whiteSpace={{ base: 'nowrap', md: 'normal' }}
-            overflow={{ base: 'hidden', md: 'visible' }}
-            textOverflow={{ base: 'ellipsis', md: 'initial' }}
-          >
-            Name: {checkIn.checkInId}
-          </Text>
+          <Box>
+            <Text
+              fontSize={{ base: 'md', sm: 'lg' }}
+              fontWeight="bold"
+              color="gray.700"
+              maxWidth={{ base: '100%', sm: '100%' }}
+              whiteSpace={{ base: 'nowrap', md: 'normal' }}
+              overflow={{ base: 'hidden', md: 'visible' }}
+              textOverflow={{ base: 'ellipsis', md: 'initial' }}
+            >
+              Name: {checkIn.checkInId}
+            </Text>
+            {checkIn.anonymous && (
+              <Text fontSize="sm" color="gray.500" fontStyle="italic" mt={1}>
+                This check-in is anonymous
+              </Text>
+            )}
+          </Box>
+
           <Badge
             colorScheme="gray"
             variant="solid"
