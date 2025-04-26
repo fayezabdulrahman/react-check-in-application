@@ -124,6 +124,11 @@ const FormFactory = ({ onSubmit }) => {
                     mb="1rem"
                   >
                     <FormLabel>{question.label}</FormLabel>
+                    {question.description && (
+                      <Text fontSize="sm" color="gray.500" fontStyle="italic" mb={2}>
+                        {question.description}
+                      </Text>
+                    )}
                     {question.componentType === 'text' && (
                       <Input type="text" {...field} />
                     )}
@@ -166,7 +171,7 @@ const FormFactory = ({ onSubmit }) => {
               </Field>
             ))}
             <Box display="flex" justifyContent="center" width="100%">
-              <Button mt={4} type="submit" width="50%" isDisabled={!isValid}>
+              <Button mt={4} type="submit" px={6} isDisabled={!isValid}>
                 Submit
               </Button>
             </Box>

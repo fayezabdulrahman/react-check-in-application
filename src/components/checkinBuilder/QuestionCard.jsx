@@ -67,20 +67,28 @@ const QuestionCard = ({ question, readOnly = false }) => {
           gap={2}
         >
           <Box flex="1">
-            <Flex align="center" wrap="wrap" gap={1} mb={2}>
-              <Text fontWeight="medium" display="inline">
-                {question.label}
-                {!readOnly && question.isRequired && (
-                  <Tooltip label="Required" aria-label="Required field">
-                    <Text as="span" color="red.500" ml={1}>
-                      *
-                    </Text>
-                  </Tooltip>
-                )}
-              </Text>
+            <Flex direction="column" gap={1} mb={2}>
+              <Flex align="center" wrap="wrap" gap={1}>
+                <Text fontWeight="medium" display="inline">
+                  {question.label}
+                  {!readOnly && question.isRequired && (
+                    <Tooltip label="Required" aria-label="Required field">
+                      <Text as="span" color="red.500" ml={1}>
+                        *
+                      </Text>
+                    </Tooltip>
+                  )}
+                </Text>
+              </Flex>
+
+              {question.description && (
+                <Text fontSize="sm" color="gray.500" fontStyle="italic">
+                  {question.description}
+                </Text>
+              )}
 
               {question.answer && (
-                <Text display="inline" color="gray.700" ml={2}>
+                <Text display="inline" color="gray.700" mt={1}>
                   {question.answer}
                 </Text>
               )}
