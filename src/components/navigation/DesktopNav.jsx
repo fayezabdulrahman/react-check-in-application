@@ -29,7 +29,7 @@ const DesktopNav = ({
     display={{ base: 'none', md: 'flex' }}
   >
     {/* Logo */}
-    <Image src={logo} height="50px" rounded="sm" />
+    <Image src={logo} height="50px" rounded="lg" />
 
     {/* Links */}
     <Flex alignItems="center" gap={6}>
@@ -38,7 +38,21 @@ const DesktopNav = ({
         to={isAdmin ? '/admin' : '/home'}
         fontSize="lg"
         fontWeight="500"
-        _hover={{ textDecoration: 'none', opacity: 0.8 }}
+        position="relative"
+        _hover={{
+          textDecoration: 'underline',
+          color: 'orange.500'
+        }}
+        _after={{
+          content: '""',
+          position: 'absolute',
+          width: '0%',
+          height: '2px',
+          left: 0,
+          bottom: '-2px',
+          bg: 'orange.500',
+          transition: 'width 0.3s ease'
+        }}
       >
         Home
       </Link>
@@ -47,7 +61,21 @@ const DesktopNav = ({
         to={isAdmin ? '/admin/create' : '/user/submitted'}
         fontSize="lg"
         fontWeight="500"
-        _hover={{ textDecoration: 'none', opacity: 0.8 }}
+        position="relative"
+        _hover={{
+          textDecoration: 'underline',
+          color: 'orange.500'
+        }}
+        _after={{
+          content: '""',
+          position: 'absolute',
+          width: '0%',
+          height: '2px',
+          left: 0,
+          bottom: '-2px',
+          bg: 'orange.500',
+          transition: 'width 0.3s ease'
+        }}
       >
         {isAdmin ? 'Create Check-in ' : 'My Check-ins'}
       </Link>
