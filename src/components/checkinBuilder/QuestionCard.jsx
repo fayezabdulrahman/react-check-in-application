@@ -11,7 +11,6 @@ import { MdEdit, MdDelete } from 'react-icons/md';
 import { useEffect, useState } from 'react';
 import useCheckInStore from '../../store/checkin-store';
 const QuestionCard = ({ question, readOnly = false }) => {
-  console.log('quetion', question);
   const [isCheckInSubmitted, setIsCheckInSubmitted] = useState(false);
   const removeQuestion = useCheckInStore((state) => state.removeQuestion);
   const setQuestionToEdit = useCheckInStore((state) => state.setQuestionToEdit);
