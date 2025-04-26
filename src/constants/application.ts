@@ -1,6 +1,7 @@
 export const INITAL_QUESTION_STATE = {
     id: undefined,
     label: '',
+    description: '',
     componentType: 'text',
     selectOptions: [],
     radioOptions: [],
