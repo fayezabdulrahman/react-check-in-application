@@ -1,7 +1,6 @@
-// components/DesktopNav.tsx
 import {
   Flex,
-  Link,
+  HStack,
   Avatar,
   Box,
   Menu,
@@ -11,8 +10,7 @@ import {
   Image
 } from '@chakra-ui/react';
 import { CiLogout } from 'react-icons/ci';
-import { Link as ReactRouterLink } from 'react-router-dom';
-
+import DesktopNavItem from './DesktopNavItem';
 const DesktopNav = ({
   isAdmin,
   userName,
@@ -32,6 +30,31 @@ const DesktopNav = ({
     <Image src={logo} height="50px" rounded="lg" />
 
     {/* Links */}
+    <HStack spacing={6} align="center">
+      <DesktopNavItem label="Home" to={isAdmin ? '/admin' : '/home'} />
+      <DesktopNavItem
+        label={isAdmin ? 'Create Check-in' : 'My Check-ins'}
+        to={isAdmin ? '/admin/create' : '/user/submitted'}
+      />
+
+      <Box onMouseEnter={handleMenuOpen} onMouseLeave={handleMenuClose}>
+        <Menu isOpen={isMenuOpen}>
+          <MenuButton>
+            <Avatar name={userName} size="md" cursor="pointer" />
+          </MenuButton>
+          <MenuList
+            onMouseEnter={handleMenuOpen}
+            onMouseLeave={handleMenuClose}
+          >
+            <MenuItem icon={<CiLogout />} onClick={handleAppLogout}>
+              Logout
+            </MenuItem>
+          </MenuList>
+        </Menu>
+      </Box>
+    </HStack>
+
+    {/* Links
     <Flex alignItems="center" gap={6}>
       <Link
         as={ReactRouterLink}
@@ -95,7 +118,7 @@ const DesktopNav = ({
           </MenuList>
         </Menu>
       </Box>
-    </Flex>
+    </Flex> */}
   </Flex>
 );
 

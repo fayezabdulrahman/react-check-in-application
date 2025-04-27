@@ -3,8 +3,8 @@ import { useRef, useState } from 'react';
 import { useLocalAuth } from '../../context/LocalAuthProvider';
 import logo from '../../assets/b2b.png';
 import { useAuth0 } from '@auth0/auth0-react';
-import MobileNav from './MobileNav';
-import DesktopNav from './DesktopNav';
+import MobileNav from './mobile/MobileNav';
+import DesktopNav from './desktop/DesktopNav';
 const Navigation = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef();
