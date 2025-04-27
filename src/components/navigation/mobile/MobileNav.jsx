@@ -1,4 +1,3 @@
-// components/MobileNav.tsx
 import {
   IconButton,
   Drawer,
@@ -13,15 +12,13 @@ import {
   Box,
   Wrap,
   WrapItem,
-  Link,
-  Icon,
   Flex,
   Image
 } from '@chakra-ui/react';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { IoHomeOutline, IoFolderOpenOutline } from 'react-icons/io5';
 import { CiLogout } from 'react-icons/ci';
-import { Link as ReactRouterLink } from 'react-router-dom';
+import MobileNavItem from './MobileNavItem';
 
 const MobileNav = ({
   isOpen,
@@ -33,7 +30,12 @@ const MobileNav = ({
   handleAppLogout,
   logo
 }) => (
-  <Flex justify="space-between" align="center" p={4} display={{ base: 'flex', md: 'none' }}>
+  <Flex
+    justify="space-between"
+    align="center"
+    p={4}
+    display={{ base: 'flex', md: 'none' }}
+  >
     <IconButton
       variant="outline"
       aria-label="Open menu"
@@ -73,41 +75,26 @@ const MobileNav = ({
             spacing={4}
             align="stretch"
           >
-            <Box display="flex" alignItems="center" gap="2">
-              <Icon as={IoHomeOutline} boxSize={6} />
-              <Link
-                as={ReactRouterLink}
-                to={isAdmin ? '/admin' : '/home'}
-                onClick={onClose}
-                fontSize="lg"
-              >
-                Home
-              </Link>
-            </Box>
-            <Box display="flex" alignItems="center" gap="2">
-              <Icon as={IoFolderOpenOutline} boxSize={6} />
-              <Link
-                as={ReactRouterLink}
-                to={isAdmin ? '/admin/create' : '/user/submitted'}
-                onClick={onClose}
-                fontSize="lg"
-              >
-                {isAdmin ? 'Create Check-in' : 'My Check-ins'}
-              </Link>
-            </Box>
-            <Box display="flex" alignItems="center" gap="2">
-              <Icon as={CiLogout} boxSize={6} />
-              <Link
-                as={ReactRouterLink}
-                onClick={() => {
-                  onClose();
-                  handleAppLogout();
-                }}
-                fontSize="lg"
-              >
-                Logout
-              </Link>
-            </Box>
+            <MobileNavItem
+              icon={IoHomeOutline}
+              label="Home"
+              to={isAdmin ? '/admin' : '/home'}
+              onClick={onClose}
+            />
+            <MobileNavItem
+              icon={IoFolderOpenOutline}
+              label={isAdmin ? 'Create Check-in' : 'My Check-ins'}
+              to={isAdmin ? '/admin/create' : '/user/submitted'}
+              onClick={onClose}
+            />
+            <MobileNavItem
+              icon={CiLogout}
+              label="Logout"
+              onClick={() => {
+                onClose();
+                handleAppLogout();
+              }}
+            />
           </VStack>
         </DrawerBody>
       </DrawerContent>
