@@ -6,6 +6,7 @@ const DesktopNavItem = ({ label, to }) => {
     <Link
       as={RouterLink}
       to={to}
+      end
       fontSize="lg"
       fontWeight="500"
       position="relative"
