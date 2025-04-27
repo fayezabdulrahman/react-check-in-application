@@ -6,7 +6,7 @@ const DesktopNavItem = ({ label, to }) => {
     <Link
       as={RouterLink}
       to={to}
-      end
+      end // only apply active styles on exact match
       fontSize="lg"
       fontWeight="500"
       position="relative"
