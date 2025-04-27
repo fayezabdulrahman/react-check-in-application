@@ -1,9 +1,21 @@
-import { Button, CardFooter, Input, useToast, Text } from '@chakra-ui/react';
+import {
+  Button,
+  CardFooter,
+  Input,
+  useToast,
+  Text,
+  Tooltip,
+  Checkbox,
+  Flex,
+  Stack,
+  Icon,
+  Box
+} from '@chakra-ui/react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useAdminService from '../../hooks/services/useAdminService';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useLocalAuth } from '../../context/LocalAuthProvider';
-import { MdPublish } from 'react-icons/md';
+import { MdPublish, MdHelpOutline } from 'react-icons/md';
 import useCheckInStore from '../../store/checkin-store';
 
 export const CheckInSubmitter = () => {
@@ -15,6 +27,7 @@ export const CheckInSubmitter = () => {
   const queryClient = useQueryClient();
   const toast = useToast();
   const checkInNameRef = useRef();
+  const [isCheckInAnonymous, setIsCheckInAnonymous] = useState(false);
 
   const { mutate: saveCheckIn, isPending } = useMutation({
     mutationFn: createAdminCheckIn,
@@ -51,7 +64,8 @@ export const CheckInSubmitter = () => {
       checkInId: checkInNameRef.current.value.trim(),
       createdBy: `${userDetails.firstName} ${userDetails.lastName}`,
       questions: questions,
-      published: false
+      published: false,
+      anonymous: isCheckInAnonymous
     };
 
     saveCheckIn(checkInToSave);
@@ -60,27 +74,59 @@ export const CheckInSubmitter = () => {
   return (
     <>
       {questions.length > 0 ? (
-        <>
-          <Input
-            placeholder="Enter Check-in name"
-            ref={checkInNameRef}
-            mb={4}
-            size="lg"
-          />
-          <CardFooter justifyContent="center" pt={0}>
+        <Stack spacing={6} p={4} maxW="600px" mx="auto" w="full">
+          <Box>
+            <Input
+              placeholder="Enter Check-in name"
+              ref={checkInNameRef}
+              size="lg"
+              shadow="sm"
+              borderColor="gray.300"
+              _focus={{ borderColor: 'orange.400', shadow: 'md' }}
+            />
+          </Box>
+
+          <Flex align="center" gap={2} wrap="wrap">
+            <Checkbox
+              isChecked={isCheckInAnonymous}
+              onChange={(e) => setIsCheckInAnonymous(e.target.checked)}
+              size="lg"
+              colorScheme="orange"
+            >
+              Anonymous
+            </Checkbox>
+            <Tooltip
+              label="Selecting this will make this check-in anonymous"
+              fontSize="sm"
+              hasArrow
+              placement="bottom"
+            >
+              <span>
+                <Icon
+                  as={MdHelpOutline}
+                  color="gray.500"
+                  _hover={{ color: 'gray.700' }}
+                  boxSize={5}
+                  cursor="help"
+                />
+              </span>
+            </Tooltip>
+          </Flex>
+
+          <CardFooter justifyContent={'center'} p={0}>
             <Button
               colorScheme="green"
               rightIcon={<MdPublish />}
               onClick={handleSaveCheckIn}
               isLoading={isPending}
-              size="md"
+              size="lg"
             >
               Create
             </Button>
           </CardFooter>
-        </>
+        </Stack>
       ) : (
-        <Text textAlign="center" color="gray.500" fontSize="lg">
+        <Text textAlign="center" color="gray.500" fontSize="lg" mt={8}>
           Add your first question to begin
         </Text>
       )}

@@ -12,8 +12,12 @@ import {
   Button,
   Flex,
   FormHelperText,
+  Tooltip,
+  Icon,
   useToast
 } from '@chakra-ui/react';
+import { MdHelpOutline } from 'react-icons/md';
+
 import { useEffect, useState } from 'react';
 import useCheckInStore from '../../store/checkin-store';
 import { INITAL_QUESTION_STATE } from '../../constants/application';
@@ -47,7 +51,7 @@ export const QuestionModal = () => {
 
   const handleSave = () => {
     if (!formData.label.trim()) {
-      return toast({ title: 'Question text required', status: 'error' });
+      return toast({ title: 'Question name is required', status: 'error' });
     }
 
     const cleanSelectOptions = formData.selectOptions
@@ -60,6 +64,7 @@ export const QuestionModal = () => {
 
     const question = {
       label: formData.label,
+      description: formData.description,
       componentType: questionType,
       isRequired: formData.isRequired,
       radioOptions: cleanRadioOptions,
@@ -117,6 +122,37 @@ export const QuestionModal = () => {
               autoFocus
             />
           </FormControl>
+
+          <Flex align="center" gap={2} wrap="wrap">
+            <FormControl mb={4}>
+              <Flex align="center"  mb={1}>
+                <FormLabel >Description</FormLabel>
+                <Tooltip
+                  label="Add further description to your question"
+                  fontSize="sm"
+                  hasArrow
+                  placement="bottom"
+                >
+                  <span>
+                    <Icon
+                      as={MdHelpOutline}
+                      color="gray.500"
+                      _hover={{ color: 'gray.700' }}
+                      boxSize={4}
+                      cursor="help"
+                    />
+                  </span>
+                </Tooltip>
+              </Flex>
+
+              <Input
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, description: e.target.value }))
+                }
+              />
+            </FormControl>
+          </Flex>
 
           {questionType === 'select' && (
             <FormControl mb={4}>
