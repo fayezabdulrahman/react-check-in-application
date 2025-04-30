@@ -9,7 +9,7 @@ export const QuestionTypesPanel = () => {
   const questionTypes = [
     { type: 'text', label: 'Short Text', icon: <IoIosText /> },
     { type: 'textarea', label: 'Long Text', icon: <IoMdText /> },
-    { type: 'select', label: 'Multiple Choice', icon: <IoMdList /> },
+    { type: 'select', label: 'Dropdown', icon: <IoMdList /> },
     { type: 'radio', label: 'Multiple Option', icon: <IoMdCheckbox /> }
   ];
 
