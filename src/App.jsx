@@ -23,9 +23,7 @@ function App() {
 
   if (error) {
     return (
-      <>
-        <ErrorMessage message="An Error Occured. Please try again later..." />
-      </>
+      <ErrorMessage message="An Error Occured. Please try again later..." />
     );
   }
 

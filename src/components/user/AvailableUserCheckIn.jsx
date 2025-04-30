@@ -30,7 +30,12 @@ const AvailableUserCheckIn = () => {
   });
 
   if (allUserCheckInsError) {
-    return <ErrorMessage onRetry={refetch} />;
+    return (
+      <ErrorMessage
+        message={`Failed to fetch all user Check-ins due to ${allUserCheckInsError.message}`}
+        onRetry={refetch}
+      />
+    );
   }
   if (allUserCheckInsIsFetching) {
     return <Loading />;

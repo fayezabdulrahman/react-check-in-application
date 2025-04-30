@@ -123,6 +123,11 @@ const CreatedCheckInCard = ({
         <Text fontSize="sm" color="gray.500" noOfLines={2}>
           Created by {availableCheckIn.createdBy}
         </Text>
+        {availableCheckIn.anonymous && (
+          <Text fontSize="sm" color="gray.500" noOfLines={2}>
+            This Check-in is anonymous
+          </Text>
+        )}
         <Flex
           align="center"
           justify="space-between"
