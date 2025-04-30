@@ -6,7 +6,8 @@ import {
   Grid,
   Flex,
   IconButton,
-  Tooltip
+  Tooltip,
+  Stack
 } from '@chakra-ui/react';
 import { IoMdRefresh } from 'react-icons/io';
 import { FaClipboardList } from 'react-icons/fa';
@@ -150,22 +151,24 @@ const AvailableCheckIn = () => {
   };
 
   if (isLoading || isFetching) {
-    return <SkeletonLoader />;
+    return (
+      <Box m={12}>
+        <Stack spacing={8}>
+          <SkeletonLoader />
+          <SkeletonLoader />
+          <SkeletonLoader />
+        </Stack>
+      </Box>
+    );
   }
   if (error) {
-    toast({
-      title: 'Failed to load all created check in',
-      status: 'error',
-      duration: 3000,
-      isClosable: true
-    });
-
     return (
-      <>
-        <Box mt={8}>
-          <ErrorMessage onRetry={refetch} />
-        </Box>
-      </>
+      <Box mt={8}>
+        <ErrorMessage
+          message={`Failed to fetch all admin Check-ins due to ${error.message}`}
+          onRetry={refetch}
+        />
+      </Box>
     );
   }
 
@@ -183,9 +186,9 @@ const AvailableCheckIn = () => {
             Manage your check-in forms
           </Text>
         </Flex>
-  
+
         {data?.checkIns?.length > 0 && (
-          <Tooltip label='Refresh'>
+          <Tooltip label="Refresh">
             <IconButton
               aria-label="Refresh check-ins"
               icon={<IoMdRefresh />}
@@ -196,7 +199,7 @@ const AvailableCheckIn = () => {
           </Tooltip>
         )}
       </Flex>
-  
+
       {data?.checkIns?.length === 0 ? (
         <Box
           textAlign="center"
@@ -222,7 +225,7 @@ const AvailableCheckIn = () => {
         >
           {data?.checkIns?.map((available, index) => {
             const isPublished = available.published; // Adjust this line as needed
-  
+
             return (
               <Box
                 key={index}
@@ -244,7 +247,7 @@ const AvailableCheckIn = () => {
                   height="4px"
                   bg={isPublished ? 'green.400' : 'orange.300'}
                 />
-    
+
                 <Box px={4} pb={4} mt={2}>
                   <CreatedCheckInCard
                     availableCheckIn={available}

@@ -1,4 +1,4 @@
-import { Box, Grid, Heading, Text, useToast } from '@chakra-ui/react';
+import { Box, Grid, Heading, Text } from '@chakra-ui/react';
 import Loading from '../shared/Loading';
 import { useQuery } from '@tanstack/react-query';
 import useUserService from '../../hooks/services/useUserService';
@@ -7,7 +7,6 @@ import UserSubmittedCheckInCard from './UserSubmittedCheckInCard';
 import ErrorMessage from '../shared/ErrorMesssage';
 const SubmittedCheckIn = () => {
   const { fetchAllUserSubmittedCheckIns } = useUserService();
-  const toast = useToast();
   const { userDetails } = useLocalAuth();
 
   const { data, isLoading, error, refetch } = useQuery({
@@ -22,20 +21,13 @@ const SubmittedCheckIn = () => {
   }
 
   if (error) {
-    toast({
-      title: 'Failed to fetch Submitted Check-ins',
-      description: error.response?.data?.message || 'An error occurred',
-      status: 'error',
-      duration: 3000,
-      isClosable: true
-    });
-
     return (
-      <>
-        <Box mt={8}>
-          <ErrorMessage onRetry={refetch} />
-        </Box>
-      </>
+      <Box mt={8}>
+        <ErrorMessage
+          message={`Failed to fetch Submitted Check-ins due to ${error.message}`}
+          onRetry={refetch}
+        />
+      </Box>
     );
   }
 
