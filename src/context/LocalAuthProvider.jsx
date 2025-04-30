@@ -3,13 +3,15 @@ import {
   useContext,
   useEffect,
   useLayoutEffect,
-  useState
+  useState,
+  useRef
 } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useMutation } from '@tanstack/react-query';
 import useAuthService from '../hooks/services/useAuthService';
 
 import Loading from '../components/shared/Loading.jsx';
+import usePushNotifications from '../hooks/useNotification.jsx';
 
 const AuthContext = createContext();
 
@@ -27,6 +29,10 @@ const LocalAuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [userDetails, setUserDetails] = useState(null);
   const { fetchUser, registerUser } = useAuthService();
+
+  const hasSubscribed = useRef(false); // Track if we've already attempted subscription
+  const { notificationPermission, requestPermissionAndSubscribe } =
+    usePushNotifications();
 
   // Ensure app only renders after Auth0 is initialized
   useEffect(() => {
@@ -67,6 +73,33 @@ const LocalAuthProvider = ({ children }) => {
     }
   });
 
+  // Handle push notification subscription
+  const handlePushSubscription = async (userId) => {
+    // Don't attempt if already subscribed or no user ID
+    if (hasSubscribed.current || !userId) return;
+
+    // Don't attempt if permission was previously denied
+    if (notificationPermission === 'denied') {
+      console.log('Notifications were previously denied by user');
+      return;
+    }
+
+    try {
+      hasSubscribed.current = true;
+
+      // Only attempt subscription if permission is granted or can be requested
+      if (
+        notificationPermission === 'granted' ||
+        notificationPermission === 'default'
+      ) {
+        await requestPermissionAndSubscribe();
+      }
+    } catch (error) {
+      console.error('Push notification subscription error:', error);
+      hasSubscribed.current = false; // Reset on error to allow retry
+    }
+  };
+
   // Fetch or register user in db
   useLayoutEffect(() => {
     if (isAuthenticated && user && !userDetails) {
@@ -78,6 +111,13 @@ const LocalAuthProvider = ({ children }) => {
       fetchUserMutate(payload);
     }
   }, [isAuthenticated, user, userDetails, fetchUserMutate]);
+
+  useLayoutEffect(() => {
+    // When we have userDetails - ask the user for push notifications
+    if (userDetails?._id) {
+      handlePushSubscription(userDetails._id);
+    }
+  }, [userDetails, notificationPermission]);
 
   const handleLogout = () => {
     logout({ returnTo: window.location.origin });
