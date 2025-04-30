@@ -28,16 +28,19 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: self-hosted # runs on aws-ec2
+    runs-on: ubuntu-latest  # Using GitHub's cloud-hosted runner
     steps:
-      - name: Pull Docker Image
-        run: docker pull ${{ secrets.DOCKER_USERNAME }}/ez-check-in-react-app:latest
-      - name: Delete old container
-        run: docker rm -f ez-check-in-react-app || true
-      - name: Run Docker Container
-        run: |
-          docker run -d --network ezcheckin-network -p 80:80 -p 443:443 \
-          --name ez-check-in-react-app \
-          -v /etc/letsencrypt/live/ezcheckin.app/fullchain.pem:/etc/letsencrypt/live/ezcheckin.app/fullchain.pem:ro \
-          -v /etc/letsencrypt/live/ezcheckin.app/privkey.pem:/etc/letsencrypt/live/ezcheckin.app/privkey.pem:ro \
-          ${{ secrets.DOCKER_USERNAME }}/ez-check-in-react-app
+      - name: SSH into EC2 and deploy
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKER_USERNAME }}/ez-check-in-react-app:latest
+            docker rm -f ez-check-in-react-app || true
+            docker run -d --network ezcheckin-network -p 80:80 -p 443:443 \
+            --name ez-check-in-react-app \
+            -v /etc/letsencrypt/live/ezcheckin.app/fullchain.pem:/etc/letsencrypt/live/ezcheckin.app/fullchain.pem:ro \
+            -v /etc/letsencrypt/live/ezcheckin.app/privkey.pem:/etc/letsencrypt/live/ezcheckin.app/privkey.pem:ro \
+            ${{ secrets.DOCKER_USERNAME }}/ez-check-in-react-app

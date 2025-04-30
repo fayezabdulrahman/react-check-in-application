@@ -2,7 +2,6 @@ import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 import { ChakraProvider } from '@chakra-ui/react';
 import {
-  QueryCache,
   QueryClient,
   QueryClientProvider
 } from '@tanstack/react-query';
@@ -14,18 +13,7 @@ const auth0Domain = import.meta.env.VITE_AUTH0_DOMAIN;
 const auth0ClientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
 const auth0Audience = import.meta.env.VITE_AUTH0_AUDIENCE;
 
-const queryClient = new QueryClient({
-  queryCache: new QueryCache({
-    onError: (error, query) => {
-      if (query.meta.errorMessage) {
-        console.error(
-          'Error occured at main.jsx level ',
-          query.meta.errorMessage
-        );
-      }
-    }
-  })
-});
+const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <ChakraProvider theme={theme}>
