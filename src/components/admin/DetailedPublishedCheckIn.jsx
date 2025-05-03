@@ -39,7 +39,7 @@ const DetailedPublishedCheckIn = () => {
   const location = useLocation();
   const { state } = location;
   const checkInName = state?.checkIn?.checkInId || '';
-  const responses = state?.checkIn?.responses || [];
+  const responses = state?.checkIn || []; // full check in object with responses and questions
   const toast = useToast();
   const [gridApi, setGridApi] = useState(null);
   const [filtersActive, setFiltersActive] = useState(false);
@@ -47,10 +47,18 @@ const DetailedPublishedCheckIn = () => {
   const transformData = (data) => {
     if (!data || data.length === 0) return { questions: [], answers: [] };
 
-    const questions = data[0].answers.map((answer) => answer.question);
-    const answers = data.map((item) => ({
+    // Get unique questions with their labels and IDs
+    const questions = data.questions.map((q) => ({
+      id: q.id,
+      label: q.label
+    }));
+
+    // Map answers using questionId as the field
+    const answers = data.responses.map((item) => ({
       fullName: `${item.submittedBy.firstName} ${item.submittedBy.lastName}`,
-      ...Object.fromEntries(item.answers.map((a) => [a.question, a.answer]))
+      ...Object.fromEntries(
+        item.answers.map((a) => [a.questionId.toString(), a.answer])
+      )
     }));
 
     return { questions, answers };
@@ -72,11 +80,11 @@ const DetailedPublishedCheckIn = () => {
 
     const questionColumns =
       questions?.map((question) => ({
-        headerName: question,
-        field: question,
+        headerName: question.label, // display question text
+        field: question.id.toString(), // use questionId as field, must match answer keys
         cellRenderer: TruncatedTextRenderer,
         filter: 'agTextColumnFilter',
-        headerTooltip: question
+        headerTooltip: question.label
       })) || [];
 
     return state.checkIn.anonymous

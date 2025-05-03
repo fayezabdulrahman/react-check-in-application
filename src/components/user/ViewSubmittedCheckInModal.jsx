@@ -32,7 +32,7 @@ const ViewSubmittedCheckInModal = () => {
     (question) => {
       // Find matching answer for this question label
       const matchingAnswer = userViewSubmittedCheckIn?.data?.answers?.find(
-        (answer) => answer.question === question.label
+        (answer) => answer.questionId === question.id
       );
 
       return {
