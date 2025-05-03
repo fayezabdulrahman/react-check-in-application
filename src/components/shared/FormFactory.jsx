@@ -26,7 +26,7 @@ const FormFactory = ({ onSubmit }) => {
   const checkInId = publishedCheckIn?.checkInId;
   const initialValues = publishedCheckIn?.questions?.reduce(
     (values, question) => {
-      values[question.label] = '';
+      values[question.id] = '';
       return values;
     },
     {}
@@ -34,8 +34,9 @@ const FormFactory = ({ onSubmit }) => {
 
   const handleSubmit = (values) => {
     // Transform the values into an array format
-    const answers = Object.entries(values).map(([question, answer]) => ({
-      question,
+    const answers = Object.entries(values).map(([questionId, answer]) => ({
+      questionId,
+      question: publishedCheckIn?.questions[questionId].label,
       answer
     }));
 
@@ -52,11 +53,11 @@ const FormFactory = ({ onSubmit }) => {
 
     questions?.forEach((question) => {
       if (question.isRequired) {
-        schemaShape[question.label] = Yup.string().required(
+        schemaShape[question.id] = Yup.string().required(
           'This field is required'
         );
       } else {
-        schemaShape[question.label] = Yup.string();
+        schemaShape[question.id] = Yup.string();
       }
     });
     return Yup.object().shape(schemaShape);
@@ -112,14 +113,14 @@ const FormFactory = ({ onSubmit }) => {
       >
         {({ values, setFieldValue, isValid }) => (
           <Form>
-            {publishedCheckIn?.questions?.map((question, index) => (
-              <Field key={index} name={question.label}>
+            {publishedCheckIn?.questions?.map((question) => (
+              <Field key={question.id} name={question.id}>
                 {({ field, form }) => (
                   <FormControl
                     isRequired={question.isRequired}
                     isInvalid={
-                      form.errors[question.label] &&
-                      form.touched[question.label]
+                      form.errors[question.id] &&
+                      form.touched[question.id]
                     }
                     mb="1rem"
                   >
@@ -149,9 +150,9 @@ const FormFactory = ({ onSubmit }) => {
                     {question.componentType === 'radio' && (
                       <RadioGroup
                         {...field}
-                        value={values[question.label]}
+                        value={values[question.id]}
                         onChange={(value) =>
-                          setFieldValue(question.label, value)
+                          setFieldValue(question.id, value)
                         }
                       >
                         <Stack direction="row">
@@ -164,7 +165,7 @@ const FormFactory = ({ onSubmit }) => {
                       </RadioGroup>
                     )}
                     <FormErrorMessage>
-                      {form.errors[question.label]}
+                      {form.errors[question.id]}
                     </FormErrorMessage>
                   </FormControl>
                 )}
