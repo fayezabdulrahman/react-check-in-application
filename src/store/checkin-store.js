@@ -168,6 +168,7 @@ const useCheckInStore = create((set) => ({
     set(
       produce((state) => {
         state.questions = [];
+        state.nextQuestionId = 0;
       })
     ),
   resetAdminAction: () =>
