@@ -124,7 +124,7 @@ const CreatedCheckInCard = ({
           Created by {availableCheckIn.createdBy}
         </Text>
         {availableCheckIn.anonymous && (
-          <Text fontSize="sm" color="gray.500" noOfLines={2}>
+          <Text fontSize="sm" color="gray.500" noOfLines={2} fontStyle={'italic'} >
             This Check-in is anonymous
           </Text>
         )}

@@ -52,6 +52,8 @@ const LocalAuthProvider = ({ children }) => {
           roles: userRoles
         };
         registerUserMutate(userToRegister);
+      } else if (error.response?.status === 401) {
+        handleLogout();
       }
     }
   });
@@ -80,8 +82,7 @@ const LocalAuthProvider = ({ children }) => {
   }, [isAuthenticated, user, userDetails, fetchUserMutate]);
 
   const handleLogout = () => {
-    logout({ returnTo: window.location.origin });
-    localStorage.clear();
+    logout({ returnTo: `${window.location.origin}/logout` });
   };
 
   const ctxValue = {

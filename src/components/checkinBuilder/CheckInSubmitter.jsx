@@ -126,7 +126,7 @@ export const CheckInSubmitter = () => {
           </CardFooter>
         </Stack>
       ) : (
-        <Text textAlign="center" color="gray.500" fontSize="lg" mt={8}>
+        <Text textAlign="center" color="gray.500" fontSize="lg" >
           Add your first question to begin
         </Text>
       )}

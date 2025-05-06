@@ -13,7 +13,6 @@ import {
   Button,
   useToast
 } from '@chakra-ui/react';
-import LocalStorageService from '../../util/LocalStorageService';
 import useAuthService from '../../hooks/services/useAuthService';
 import { useMutation } from '@tanstack/react-query';
 
@@ -30,7 +29,6 @@ const CaptureUserDetails = () => {
     mutationFn: updateUserDetails,
     onSuccess: (response) => {
       setUserDetails(response);
-      LocalStorageService.setItem('hasPromptedName', true);
       setShowPrompt(false);
       toast({
         title: 'Profile updated!',
@@ -66,16 +64,18 @@ const CaptureUserDetails = () => {
   // Check if user details are empty and prompt for input (only once)
   useEffect(() => {
     if (userDetails?.firstName === '' && userDetails?.lastName === '') {
-      const hasPrompted = LocalStorageService.getItem('hasPromptedName');
-      if (!hasPrompted) {
-        setShowPrompt(true);
-      }
+      setShowPrompt(true);
     }
   }, [userDetails]);
 
   if (!showPrompt) return null;
   return (
-    <Modal closeOnOverlayClick={false} isOpen={showPrompt} onClose={() => showPrompt(false)} isCentered>
+    <Modal
+      closeOnOverlayClick={false}
+      isOpen={showPrompt}
+      onClose={() => showPrompt(false)}
+      isCentered
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Complete Your Profile</ModalHeader>
