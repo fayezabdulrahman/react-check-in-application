@@ -10,7 +10,9 @@ import {
   Text,
   Divider,
   useToast,
-  Stack
+  Stack,
+  Flex,
+  Switch
 } from '@chakra-ui/react';
 import { FaDownload } from 'react-icons/fa';
 import { MdFilterAltOff } from 'react-icons/md';
@@ -43,9 +45,11 @@ const DetailedPublishedCheckIn = () => {
   const toast = useToast();
   const [gridApi, setGridApi] = useState(null);
   const [filtersActive, setFiltersActive] = useState(false);
+  const [expandAnswer, setExpandAnswer] = useState(false);
 
   const transformData = (data) => {
-    if (!data || data.responses.length === 0) return { questions: [], answers: [] };
+    if (!data || data.responses.length === 0)
+      return { questions: [], answers: [] };
 
     // Get unique questions with their labels and IDs
     const questions = data.questions.map((q) => ({
@@ -82,7 +86,14 @@ const DetailedPublishedCheckIn = () => {
       questions?.map((question) => ({
         headerName: question.label, // display question text
         field: question.id.toString(), // use questionId as field, must match answer keys
-        cellRenderer: TruncatedTextRenderer,
+        cellRenderer: expandAnswer ? undefined : TruncatedTextRenderer,
+        cellStyle: expandAnswer
+          ? {}
+          : {
+              whiteSpace: 'normal',
+              overflow: 'visible',
+              textOverflow: 'clip'
+            },
         filter: 'agTextColumnFilter',
         headerTooltip: question.label
       })) || [];
@@ -90,7 +101,7 @@ const DetailedPublishedCheckIn = () => {
     return state.checkIn.anonymous
       ? questionColumns
       : [userColumn, ...questionColumns];
-  }, [questions, state?.checkIn?.anonymous]);
+  }, [questions, state?.checkIn?.anonymous, expandAnswer]);
 
   const defaultColDef = useMemo(
     () => ({
@@ -177,11 +188,22 @@ const DetailedPublishedCheckIn = () => {
         <Box>
           <Heading size="lg">Results for {checkInName}</Heading>
           <Text color="gray.500" mt={1}>
-            {answers.length} Responses Collected
+            {answers.length} Response {answers.length !== 1 ? 's' : ''}{' '}
+            Collected
           </Text>
         </Box>
 
         <Stack direction="row" spacing={2}>
+          <Flex align="center" mr={4}>
+            <Switch
+              isChecked={expandAnswer}
+              onChange={() => setExpandAnswer(!expandAnswer)}
+              colorScheme="blue"
+              id="truncation-toggle"
+              mr={2}
+            />
+            <Text fontSize="sm">Expand Answers</Text>
+          </Flex>
           <Tooltip label="Clear Filters" hasArrow>
             <IconButton
               icon={<MdFilterAltOff />}
