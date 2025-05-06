@@ -13,6 +13,7 @@ import CheckInForm from './components/user/CheckInForm';
 import { useAuth0 } from '@auth0/auth0-react';
 import Loading from './components/shared/Loading';
 import ErrorMessage from './components/shared/ErrorMesssage';
+import Logout from './Pages/Logout';
 
 function App() {
   const { isLoading, error } = useAuth0();
@@ -33,6 +34,7 @@ function App() {
         <LocalAuthProvider>
           <Routes>
             <Route path="/" element={<Landing />} />
+            <Route path="/logout" element={<Logout />} />
             <Route element={<ProtectedRoute allowedRoles={['user']} />}>
               <Route element={<Layout />}>
                 <Route path="/home" index element={<Homepage />} />
