@@ -39,13 +39,13 @@ const DetailedPublishedCheckIn = () => {
   const location = useLocation();
   const { state } = location;
   const checkInName = state?.checkIn?.checkInId || '';
-  const responses = state?.checkIn || []; // full check in object with responses and questions
+  const checkIn = state?.checkIn || null; // full check in object with responses and questions
   const toast = useToast();
   const [gridApi, setGridApi] = useState(null);
   const [filtersActive, setFiltersActive] = useState(false);
 
   const transformData = (data) => {
-    if (!data || data.length === 0) return { questions: [], answers: [] };
+    if (!data || data.responses.length === 0) return { questions: [], answers: [] };
 
     // Get unique questions with their labels and IDs
     const questions = data.questions.map((q) => ({
@@ -64,7 +64,7 @@ const DetailedPublishedCheckIn = () => {
     return { questions, answers };
   };
 
-  const { questions, answers } = transformData(responses);
+  const { questions, answers } = transformData(checkIn);
 
   const columnDefs = useMemo(() => {
     const userColumn = {
@@ -147,7 +147,7 @@ const DetailedPublishedCheckIn = () => {
     setFiltersActive(false); // Reset state
   }, [gridApi]);
 
-  if (responses.length === 0) {
+  if (checkIn.responses.length === 0) {
     return (
       <Box textAlign="center" p={10}>
         <Heading size="md" mb={4}>
