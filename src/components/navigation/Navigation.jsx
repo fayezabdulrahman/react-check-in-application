@@ -2,7 +2,6 @@ import { useDisclosure } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
 import { useLocalAuth } from '../../context/LocalAuthProvider';
 import logo from '../../assets/b2b.png';
-import { useAuth0 } from '@auth0/auth0-react';
 import MobileNav from './mobile/MobileNav';
 import DesktopNav from './desktop/DesktopNav';
 const Navigation = () => {
@@ -10,8 +9,7 @@ const Navigation = () => {
   const btnRef = useRef();
 
   const { handleAppLogout, userDetails } = useLocalAuth();
-  const { user } = useAuth0();
-  const userRoles = user?.['https://ez-check-in/roles'] || [];
+  const userRoles = userDetails?.roles || [];
 
   const isAdmin = userRoles.includes('admin');
 
