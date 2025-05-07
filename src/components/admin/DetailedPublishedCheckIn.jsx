@@ -188,7 +188,7 @@ const DetailedPublishedCheckIn = () => {
         <Box>
           <Heading size="lg">Results for {checkInName}</Heading>
           <Text color="gray.500" mt={1}>
-            {answers.length} Response {answers.length !== 1 ? 's' : ''}{' '}
+            {answers.length} Response{answers.length !== 1 ? 's' : ''} {' '}
             Collected
           </Text>
         </Box>
