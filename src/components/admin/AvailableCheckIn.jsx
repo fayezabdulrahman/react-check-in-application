@@ -7,16 +7,20 @@ import {
   Flex,
   IconButton,
   Tooltip,
-  Stack
+  Stack,
+  ButtonGroup
 } from '@chakra-ui/react';
 import { IoMdRefresh } from 'react-icons/io';
 import { FaClipboardList } from 'react-icons/fa';
+import { MdDensitySmall } from 'react-icons/md';
+import { BsFolderCheck, BsFolderX } from 'react-icons/bs';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import CreatedCheckInCard from './CreatedCheckInCard';
 import useAdminService from '../../hooks/services/useAdminService';
 import useCheckInStore from '../../store/checkin-store';
 import ErrorMessage from '../shared/ErrorMesssage';
 import SkeletonLoader from '../shared/SkeletonLoader';
+import { useState } from 'react';
 
 const AvailableCheckIn = () => {
   const {
@@ -34,11 +38,22 @@ const AvailableCheckIn = () => {
 
   const toast = useToast();
 
+  // Add state for filtering
+  const [filter, setFilter] = useState('all'); // 'all', 'published', 'unpublished'
+
   const { data, isFetching, isLoading, error, refetch } = useQuery({
     queryKey: ['allAdminCheckIn'],
     queryFn: fetchAllAdminCheckIn,
     staleTime: 1000 * 60 * 10 // Cache for 10 minutes
   });
+
+  // Add filter function
+  const filteredCheckIns =
+    data?.checkIns?.filter((checkIn) => {
+      if (filter === 'published') return checkIn.published;
+      if (filter === 'unpublished') return !checkIn.published;
+      return true; // 'all'
+    }) || [];
 
   const { mutate: publishCheckInMutate } = useMutation({
     mutationFn: publishNewCheckIn,
@@ -187,20 +202,56 @@ const AvailableCheckIn = () => {
           </Text>
         </Flex>
 
-        {data?.checkIns?.length > 0 && (
-          <Tooltip label="Refresh">
-            <IconButton
-              aria-label="Refresh check-ins"
-              icon={<IoMdRefresh />}
-              onClick={refetch}
-              variant="ghost"
-              colorScheme="gray"
-            />
-          </Tooltip>
-        )}
+        <Flex align="center" gap={4}>
+          <ButtonGroup isAttached variant="outline" size="sm">
+            <Tooltip label="All check-ins">
+              <IconButton
+                aria-label="All check-ins"
+                icon={<MdDensitySmall />}
+                onClick={() => setFilter('all')}
+                variant={filter === 'all' ? 'solid' : 'outline'}
+                colorScheme="blue"
+              />
+            </Tooltip>
+            <Tooltip label="Published check-ins">
+              <IconButton
+                icon={<BsFolderCheck />}
+                aria-label="Published check-ins"
+                onClick={() => setFilter('published')}
+                variant={filter === 'published' ? 'solid' : 'outline'}
+                colorScheme="green"
+              >
+                Active
+              </IconButton>
+            </Tooltip>
+            <Tooltip label="Unpublished check-ins">
+              <IconButton
+                icon={<BsFolderX />}
+                aria-label="Unpublished check-ins"
+                onClick={() => setFilter('unpublished')}
+                variant={filter === 'unpublished' ? 'solid' : 'outline'}
+                colorScheme="orange"
+              >
+                Drafts
+              </IconButton>
+            </Tooltip>
+          </ButtonGroup>
+
+          {data?.checkIns?.length > 0 && (
+            <Tooltip label="Refresh">
+              <IconButton
+                aria-label="Refresh check-ins"
+                icon={<IoMdRefresh />}
+                onClick={refetch}
+                variant="ghost"
+                colorScheme="gray"
+              />
+            </Tooltip>
+          )}
+        </Flex>
       </Flex>
 
-      {data?.checkIns?.length === 0 ? (
+      {filteredCheckIns.length === 0 ? (
         <Box
           textAlign="center"
           p={8}
@@ -210,7 +261,7 @@ const AvailableCheckIn = () => {
           bgGradient="linear(to-b, gray.50, white)"
         >
           <Text color="gray.500" mb={2}>
-            No Check-in forms created!
+            No {filter === 'all' ? '' : filter} Check-in forms created!
           </Text>
         </Box>
       ) : (
@@ -223,9 +274,8 @@ const AvailableCheckIn = () => {
           gap={6}
           pb={6}
         >
-          {data?.checkIns?.map((available, index) => {
-            const isPublished = available.published; // Adjust this line as needed
-
+          {filteredCheckIns.map((available, index) => {
+            const isPublished = available.published;
             return (
               <Box
                 key={index}
