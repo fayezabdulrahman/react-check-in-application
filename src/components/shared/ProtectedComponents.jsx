@@ -4,6 +4,7 @@ import EditCheckInModal from '../admin/EditCheckInModal';
 import CaptureUserDetails from '../shared/CaptureUserDetails';
 import ViewSubmittedCheckInModal from '../user/ViewSubmittedCheckInModal';
 import PopUpModal from './PopUpModal';
+import DuplicatePopUpModal from './DuplicatePopUpModal';
 
 const ProtectedComponents = () => {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -17,6 +18,7 @@ const ProtectedComponents = () => {
       <CaptureUserDetails />
       <PopUpModal />
       <ViewSubmittedCheckInModal />
+      <DuplicatePopUpModal />
     </>
   );
 };
