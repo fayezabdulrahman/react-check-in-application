@@ -115,7 +115,6 @@ const useCheckInStore = create((set) => ({
   setToggleDuplicateModal: (checkInToDuplicate) =>
     set(
       produce((state) => {
-        console.log('check in to duplicate', checkInToDuplicate);
         state.toggleDuplicateModal = !state.toggleDuplicateModal;
         state.duplicateCheckInData = {
           createdBy: checkInToDuplicate.createdBy,
