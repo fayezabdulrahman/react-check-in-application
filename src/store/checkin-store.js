@@ -9,6 +9,8 @@ const useCheckInStore = create((set) => ({
   toggleModal: false,
   toggleEditModal: false,
   toggleDeleteModal: false,
+  toggleDuplicateModal: false,
+  duplicateCheckInData: null,
   deleteModalConfig: {
     id: null,
     header: '',
@@ -110,6 +112,18 @@ const useCheckInStore = create((set) => ({
           !state.toggleUserViewSubmittedCheckInModal;
       })
     ),
+  setToggleDuplicateModal: (checkInToDuplicate) =>
+    set(
+      produce((state) => {
+        state.toggleDuplicateModal = !state.toggleDuplicateModal;
+        state.duplicateCheckInData = {
+          createdBy: checkInToDuplicate.createdBy,
+          published: false,
+          questions: checkInToDuplicate.questions,
+          anonymous: checkInToDuplicate.anonymous
+        };
+      })
+    ),
   setToggleEditModal: () =>
     set((state) => ({ toggleEditModal: !state.toggleEditModal })),
   openDeleteModal: (config) =>
@@ -134,6 +148,14 @@ const useCheckInStore = create((set) => ({
           body: '',
           onConfirm: null
         };
+      })
+    ),
+
+  closeDuplicateModal: () =>
+    set(
+      produce((state) => {
+        state.toggleDuplicateModal = !state.toggleDuplicateModal;
+        state.duplicateCheckInData = null;
       })
     ),
   addQuestion: (question) =>

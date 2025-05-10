@@ -33,7 +33,6 @@ const useAxiosClient = () => {
       
       // Use cached token if valid
       if (cachedToken && cachedTokenExpiry && cachedTokenExpiry > now + 60) {
-        console.log('Using cached token');
         config.headers.Authorization = `Bearer ${cachedToken}`;
         if (cachedUserSub) {
           config.headers['X-User-Id'] = cachedUserSub;

@@ -6,7 +6,11 @@ import {
   Flex,
   IconButton,
   Text,
-  Badge
+  Badge,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem
 } from '@chakra-ui/react';
 import {
   MdDeleteOutline,
@@ -14,7 +18,9 @@ import {
   MdUnpublished,
   MdPublish,
   MdOutlineQuestionAnswer,
-  MdOutlineRemoveRedEye
+  MdOutlineRemoveRedEye,
+  MdControlPointDuplicate,
+  MdMoreVert
 } from 'react-icons/md';
 import useCheckInStore from '../../store/checkin-store';
 import { useState } from 'react';
@@ -28,6 +34,10 @@ const CreatedCheckInCard = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const setAdminAction = useCheckInStore((state) => state.setAdminAction);
   const adminAction = useCheckInStore((state) => state.adminAction);
+  const setToggleDuplicateModal = useCheckInStore(
+    (state) => state.setToggleDuplicateModal
+  );
+
   const navigate = useNavigate();
 
   const setSubmittedCheckInToEdit = useCheckInStore(
@@ -105,26 +115,47 @@ const CreatedCheckInCard = ({
           >
             {availableCheckIn.checkInId}
           </Text>
+        </Flex>
+
+        <Flex position="absolute" right="0" top="0" align="center" gap={2}>
           <Badge
             colorScheme={isCurrentlyPublished ? 'green' : 'gray'}
             variant="subtle"
-            position="absolute"
-            right="0"
-            top="0"
             fontSize="xs"
           >
             {isCurrentlyPublished ? 'Active' : 'Draft'}
           </Badge>
+          <Menu>
+            <MenuButton
+              as={IconButton}
+              aria-label="Options"
+              icon={<MdMoreVert />}
+              variant="ghost"
+              size="sm"
+            />
+            <MenuList>
+              <MenuItem
+                icon={<MdControlPointDuplicate />}
+                onClick={() => setToggleDuplicateModal(availableCheckIn)}
+              >
+                Duplicate
+              </MenuItem>
+            </MenuList>
+          </Menu>
         </Flex>
       </Box>
-
       {/* Metadata */}
       <Box mt={2} mb={4}>
         <Text fontSize="sm" color="gray.500" noOfLines={2}>
           Created by {availableCheckIn.createdBy}
         </Text>
         {availableCheckIn.anonymous && (
-          <Text fontSize="sm" color="gray.500" noOfLines={2} fontStyle={'italic'} >
+          <Text
+            fontSize="sm"
+            color="gray.500"
+            noOfLines={2}
+            fontStyle={'italic'}
+          >
             This Check-in is anonymous
           </Text>
         )}
