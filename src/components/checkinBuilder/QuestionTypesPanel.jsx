@@ -1,16 +1,23 @@
 import { Button, Flex, Text } from '@chakra-ui/react';
 import useCheckInStore from '../../store/checkin-store';
-import { IoMdCheckbox, IoIosText, IoMdText, IoMdList } from 'react-icons/io';
+import {
+  IoMdCheckbox,
+  IoIosText,
+  IoMdText,
+  IoMdList,
+  IoIosListBox
+} from 'react-icons/io';
 
 export const QuestionTypesPanel = () => {
   const setToggleModal = useCheckInStore((state) => state.setToggleModal);
   const setQuestionType = useCheckInStore((state) => state.setQuestionType);
 
   const questionTypes = [
-    { type: 'text', label: 'Short Text', icon: <IoIosText /> },
-    { type: 'textarea', label: 'Long Text', icon: <IoMdText /> },
-    { type: 'select', label: 'Dropdown', icon: <IoMdList /> },
-    { type: 'radio', label: 'Multiple Option', icon: <IoMdCheckbox /> }
+    { type: 'text', label: 'Short Answer', icon: <IoIosText /> },
+    { type: 'textarea', label: 'Paragraph Answer', icon: <IoMdText /> },
+    { type: 'select', label: 'Single Choice (Dropdown)', icon: <IoMdList /> },
+    { type: 'radio', label: 'Single Choice (Buttons)', icon: <IoMdCheckbox /> },
+    { type: 'multiselect', label: 'Multiple Choice', icon: <IoIosListBox /> }
   ];
 
   return (
@@ -29,6 +36,7 @@ export const QuestionTypesPanel = () => {
           key={question.type}
           leftIcon={question.icon}
           justifyContent="flex-start"
+          overflow="hidden"
           variant="outline"
           onClick={() => {
             setToggleModal();

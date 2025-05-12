@@ -12,6 +12,8 @@ import {
   Flex,
   Text,
   Badge,
+  CheckboxGroup,
+  Checkbox,
   FormErrorMessage
 } from '@chakra-ui/react';
 import { Field, Form, Formik } from 'formik';
@@ -26,7 +28,7 @@ const FormFactory = ({ onSubmit }) => {
   const checkInId = publishedCheckIn?.checkInId;
   const initialValues = publishedCheckIn?.questions?.reduce(
     (values, question) => {
-      values[question.id] = '';
+      values[question.id] = question.componentType === 'multiselect' ? [] : '';
       return values;
     },
     {}
@@ -34,11 +36,17 @@ const FormFactory = ({ onSubmit }) => {
 
   const handleSubmit = (values) => {
     // Transform the values into an array format
-    const answers = Object.entries(values).map(([questionId, answer]) => ({
-      questionId,
-      question: publishedCheckIn?.questions[questionId].label,
-      answer
-    }));
+    const answers = Object.entries(values).map(([questionId, answer]) => {
+      const question = publishedCheckIn?.questions[questionId];
+      return {
+        questionId,
+        question: question.label,
+        answer:
+          question.componentType === 'multiselect' && Array.isArray(answer)
+            ? answer.join(', ')
+            : answer
+      };
+    });
 
     const userSubmission = {
       checkInId,
@@ -52,12 +60,14 @@ const FormFactory = ({ onSubmit }) => {
     let schemaShape = {};
 
     questions?.forEach((question) => {
-      if (question.isRequired) {
-        schemaShape[question.id] = Yup.string().required(
-          'This field is required'
-        );
+      if (question.componentType === 'multiselect') {
+        schemaShape[question.id] = question.isRequired
+          ? Yup.array().min(1, 'Select at least one option')
+          : Yup.array();
       } else {
-        schemaShape[question.id] = Yup.string();
+        schemaShape[question.id] = question.isRequired
+          ? Yup.string().required('This field is required')
+          : Yup.string();
       }
     });
     return Yup.object().shape(schemaShape);
@@ -102,7 +112,7 @@ const FormFactory = ({ onSubmit }) => {
           fontSize="sm"
           mt={{ base: 2, md: 0 }}
         >
-          * Required fields
+          * Required field
         </Text>
       </Flex>
       <Formik
@@ -112,21 +122,26 @@ const FormFactory = ({ onSubmit }) => {
         onSubmit={handleSubmit}
       >
         {({ values, setFieldValue, isValid }) => (
-          <Form>
+          // no validate - stops default HTML Browser from validating the form, validation is done via Yup Schema
+          <Form noValidate>
             {publishedCheckIn?.questions?.map((question) => (
               <Field key={question.id} name={question.id}>
                 {({ field, form }) => (
                   <FormControl
                     isRequired={question.isRequired}
                     isInvalid={
-                      form.errors[question.id] &&
-                      form.touched[question.id]
+                      form.errors[question.id] && form.touched[question.id]
                     }
                     mb="1rem"
                   >
                     <FormLabel>{question.label}</FormLabel>
                     {question.description && (
-                      <Text fontSize="sm" color="gray.500" fontStyle="italic" mb={2}>
+                      <Text
+                        fontSize="sm"
+                        color="gray.500"
+                        fontStyle="italic"
+                        mb={2}
+                      >
                         {question.description}
                       </Text>
                     )}
@@ -147,13 +162,31 @@ const FormFactory = ({ onSubmit }) => {
                         })}
                       </Select>
                     )}
+
+                    {question.componentType === 'multiselect' && (
+                      <CheckboxGroup
+                        {...field}
+                        colorScheme="orange"
+                        value={values[question.id || []]}
+                        onChange={(value) => {
+                          form.setFieldValue(question.id, value);
+                          form.setFieldTouched(question.id, true, false);
+                        }}
+                      >
+                        <Stack spacing={2}>
+                          {question.selectOptions?.map((option, index) => (
+                            <Checkbox key={index} value={option}>
+                              {option}
+                            </Checkbox>
+                          ))}
+                        </Stack>
+                      </CheckboxGroup>
+                    )}
                     {question.componentType === 'radio' && (
                       <RadioGroup
                         {...field}
                         value={values[question.id]}
-                        onChange={(value) =>
-                          setFieldValue(question.id, value)
-                        }
+                        onChange={(value) => setFieldValue(question.id, value)}
                       >
                         <Stack direction="row">
                           {question.radioOptions?.map((option, index) => (

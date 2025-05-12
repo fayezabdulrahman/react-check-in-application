@@ -154,7 +154,7 @@ export const QuestionModal = () => {
             </FormControl>
           </Flex>
 
-          {questionType === 'select' && (
+          {(questionType === 'select' || questionType === 'multiselect') && (
             <FormControl mb={4}>
               <FormLabel>Options (comma-separated)</FormLabel>
               <Input
