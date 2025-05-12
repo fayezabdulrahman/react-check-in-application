@@ -121,7 +121,7 @@ const FormFactory = ({ onSubmit }) => {
         validateOnMount={true}
         onSubmit={handleSubmit}
       >
-        {({ values, setFieldValue, isValid, errors, touched }) => (
+        {({ values, setFieldValue, isValid }) => (
           // no validate - stops default HTML Browser from validating the form, validation is done via Yup Schema
           <Form noValidate>
             {publishedCheckIn?.questions?.map((question) => (
@@ -209,7 +209,6 @@ const FormFactory = ({ onSubmit }) => {
                 Submit
               </Button>
             </Box>
-            <pre>{JSON.stringify({ values, errors, touched }, null, 2)}</pre>
           </Form>
         )}
       </Formik>
